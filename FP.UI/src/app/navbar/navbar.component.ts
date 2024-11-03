@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { NavigationEnd, Router, RoutesRecognized } from '@angular/router';
+import { Router, RoutesRecognized } from '@angular/router';
 import { filter } from 'rxjs';
 
 @Component({

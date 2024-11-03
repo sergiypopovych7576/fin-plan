@@ -1,20 +1,12 @@
 import { NgModule } from '@angular/core';
-import { NavbarComponent } from './navbar';
-import {MatButtonModule} from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
+import { NavbarModule } from './navbar';
 
 @NgModule({
   imports: [
-    MatButtonModule,
-    MatIconModule,
-    RouterModule
-  ],
-  declarations: [
-    NavbarComponent
+    NavbarModule
   ],
   exports: [
-    NavbarComponent
-  ],
+    NavbarModule
+  ]
 })
-export class AppModule {}
+export class AppModule { }
