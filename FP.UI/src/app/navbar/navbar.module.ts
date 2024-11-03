@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar.component';
+import { CommonModule } from '@angular/common';
 
 const COMPONENTS = [
     NavbarComponent
@@ -10,6 +11,7 @@ const COMPONENTS = [
 
 @NgModule({
     imports: [
+        CommonModule,
         RouterModule,
         MatButtonModule,
         MatIconModule,
