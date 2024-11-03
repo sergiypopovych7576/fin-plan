@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 export class BudgetComponent {
 
   displayedColumns: string[] = ['name', 'category', 'amount', 'date'];
-  ELEMENT_DATA: any[] = [
+  ELEMENT_DATA: unknown[] = [
     { name: 'Rent Kyiv', category: 'Needs', amount: 375, date: '01.01.2024' },
     { name: 'Utilities Kyiv', category: 'Needs', amount: 50, date: '01.01.2024' },
     { name: 'Food', category: 'Needs', amount: 400, date: '01.01.2024' },

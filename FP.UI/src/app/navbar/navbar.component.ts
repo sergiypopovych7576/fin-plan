@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit {
   public ngOnInit(): void {
     this._router.events
       .pipe(filter(event => event instanceof RoutesRecognized))
-      .subscribe((event: any) => {
+      .subscribe((event: RoutesRecognized) => {
         this.currentRoute.set(event.urlAfterRedirects);
       });
   }
