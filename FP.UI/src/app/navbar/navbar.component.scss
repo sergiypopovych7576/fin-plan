@@ -1,0 +1,39 @@
+:host {
+    display: block;
+    background-color: #2E3841;
+    color: #E0F1F8;
+    text-align: center;
+    padding: .5rem;
+    display: flex;
+    padding-left: 2rem;
+    padding-right: 2rem;
+
+    .label {
+        font-size: 2em;
+        font-weight: 100;
+    }
+
+    .links {
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 6rem;
+        display: flex;
+
+        .item {
+            margin-left: 1rem;
+            display: flex;
+
+            a {
+                margin: auto;
+                text-align: center;
+                color: white;
+                text-decoration: none;
+
+                &.underline {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+    }
+}
