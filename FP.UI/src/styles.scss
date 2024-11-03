@@ -1,13 +1,8 @@
 @use '@angular/material' as mat;
-@use './theme' as m3-theme;
 @use 'styles/utils.scss';
-
-@include mat.core();
 
 html,
 body {
-    @include mat.core-theme(m3-theme.$light-theme);
-    @include mat.button-theme(m3-theme.$light-theme);
     height: 100%;
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;

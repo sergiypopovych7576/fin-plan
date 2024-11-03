@@ -3,12 +3,11 @@
 </span>
 <div class="links">
     <div class="item">
-        <mat-icon fontIcon="request_quote"></mat-icon>
-        <a routerLink="/budget" [class.underline]="matchesRoute('/budget')">Budget</a>
+        <a mat-button routerLink="/dashboard" [class.underline]="matchesRoute('/dashboard')"> <mat-icon
+                fontIcon="dashboard"></mat-icon>Dashboard</a>
     </div>
-
     <div class="item">
-        <mat-icon fontIcon="dashboard"></mat-icon>
-        <a routerLink="/dashboard" [class.underline]="matchesRoute('/dashboard')">Dashboard</a>
+        <a mat-button routerLink="/budget" [class.underline]="matchesRoute('/budget')"><mat-icon
+                fontIcon="request_quote"></mat-icon> Budget</a>
     </div>
 </div>

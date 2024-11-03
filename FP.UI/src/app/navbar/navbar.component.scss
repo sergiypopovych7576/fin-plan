@@ -1,16 +1,16 @@
 :host {
     display: block;
-    background-color: #2E3841;
-    color: #E0F1F8;
     text-align: center;
     padding: .5rem;
     display: flex;
+    background-color: #005cbb;
     padding-left: 2rem;
     padding-right: 2rem;
 
     .label {
         font-size: 2em;
-        font-weight: 100;
+        font-weight: 400;
+        color: white;
     }
 
     .links {
@@ -26,8 +26,8 @@
             a {
                 margin: auto;
                 text-align: center;
-                color: white;
                 text-decoration: none;
+                color: white;
 
                 &.underline {
                     text-decoration: underline;
