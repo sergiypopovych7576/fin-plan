@@ -1,69 +1,44 @@
-<mat-tab-group animationDuration="0ms" class="w-50">
-  <mat-tab label="Incomes">
-    <table mat-table [dataSource]="incomes" class="mat-elevation-z8">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="category">
-        <th mat-header-cell *matHeaderCellDef> Category </th>
-        <td mat-cell *matCellDef="let element"> {{element.category}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="amount">
-        <th mat-header-cell *matHeaderCellDef> Amount </th>
-        <td mat-cell *matCellDef="let element"> {{element.amount}}€ </td>
-      </ng-container>
-
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef> Date </th>
-        <td mat-cell *matCellDef="let element"> {{element.date}} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </mat-tab>
-  <mat-tab label="Expenses">
-    <table mat-table [dataSource]="expenses" class="mat-elevation-z8">
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="category">
-        <th mat-header-cell *matHeaderCellDef> Category </th>
-        <td mat-cell *matCellDef="let element"> {{element.category}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="amount">
-        <th mat-header-cell *matHeaderCellDef> Amount </th>
-        <td mat-cell *matCellDef="let element"> {{element.amount}}€ </td>
-      </ng-container>
-
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef> Date </th>
-        <td mat-cell *matCellDef="let element"> {{element.date}} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </mat-tab>
-</mat-tab-group>
-
-<div class="chart-container w-50 ml-2">
-  <div>Left to spend: 1500€</div>
+<div class="d-flex w-100 f-column">
   <div class="d-flex">
     <div class="w-50">
-      Income by category
-      <canvas  id="MyChart" >{{ chart }}</canvas>
-    </div>
-    <div class="w-50">
-      Expenses by category
-      <canvas  id="MyChart2" >{{ chart2 }}</canvas>
+      <div class="d-flex justify-center">
+        <fp-month-selector></fp-month-selector>
+      </div>
+        <mat-tab-group animationDuration="0ms" class="w-100">
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="mr-1">payments</mat-icon>
+              Expenses
+            </ng-template>
+            <fp-operations-table [operations]="expenses">
+            </fp-operations-table>
+          </mat-tab>
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="mr-1">add_card</mat-icon>
+              Incomes
+            </ng-template>
+            <fp-operations-table [operations]="incomes">
+            </fp-operations-table>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    <div class="d-flex f-column w-50 pl-2 pr-2">
+      <div class="d-flex justify-around">
+        <div>
+          <p class="text-center">Income by category</p>
+          <canvas  id="MyChart" class="mt-1">{{ chart }}</canvas>
+        </div>
+        <div>
+          <p class="text-center">Expenses by category</p>
+          <canvas  id="MyChart2" class="mt-1">{{ chart2 }}</canvas>
+        </div>
+      </div>
+      <div class="d-flex justify-center pt-5">
+        <div class="w-50">
+          <fp-month-summary></fp-month-summary>
+        </div>
+      </div>
     </div>
   </div>
-
 </div>

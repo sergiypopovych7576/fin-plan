@@ -12,11 +12,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public currentRoute = signal('');
 
   public menuItems = [
-    {
-      icon: 'dashboard',
-      path: '/dashboard',
-      label: 'Dashboard'
-    },
+    // {
+    //   icon: 'dashboard',
+    //   path: '/dashboard',
+    //   label: 'Dashboard'
+    // },
     {
       icon: 'request_quote',
       path: '/budget',

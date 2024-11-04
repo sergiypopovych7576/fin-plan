@@ -1,0 +1,89 @@
+$primary-color: #005cbb;
+$primary-color-light: lighten($primary-color, 25);
+$text-color: #555;
+$secondary-color: lightgray;
+
+.color-white {
+    color: white !important;
+}
+
+.bg-color-white {
+    background-color: white;
+}
+
+.color-primary {
+    color: $primary-color;
+}
+
+.bg-color-primary-gradient {
+    background-image: linear-gradient(to right top, $primary-color, $primary-color-light);
+}
+
+.color-secondary {
+    color: $secondary-color;
+}
+
+.bg-color-primary {
+    background-color: $primary-color;
+}
+
+.bg-color-secondary {
+    background-color: $secondary-color;
+}
+
+$contrasts: 10, 15, 20;
+@each $contrast in $contrasts {
+    .color-primary-dark-#{$contrast} {
+        color: darken($primary-color, $contrast);
+    }
+
+    .color-primary-light-#{$contrast} {
+        color: lighten($primary-color, $contrast);
+    }
+
+    .bg-color-primary-dark-#{$contrast} {
+        background-color: darken($primary-color, $contrast);
+    }
+
+    .bg-color-primary-light-#{$contrast} {
+        background-color: lighten($primary-color, $contrast);
+    }
+
+    .color-secondary-dark-#{$contrast} {
+        color: darken($secondary-color, $contrast);
+    }
+
+    .color-secondary-light-#{$contrast} {
+        color: lighten($secondary-color, $contrast);
+    }
+
+    .bg-color-secondary-dark-#{$contrast} {
+        background-color: darken($secondary-color, $contrast);
+    }
+
+    .bg-color-secondary-light-#{$contrast} {
+        background-color: lighten($secondary-color, $contrast);
+    }
+}
+
+@function get-light-color($color, $contrast) {
+    @return lighten($color, $contrast);
+}
+
+@function get-dark-color($color, $contrast) {
+    @return darken($color, $contrast);
+}
+
+@function darken($color) {
+    @return darken($color, 10);
+}
+
+body {
+    color: $text-color;
+}
+
+hr {
+    height: 1px;
+    background-color: $primary-color;
+    border: none;
+}
