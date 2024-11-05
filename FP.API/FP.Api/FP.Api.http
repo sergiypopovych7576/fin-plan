@@ -5,5 +5,10 @@ Accept: application/json
 
 ###
 
-POST {{FP.Api_HostAddress}}/api/query
+GET {{FP.Api_HostAddress}}/api/operation/year/2024/month/11
+Accept: application/json
+
+###
+
+GET {{FP.Api_HostAddress}}/api/category
 Accept: application/json
