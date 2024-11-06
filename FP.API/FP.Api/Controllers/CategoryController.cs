@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FP.Application.DTOs;
 using FP.Application.Interfaces;
+using FP.Application.Services;
 using FP.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,19 +12,19 @@ namespace FP.Api.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly IRepository<Category> _repo;
+        private readonly ICategoryService _service;
         private readonly IMapper _mapper;
 
-        public CategoryController(IRepository<Category> repo, IMapper mapper)
+        public CategoryController(ICategoryService service, IMapper mapper)
         {
-            _repo = repo;
+			_service = service;
             _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<List<CategoryDto>> Get()
         {
-            return await _mapper.ProjectTo<CategoryDto>(_repo.GetAll()).ToListAsync();
+            return await _service.Get();
         }
     }
 }

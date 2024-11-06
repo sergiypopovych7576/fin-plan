@@ -6,10 +6,10 @@ namespace FP.Infrastructure.Services
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        protected readonly AppDbContext _context;
+        protected readonly BudgetDbContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public Repository(AppDbContext context)
+        public Repository(BudgetDbContext context)
         {
             _context = context;
             _dbSet = context.Set<T>();

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FP.Application.DTOs;
+﻿using FP.Application.DTOs;
 using FP.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 

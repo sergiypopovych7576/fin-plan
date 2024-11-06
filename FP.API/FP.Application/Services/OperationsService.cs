@@ -15,6 +15,7 @@ namespace FP.Application.Services
     {
         private readonly IRepository<Operation> _repo;
         private readonly IMapper _mapper;
+
         public OperationsService(IRepository<Operation> repo, IMapper mapper)
         {
             _repo = repo;
