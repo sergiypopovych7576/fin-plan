@@ -7,12 +7,12 @@
 @include mat.core();
 
 * {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
 }
 
 html {
-    height: 100%;
-    @include mat.all-component-themes(m3.$light-theme);
+	height: 100%;
+	@include mat.all-component-themes(m3.$light-theme);
 }

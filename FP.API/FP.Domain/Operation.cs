@@ -10,5 +10,6 @@ namespace FP.Domain
         public DateTime Date { get; set; }
         public OperationType Type { get; set; }
         public Category Category { get; set; }
-    }
+		public Guid CategoryId { get; set; }
+	}
 }

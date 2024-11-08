@@ -1,0 +1,16 @@
+<div class="d-flex p-2 bg-color-primary">
+	<h2 class="m-0 ml-2 color-white">FinPlan</h2>
+	<div class="links ml-4 d-flex">
+		<div class="d-flex ml-1" *ngFor="let item of menuItems">
+			<a
+				mat-button
+				[hidden]="item.hidden"
+				[routerLink]="item.path"
+				[class.underline]="matchesRoute(item.path)"
+				class="m-auto color-white"
+			>
+				<mat-icon [fontIcon]="item.icon"></mat-icon>{{ item.label }}</a
+			>
+		</div>
+	</div>
+</div>

@@ -5,10 +5,10 @@ Accept: application/json
 
 ###
 
-GET {{FP.Api_HostAddress}}/api/operation/year/2024/month/11
+GET https://localhost:7161/api/operations?year=2024&month=11
 Accept: application/json
 
 ###
 
-GET https://localhost:7161/api/category
+GET https://localhost:7161/api/categories
 Accept: application/json

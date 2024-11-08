@@ -1,97 +1,97 @@
 .d-flex {
-    display: flex;
+	display: flex;
 }
 
 .f-column {
-    flex-direction: column;
+	flex-direction: column;
 }
 
 .justify-center {
-    justify-content: center;
+	justify-content: center;
 }
 
 .justify-around {
-    justify-content: space-around;
+	justify-content: space-around;
 }
 
 .justify-between {
-    justify-content: space-between;
+	justify-content: space-between;
 }
 
 .align-center {
-    align-items: center;
+	align-items: center;
 }
 
 .text-center {
-    text-align: center;
+	text-align: center;
 }
 
 .pointer {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .underline {
-    text-decoration: underline !important;
+	text-decoration: underline !important;
 }
 
 .uppercase {
-    text-transform: uppercase;
+	text-transform: uppercase;
 }
 
 .m-auto {
-    margin: auto;
+	margin: auto;
 }
 
 .ml-auto {
-    margin-left: auto;
+	margin-left: auto;
 }
 
 .mr-auto {
-    margin-right: auto;
+	margin-right: auto;
 }
 
 .w-100 {
-    width: 100%;
+	width: 100%;
 }
 
 .w-50 {
-    width: 50%;
+	width: 50%;
 }
 
 .h-100 {
-    height: 100%;
+	height: 100%;
 }
 
 @for $i from 0 through 5 {
-    .m-#{$i} {
-        margin: $i * 0.5rem;
-    }
+	.m-#{$i} {
+		margin: $i * 0.5rem;
+	}
 
-    .mt-#{$i} {
-        margin-top: $i * 0.5rem;
-    }
+	.mt-#{$i} {
+		margin-top: $i * 0.5rem;
+	}
 
-    .ml-#{$i} {
-        margin-left: $i * 0.5rem;
-    }
+	.ml-#{$i} {
+		margin-left: $i * 0.5rem;
+	}
 
-    .mr-#{$i} {
-        margin-right: $i * 0.5rem;
-    }
+	.mr-#{$i} {
+		margin-right: $i * 0.5rem;
+	}
 
-    .p-#{$i} {
-        padding: $i * 0.5rem;
-    }
+	.p-#{$i} {
+		padding: $i * 0.5rem;
+	}
 
-    .pt-#{$i} {
-        padding-top: $i * 0.5rem;
-    }
+	.pt-#{$i} {
+		padding-top: $i * 0.5rem;
+	}
 
-    .pl-#{$i} {
-        padding-left: $i * 0.5rem;
-    }
+	.pl-#{$i} {
+		padding-left: $i * 0.5rem;
+	}
 
-    .pr-#{$i} {
-        padding-right: $i * 0.5rem;
-    }
+	.pr-#{$i} {
+		padding-right: $i * 0.5rem;
+	}
 }

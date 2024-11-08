@@ -27,7 +27,7 @@ namespace FP.Application.Services
 			var cached = await _cache.Get<List<CategoryDto>>("Categories");
 			if (cached != null)
 				return cached;
-			var categories = await _mapper.ProjectTo<CategoryDto>(_repo.GetAll()).ToListAsync();
+			var categories = await _mapper.ProjectTo<CategoryDto>(_repo.GetAll().AsNoTracking()).ToListAsync();
 			await _cache.Set("Categories", categories, 60);
 			return categories;
 		}

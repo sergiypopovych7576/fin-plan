@@ -10,32 +10,30 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<ExceptionFilter>();
+builder.Services.AddControllers(options => {
+	options.Filters.Add<ExceptionFilter>();
 });
 
 builder.Services.AddDbContext<BudgetDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var domainAssembly = Assembly.Load("FP.Application");
 builder.Services.AddAutoMapper(domainAssembly);
 builder.RegisterRepositories();
 builder.RegisterServices();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader());
+builder.Services.AddCors(options => {
+	options.AddPolicy("AllowAll", policy =>
+		policy.AllowAnyOrigin()
+			  .AllowAnyMethod()
+			  .AllowAnyHeader());
 });
 
 Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+	.ReadFrom.Configuration(builder.Configuration)
+	.Enrich.FromLogContext()
+	.WriteTo.Console()
+	.WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+	.CreateLogger();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => {
 	var configuration = builder.Configuration.GetConnectionString("Redis");
@@ -46,6 +44,7 @@ builder.Services.AddTransient<ICacheService, RedisCacheService>();
 builder.Host.UseSerilog();
 
 var app = builder.Build();
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

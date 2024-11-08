@@ -1,0 +1,21 @@
+{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@angular-eslint/recommended",
+      "plugin:prettier/recommended"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+            "singleQuote": true,
+            "trailingComma": "all",
+            "printWidth": 80,
+            "tabWidth": 2,
+            "useTabs": true,
+            "semi": true
+        }
+      ]
+    }
+  }
+  
