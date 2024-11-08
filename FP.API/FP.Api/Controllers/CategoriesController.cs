@@ -10,12 +10,10 @@ namespace FP.Api.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _service;
-        private readonly IMapper _mapper;
 
-        public CategoriesController(ICategoryService service, IMapper mapper)
+        public CategoriesController(ICategoryService service)
         {
 			_service = service;
-            _mapper = mapper;
         }
 
         [HttpGet]
