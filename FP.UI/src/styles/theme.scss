@@ -3,6 +3,14 @@ $primary-color-light: lighten($primary-color, 25);
 $text-color: #555;
 $secondary-color: lightgray;
 
+.color-red {
+	color: red;
+}
+
+.color-green {
+	color: green;
+}
+
 .color-white {
 	color: white !important;
 }

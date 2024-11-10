@@ -18,6 +18,14 @@
 	justify-content: space-between;
 }
 
+.justify-left {
+	justify-content: left;
+}
+
+.justify-right {
+	justify-content: right;
+}
+
 .align-center {
 	align-items: center;
 }
@@ -54,8 +62,20 @@
 	width: 100%;
 }
 
+.w-60 {
+	width: 60%;
+}
+
 .w-50 {
 	width: 50%;
+}
+
+.w-40 {
+	width: 40%;
+}
+
+.w-25 {
+	width: 25%;
 }
 
 .h-100 {

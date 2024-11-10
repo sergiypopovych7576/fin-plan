@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-import { IOperation } from '@fp-core/models';
+import { IOperation, OperationType } from '@fp-core/models';
 
 @Component({
 	selector: 'fp-operations-table',
@@ -16,7 +16,13 @@ export class OperationsTableComponent {
 	@Input()
 	public set operations(operations: IOperation[]) {
 		this._operations = operations;
-		this.total = this.operations.reduce((sum, operation) => sum + operation.amount, 0);
+		this.total = this.operations.reduce((sum, operation) => { 
+			let val = operation.amount;
+			if(operation.type === OperationType.Expenses) {
+				val = -val;
+			}
+			return sum + val; 
+		}, 0);
 	}
 
 	public get operations(): IOperation[] {

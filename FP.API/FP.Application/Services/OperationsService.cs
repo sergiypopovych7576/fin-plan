@@ -37,7 +37,7 @@ namespace FP.Application.Services
 
 		public async Task<List<OperationDto>> GetMonthlyOperations(int year, int month, CancellationToken cancellationToken) {
 			return await _mapper.ProjectTo<OperationDto>(_repo.GetAll().Include(c => c.Category)
-			  .Where(o => o.Date.Month == month && o.Date.Year == year))
+			  .Where(o => o.Date.Month == month && o.Date.Year == year).OrderBy(c => c.Date))
 			  .ToListAsync(cancellationToken);
 		}
 	}

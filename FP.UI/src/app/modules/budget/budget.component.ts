@@ -12,49 +12,13 @@ import { timer } from 'rxjs';
 	styleUrl: './budget.component.scss',
 })
 export class BudgetComponent implements OnInit {
-	public incomes: WritableSignal<IOperation[]> = signal([]);
-	public expenses: WritableSignal<IOperation[]> = signal([]);
+	public operations: WritableSignal<IOperation[]> = signal([]);
 	public chart: any;
 	public categories: ICategory[] = [];
 	public operationsLoading = signal(false);
-	public expensesChartData = {
-		type: 'doughnut',
-		data: {
-			labels: ['Needs', 'Wants', 'Subscriptions', 'Presents'],
-			datasets: [
-				{
-					label: 'Expenses',
-					data: [375 + 150 + 400 + 100, 200 + 100, 6 + 19 + 5, 100],
-					backgroundColor: [
-						'rgb(255, 99, 132)',
-						'rgb(54, 162, 235)',
-						'rgb(255, 205, 86)',
-						'rgb(0, 92, 187)',
-					],
-					hoverOffset: 4,
-				},
-			],
-		}
-	};
-	public incomesChartData =
-		{
-			type: 'doughnut',
-			data: {
-				labels: ['Salary', 'Investments', 'Loans'],
-				datasets: [
-					{
-						label: 'Incomes',
-						data: [2000, 200, 50],
-						backgroundColor: [
-							'rgb(0, 92, 187)',
-							'rgb(255, 205, 86)',
-							'rgb(54, 162, 235)',
-						],
-						hoverOffset: 4,
-					},
-				],
-			}
-		};
+	private readonly _categoriesService = inject(CategoriesService);
+	public expensesChartData: unknown;
+	public incomesChartData: unknown;
 	private readonly _dialog = inject(MatDialog);
 	private readonly _operationsService = inject(OperationsService);
 
@@ -62,6 +26,7 @@ export class BudgetComponent implements OnInit {
 	private _selectedMonthNumber = 11;
 
 	public ngOnInit(): void {
+		this._categoriesService.get().subscribe(c => this.categories = c);
 		this.refreshOperations();
 	}
 
@@ -80,9 +45,10 @@ export class BudgetComponent implements OnInit {
 
 	public refreshOperations(): void {
 		this._operationsService.get(this._selectedYear, this._selectedMonthNumber).subscribe((operations) => {
-			this.incomes.set(operations.filter(c => c.type === OperationType.Incomes));
-			this.expenses.set(operations.filter(c => c.type === OperationType.Expenses));
-			timer(600).subscribe(() => this.operationsLoading.set(false));
+			this.operations.set(operations);
+			this.incomesChartData = this.generateChartData(operations, OperationType.Incomes, 'Incomes');
+			this.expensesChartData = this.generateChartData(operations, OperationType.Expenses, 'Expenses');
+			timer(500).subscribe(() => this.operationsLoading.set(false));
 		});
 	}
 
@@ -95,5 +61,49 @@ export class BudgetComponent implements OnInit {
 	public onOperationDelete(operation: IOperation): void {
 		this.operationsLoading.set(true);
 		this._operationsService.delete(operation.id).subscribe(() => this.refreshOperations());
+	}
+
+	private generateChartData(operations: IOperation[], type: OperationType, label: string): any {
+		// Filter operations based on the specified type
+		const filteredOperations = operations.filter(op => op.type === type);
+	
+		// Group operations by category and sum amounts
+		const categoryData = filteredOperations.reduce((acc, op) => {
+			const categoryName = op.category.name;
+			if (!acc[categoryName]) {
+				acc[categoryName] = { amount: 0, color: op.category.color };
+			}
+			acc[categoryName].amount += op.amount;
+			return acc;
+		}, {} as Record<string, { amount: number; color: string }>);
+	
+		// Generate labels, data, and colors arrays for the chart
+		const labels = Object.keys(categoryData);
+		const data = Object.values(categoryData).map(item => item.amount);
+		const backgroundColors = Object.values(categoryData).map(item => item.color);
+	
+		// Return chart configuration
+		return {
+			type: 'doughnut',
+			data: {
+				labels,
+				datasets: [
+					{
+						label,
+						data,
+						backgroundColor: backgroundColors,
+						hoverOffset: 4,
+					},
+				],
+			},
+			options: {   
+				plugins: {
+				  legend: {
+					display: true,
+					position: 'right'
+				  }
+				}
+			  }
+		};
 	}
 }

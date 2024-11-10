@@ -1,7 +1,5 @@
 <h2 mat-dialog-title>Operation</h2>
 <mat-dialog-content>
-	Edit operation
-	<br />
 	<form [formGroup]="categoryForm">
 		<mat-form-field>
 			<mat-label>Title</mat-label>
@@ -17,27 +15,28 @@
 			<mat-label>Type</mat-label>
 			<mat-select formControlName="type">
 				<mat-option [value]="0">
-				  Income
+					Income
 				</mat-option>
 				<mat-option [value]="1">
 					Expenses
 				</mat-option>
-			  </mat-select>
+			</mat-select>
 		</mat-form-field>
+		<br>
 		<mat-form-field>
 			<mat-label>Date</mat-label>
 			<input matInput [matDatepicker]="picker" formControlName="date">
-			<mat-hint>MM/DD/YYYY</mat-hint>
 			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
 			<mat-datepicker #picker></mat-datepicker>
-		  </mat-form-field>
+		</mat-form-field>
+		<br>
 		<mat-form-field>
 			<mat-label>Type</mat-label>
 			<mat-select formControlName="categoryId">
 				<mat-option *ngFor="let cat of categories(); trackBy: trackByCategory" [value]="cat.id">
-				  {{ cat.name }}
+					{{ cat.name }}
 				</mat-option>
-			  </mat-select>
+			</mat-select>
 		</mat-form-field>
 	</form>
 </mat-dialog-content>

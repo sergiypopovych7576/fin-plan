@@ -1,17 +1,18 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { IDateChange } from './date-change.model';
+import moment from 'moment';
 
 @Component({
 	selector: 'fp-month-selector',
 	templateUrl: './month-selector.component.html',
-	styleUrl: './month-selector.component.scss',
+	styleUrls: ['./month-selector.component.scss'],
 })
 export class MonthSelectorComponent implements OnInit {
-	public selectedDate = new Date();
+	public selectedDate = moment();
 	public currentMonth = '';
 	public monthIsCurrent = true;
-	public currentMonthNumber = this.selectedDate.getMonth();
-	public currentYear = this.selectedDate.getFullYear();
+	public currentMonthNumber = moment().month();
+	public currentYear = moment().year();
 	public selectedMonthNumber!: number;
 	public selectedYear!: number;
 
@@ -19,23 +20,13 @@ export class MonthSelectorComponent implements OnInit {
 	public dateChanged = new EventEmitter<IDateChange>();
 
 	private _formMonth(): void {
-		if (
-			this.selectedDate.getMonth() === this.currentMonthNumber &&
-			this.selectedDate.getFullYear() === this.currentYear
-		) {
-			this.monthIsCurrent = true;
-		}
-		this.currentMonth = this.selectedDate.toLocaleString('en-US', {
-			month: 'long',
-		});
-		this.currentMonth =
-			this.currentMonth.charAt(0).toUpperCase() +
-			this.currentMonth.slice(1) +
-			' ' +
-			this.selectedDate.getFullYear();
-		this.selectedMonthNumber = this.selectedDate.getMonth();
-		this.selectedYear = this.selectedDate.getFullYear();
-		this.dateChanged.emit({ year: this.selectedYear, month: this.selectedMonthNumber });
+		this.monthIsCurrent =
+			this.selectedDate.month() === this.currentMonthNumber &&
+			this.selectedDate.year() === this.currentYear;
+		this.currentMonth = this.selectedDate.format('MMMM YYYY');
+		this.selectedMonthNumber = this.selectedDate.month();
+		this.selectedYear = this.selectedDate.year();
+		this.dateChanged.emit({ year: this.selectedYear, month: this.selectedMonthNumber + 1 });
 	}
 
 	public ngOnInit(): void {
@@ -44,24 +35,18 @@ export class MonthSelectorComponent implements OnInit {
 
 	public onNextMonth(): void {
 		this.monthIsCurrent = false;
-		this.selectedDate = new Date(
-			this.selectedDate.getFullYear(),
-			this.selectedDate.getMonth() + 1,
-		);
+		this.selectedDate = this.selectedDate.clone().add(1, 'month');
 		this._formMonth();
 	}
 
 	public onPreviousMonth(): void {
 		this.monthIsCurrent = false;
-		this.selectedDate = new Date(
-			this.selectedDate.getFullYear(),
-			this.selectedDate.getMonth() - 1,
-		);
+		this.selectedDate = this.selectedDate.clone().subtract(1, 'month');
 		this._formMonth();
 	}
 
 	public onCurrentMonth(): void {
-		this.selectedDate = new Date();
+		this.selectedDate = moment();
 		this.monthIsCurrent = true;
 		this._formMonth();
 	}

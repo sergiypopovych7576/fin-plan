@@ -9,14 +9,14 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { apiUrlInterceptor, appFactoryInitalization, routes } from './configuration';
 import { ConfigurationService } from '@fp-core/services';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { provideMomentDateAdapter } from '@angular/material-moment-adapter';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideExperimentalZonelessChangeDetection(),
 		provideRouter(routes),
 		provideAnimationsAsync(),
-		provideNativeDateAdapter(),
+		provideMomentDateAdapter(),
 		provideHttpClient(withInterceptors([apiUrlInterceptor])),
 		{
 			provide: APP_INITIALIZER,

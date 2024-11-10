@@ -16,7 +16,7 @@ export class ChartComponent implements AfterViewInit {
     public title = '';
 
     @Input()
-    public set config(config: unknown) {
+    public set config(config: any) {
         this._config = config;
         this._rendered = false;
         this.renderChart();
@@ -30,7 +30,12 @@ export class ChartComponent implements AfterViewInit {
 
     public renderChart(): void {
         if (this.config && this._canvas?.nativeElement && !this._rendered) {
-            this.chart = new Chart(this._canvas.nativeElement, this.config as ChartConfiguration);
+            if(!this.chart) {
+                this.chart = new Chart(this._canvas.nativeElement, this.config as ChartConfiguration);
+            } else {
+                this.chart.data = this.config['data'];
+                this.chart.update();
+            }
             this._rendered = true;
         }
     }

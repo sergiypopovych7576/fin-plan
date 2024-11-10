@@ -1,5 +1,6 @@
 .actions-menu {
-    min-width: 3rem !important;
+    min-width: 8rem !important;
+    min-height: 3rem;
     text-align: center;
 }
 
@@ -16,6 +17,6 @@
 }
 
 .table-container {
-    max-height: 38rem;
+    max-height: 70vh;
     overflow-y: auto;
 }

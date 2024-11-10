@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FP.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,7 +19,8 @@ namespace FP.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Color = table.Column<string>(type: "text", nullable: false)
+                    Color = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,29 +51,29 @@ namespace FP.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "Id", "Color", "Name" },
+                columns: new[] { "Id", "Color", "Name", "Type" },
                 values: new object[,]
                 {
-                    { new Guid("18bdd321-c65c-4bc4-96f8-15883d95fb4a"), "#2ECC71", "Freelance" },
-                    { new Guid("33db6d81-7c07-44a1-bdc8-5684352242fe"), "#BDC3C7", "Utilities" },
-                    { new Guid("3d5fac86-11e6-4aed-b5d5-ea5d399e7837"), "#F39C12", "Bonuses" },
-                    { new Guid("417cfc76-4454-4833-b493-3bca9a62ca97"), "#2980B9", "Education" },
-                    { new Guid("4f330be9-41b5-4229-871b-36853f480b8b"), "#3498DB", "Salary" },
-                    { new Guid("4f46f8e0-86c3-4b77-acad-60d51c9228d6"), "#D35400", "Insurance" },
-                    { new Guid("6af58cb8-81e6-4d4c-95e2-81cb9da2a128"), "#8E44AD", "Subscriptions" },
-                    { new Guid("7265a21c-80b8-4e12-9e9e-860e4c554918"), "#E74C3C", "Loans" },
-                    { new Guid("77b95a66-8796-4363-93a5-8ce752a238d7"), "#27AE60", "Groceries" },
-                    { new Guid("8f0eab38-e186-4801-a2af-14e56494382f"), "#8E44AD", "Interest" },
-                    { new Guid("96fbede3-2676-4889-bbc3-e7e018bae1ac"), "#28A745", "Savings" },
-                    { new Guid("a0c5ebc9-a9bb-4317-9251-9dfa717dc8fb"), "#16A085", "Side Hustle" },
-                    { new Guid("bba28a72-f54e-4ad0-8e2c-7b144e08bc1d"), "#1ABC9C", "Investments" },
-                    { new Guid("cb4cbf22-e728-487e-b6e1-f01dda96b8a6"), "#FF6347", "Presents" },
-                    { new Guid("d1b12a7b-9985-40da-b84d-f81c8a3b161b"), "#9B59B6", "Entertainment" },
-                    { new Guid("daa73fdd-22ee-4d93-9ebb-f2953633df44"), "#C0392B", "Health" },
-                    { new Guid("e53e33d1-afcf-4608-a0cf-c667da634cbc"), "#34495E", "Rent" },
-                    { new Guid("e7d28a89-80e4-4071-866e-e97ab2ef29b8"), "#E67E22", "Charity" },
-                    { new Guid("e91d46fc-3b57-49d1-b9ea-d103daec6506"), "#FFC300", "Wants" },
-                    { new Guid("ea0cd471-45a6-43fc-959f-a79a862dd1ac"), "#FF5733", "Needs" }
+                    { new Guid("1dbbf7b0-c06e-4c5a-99fe-825010996a1b"), "#34495E", "Rent", 1 },
+                    { new Guid("367116cf-fa31-4754-b989-8309c0d745a8"), "#E67E22", "Charity", 1 },
+                    { new Guid("3b7df4a1-9d8b-48a2-abd7-3cbaf1631d67"), "#BDC3C7", "Utilities", 1 },
+                    { new Guid("3e57aa1c-6763-4ad4-8093-1880069e914b"), "#E74C3C", "Loans", 0 },
+                    { new Guid("3f1c9129-9a5e-4b04-b929-3e3dc2aca725"), "#8E44AD", "Subscriptions", 1 },
+                    { new Guid("401f1c6d-9765-4341-81c7-87e16d09e93e"), "#1ABC9C", "Investments", 0 },
+                    { new Guid("4c3397c9-f22a-413d-b4f7-b45aa0369350"), "#F39C12", "Bonuses", 0 },
+                    { new Guid("4ed9c859-14c8-4866-a256-fd2b0aaa68e4"), "#FF6347", "Presents", 1 },
+                    { new Guid("79de3e51-3b72-48c1-9eb1-c48c7cdce746"), "#FFC300", "Wants", 1 },
+                    { new Guid("862442fc-2473-47ab-8b92-9182f73f1bbd"), "#D35400", "Insurance", 1 },
+                    { new Guid("9fb465b5-3097-4641-befe-43e8916a9d3b"), "#3498DB", "Salary", 0 },
+                    { new Guid("a32456f2-e734-47a0-b736-b734bd655226"), "#28A745", "Savings", 1 },
+                    { new Guid("aa962b69-f3b7-4e43-bd96-093bbc0b71e9"), "#8E44AD", "Interest", 0 },
+                    { new Guid("ab441d80-a897-4cd5-b50c-52fffda543d2"), "#16A085", "Side Hustle", 0 },
+                    { new Guid("addc0b03-b632-4c50-98f4-94871bef630e"), "#9B59B6", "Entertainment", 1 },
+                    { new Guid("ce9f563c-a479-419c-a1e9-15cf38f00209"), "#27AE60", "Groceries", 1 },
+                    { new Guid("dcdbc0c0-6399-4dbe-bfc6-39351b86763d"), "#FF5733", "Needs", 1 },
+                    { new Guid("f4743f89-f9da-4697-999b-45147423cce3"), "#2980B9", "Education", 1 },
+                    { new Guid("f536adb6-c623-43c4-abfb-635568ce941b"), "#C0392B", "Health", 1 },
+                    { new Guid("f6b969f9-5d39-4d46-a021-d17523980ce6"), "#2ECC71", "Freelance", 0 }
                 });
 
             migrationBuilder.CreateIndex(
