@@ -7,18 +7,20 @@ import { provideRouter } from '@angular/router';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { apiUrlInterceptor, initializeConfig, routes } from './configuration';
+import { apiUrlInterceptor, appFactoryInitalization, routes } from './configuration';
 import { ConfigurationService } from '@fp-core/services';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideExperimentalZonelessChangeDetection(),
 		provideRouter(routes),
 		provideAnimationsAsync(),
+		provideNativeDateAdapter(),
 		provideHttpClient(withInterceptors([apiUrlInterceptor])),
 		{
 			provide: APP_INITIALIZER,
-			useFactory: initializeConfig,
+			useFactory: appFactoryInitalization,
 			deps: [ConfigurationService],
 			multi: true,
 		},

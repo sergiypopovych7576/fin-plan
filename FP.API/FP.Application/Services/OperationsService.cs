@@ -9,7 +9,7 @@ namespace FP.Application.Services
 {
 	public interface IOperationsService : IBaseService
 	{
-		Task<List<OperationDto>> GetMonthlyOperations(int year, int month);
+		Task<List<OperationDto>> GetMonthlyOperations(int year, int month, CancellationToken cancellationToken);
 		Task Create(OperationDto operation);
 		Task Delete(Guid id);
 	}
@@ -35,10 +35,10 @@ namespace FP.Application.Services
 			await _repo.SaveChangesAsync();
 		}
 
-		public async Task<List<OperationDto>> GetMonthlyOperations(int year, int month) {
+		public async Task<List<OperationDto>> GetMonthlyOperations(int year, int month, CancellationToken cancellationToken) {
 			return await _mapper.ProjectTo<OperationDto>(_repo.GetAll().Include(c => c.Category)
 			  .Where(o => o.Date.Month == month && o.Date.Year == year))
-			  .ToListAsync();
+			  .ToListAsync(cancellationToken);
 		}
 	}
 }

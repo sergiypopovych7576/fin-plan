@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { BudgetComponent } from './budget.component';
 import { RouterModule, Routes } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -21,6 +21,14 @@ import { OperationModalDialogComponent } from './operation-modal';
 import { CategoriesService, OperationsService } from '@fp-core/services';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ChartComponent } from 'app/shared/chart/chart.component';
+import { MatMenuModule } from '@angular/material/menu';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { IndicatorComponent } from 'app/shared';
+import { ToMoneyPipe } from 'app/shared/to-money';
+import {MatSelectModule} from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 const routes: Routes = [{ path: '', component: BudgetComponent }];
 
@@ -31,8 +39,11 @@ const routes: Routes = [{ path: '', component: BudgetComponent }];
 		MonthSelectorComponent,
 		MonthSummaryComponent,
 		OperationModalDialogComponent,
+		ChartComponent,
+		IndicatorComponent,
+		ToMoneyPipe
 	],
-	providers: [CategoriesService, OperationsService],
+	providers: [CategoriesService, OperationsService, CurrencyPipe],
 	imports: [
 		CommonModule,
 		RouterModule.forChild(routes),
@@ -47,7 +58,12 @@ const routes: Routes = [{ path: '', component: BudgetComponent }];
 		MatDialogTitle,
 		MatDialogContent,
 		ReactiveFormsModule,
-		MatFormFieldModule
+		MatFormFieldModule,
+		MatMenuModule,
+		MatProgressBarModule,
+		MatSelectModule,
+		MatInputModule,
+		MatDatepickerModule
 	],
 })
-export class BudgetModule {}
+export class BudgetModule { }

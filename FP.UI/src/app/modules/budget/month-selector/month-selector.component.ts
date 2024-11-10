@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { IDateChange } from './date-change.model';
 
 @Component({
 	selector: 'fp-month-selector',
@@ -6,27 +7,35 @@ import { Component, OnInit } from '@angular/core';
 	styleUrl: './month-selector.component.scss',
 })
 export class MonthSelectorComponent implements OnInit {
-	public currentDate = new Date();
+	public selectedDate = new Date();
 	public currentMonth = '';
 	public monthIsCurrent = true;
-	public currentMonthNumber = this.currentDate.getMonth();
-	public currentYear = this.currentDate.getFullYear();
+	public currentMonthNumber = this.selectedDate.getMonth();
+	public currentYear = this.selectedDate.getFullYear();
+	public selectedMonthNumber!: number;
+	public selectedYear!: number;
+
+	@Output()
+	public dateChanged = new EventEmitter<IDateChange>();
 
 	private _formMonth(): void {
 		if (
-			this.currentDate.getMonth() === this.currentMonthNumber &&
-			this.currentDate.getFullYear() === this.currentYear
+			this.selectedDate.getMonth() === this.currentMonthNumber &&
+			this.selectedDate.getFullYear() === this.currentYear
 		) {
 			this.monthIsCurrent = true;
 		}
-		this.currentMonth = this.currentDate.toLocaleString('en-US', {
+		this.currentMonth = this.selectedDate.toLocaleString('en-US', {
 			month: 'long',
 		});
 		this.currentMonth =
 			this.currentMonth.charAt(0).toUpperCase() +
 			this.currentMonth.slice(1) +
 			' ' +
-			this.currentDate.getFullYear();
+			this.selectedDate.getFullYear();
+		this.selectedMonthNumber = this.selectedDate.getMonth();
+		this.selectedYear = this.selectedDate.getFullYear();
+		this.dateChanged.emit({ year: this.selectedYear, month: this.selectedMonthNumber });
 	}
 
 	public ngOnInit(): void {
@@ -35,24 +44,24 @@ export class MonthSelectorComponent implements OnInit {
 
 	public onNextMonth(): void {
 		this.monthIsCurrent = false;
-		this.currentDate = new Date(
-			this.currentDate.getFullYear(),
-			this.currentDate.getMonth() + 1,
+		this.selectedDate = new Date(
+			this.selectedDate.getFullYear(),
+			this.selectedDate.getMonth() + 1,
 		);
 		this._formMonth();
 	}
 
 	public onPreviousMonth(): void {
 		this.monthIsCurrent = false;
-		this.currentDate = new Date(
-			this.currentDate.getFullYear(),
-			this.currentDate.getMonth() - 1,
+		this.selectedDate = new Date(
+			this.selectedDate.getFullYear(),
+			this.selectedDate.getMonth() - 1,
 		);
 		this._formMonth();
 	}
 
 	public onCurrentMonth(): void {
-		this.currentDate = new Date();
+		this.selectedDate = new Date();
 		this.monthIsCurrent = true;
 		this._formMonth();
 	}

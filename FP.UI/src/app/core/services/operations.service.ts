@@ -17,4 +17,10 @@ export class OperationsService extends BaseService {
 			operation
 		);
 	}
+
+	public delete(operationId: string): Observable<unknown> {
+		return this._httpClient.delete(
+			`operations/${operationId}`,
+		);
+	}
 }
