@@ -40,6 +40,11 @@ namespace FP.Infrastructure.Services
             _dbSet.Update(entity);
         }
 
+        public void Update(IEnumerable<T> entities)
+        {
+            _dbSet.UpdateRange(entities);
+        }
+
         public void Remove(T entity)
         {
             _dbSet.Remove(entity);

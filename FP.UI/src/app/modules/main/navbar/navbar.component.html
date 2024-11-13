@@ -1,16 +1,21 @@
-<div class="d-flex p-2 bg-color-primary">
-	<h2 class="m-0 ml-2 color-white">FinPlan</h2>
-	<div class="links ml-4 d-flex">
-		<div class="d-flex ml-1" *ngFor="let item of menuItems">
-			<a
-				mat-button
-				[hidden]="item.hidden"
-				[routerLink]="item.path"
-				[class.underline]="matchesRoute(item.path)"
-				class="m-auto color-white"
-			>
-				<mat-icon [fontIcon]="item.icon"></mat-icon>{{ item.label }}</a
-			>
+<div class="d-flex f-column h-100 p-2 pt-4 border bg-color-white">
+	<div class="logo color-primary">
+		<h2 class="text-center">FP</h2>
+	</div>
+	<hr class="mt-4">
+	<div class="d-flex f-column h-100 justify-center mt-2">
+		<div class="d-flex mt-1 justify-center" *ngFor="let item of menuItems">
+			<button class="w-100" mat-flat-button *ngIf="matchesRoute(item.path)" [routerLink]="item.path">
+				<mat-icon [fontIcon]="item.icon"></mat-icon>{{ item.label }}
+			</button>
+			<button class="w-100" mat-stroked-button *ngIf="!matchesRoute(item.path)" [routerLink]="item.path">
+				<mat-icon [fontIcon]="item.icon"></mat-icon>{{ item.label }}
+			</button>
+		</div>
+		<div class="mt-auto d-flex f-column">
+			<div class="text-center">
+				Serhii Popovych
+			</div>
 		</div>
 	</div>
 </div>

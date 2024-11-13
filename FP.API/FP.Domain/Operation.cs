@@ -11,5 +11,6 @@ namespace FP.Domain
         public OperationType Type { get; set; }
         public Category Category { get; set; }
 		public Guid CategoryId { get; set; }
-	}
+        public bool Applied { get; set; }
+    }
 }

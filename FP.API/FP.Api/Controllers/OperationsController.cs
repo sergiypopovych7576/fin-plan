@@ -1,5 +1,6 @@
 ﻿using FP.Application.DTOs;
 using FP.Application.Services;
+using FP.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FP.Api.Controllers
@@ -23,7 +24,14 @@ namespace FP.Api.Controllers
 			return _opsService.Create(operation);
 		}
 
-		[HttpDelete("{id}")]
+        [HttpPost]
+        [Route("sync")]
+        public Task Sync()
+        {
+            return _opsService.Sync();
+        }
+
+        [HttpDelete("{id}")]
 		public Task Delete(Guid id) {
 			return _opsService.Delete(id);
 		}

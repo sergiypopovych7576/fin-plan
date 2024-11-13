@@ -12,3 +12,8 @@ Accept: application/json
 
 GET https://localhost:7161/api/categories
 Accept: application/json
+
+###
+
+POST https://localhost:7161/api/operations/sync
+Accept: application/json

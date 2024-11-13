@@ -1,17 +1,17 @@
 <h2 mat-dialog-title>Operation</h2>
 <mat-dialog-content>
 	<form [formGroup]="categoryForm">
-		<mat-form-field>
+		<mat-form-field class="w-100">
 			<mat-label>Title</mat-label>
 			<input matInput formControlName="name">
 		</mat-form-field>
 		<br>
-		<mat-form-field>
+		<mat-form-field class="w-100">
 			<mat-label>Amount</mat-label>
 			<input matInput type="number" min="0" formControlName="amount">
 		</mat-form-field>
 		<br>
-		<mat-form-field>
+		<mat-form-field class="w-100">
 			<mat-label>Type</mat-label>
 			<mat-select formControlName="type">
 				<mat-option [value]="0">
@@ -30,7 +30,7 @@
 			<mat-datepicker #picker></mat-datepicker>
 		</mat-form-field>
 		<br>
-		<mat-form-field>
+		<mat-form-field class="w-100">
 			<mat-label>Type</mat-label>
 			<mat-select formControlName="categoryId">
 				<mat-option *ngFor="let cat of categories(); trackBy: trackByCategory" [value]="cat.id">

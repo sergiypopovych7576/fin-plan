@@ -5,6 +5,7 @@ import { NavbarComponent } from './navbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MainComponent } from './main.component';
+import {MatSidenavModule} from '@angular/material/sidenav'
 
 const COMPONENTS = [NavbarComponent, MainComponent];
 
@@ -14,6 +15,7 @@ const COMPONENTS = [NavbarComponent, MainComponent];
 		CommonModule,
 		RouterModule,
 		RouterOutlet,
+		MatSidenavModule,
 		MatButtonModule,
 		MatIconModule,
 	],

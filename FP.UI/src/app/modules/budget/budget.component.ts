@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core
 import { MatDialog } from '@angular/material/dialog';
 import { OperationModalDialogComponent } from './operation-modal';
 import { ICategory, IOperation, OperationType } from '@fp-core/models';
-import { CategoriesService, OperationsService } from '@fp-core/services';
+import { AccountsService, CategoriesService, OperationsService } from '@fp-core/services';
 import { IDateChange } from './month-selector/date-change.model';
 import { timer } from 'rxjs';
 
@@ -21,6 +21,8 @@ export class BudgetComponent implements OnInit {
 	public incomesChartData: unknown;
 	private readonly _dialog = inject(MatDialog);
 	private readonly _operationsService = inject(OperationsService);
+	public incomeCategories = signal([] as any[]);
+	public expenseCategories= signal([] as any[])
 
 	private _selectedYear = 2024;
 	private _selectedMonthNumber = 11;
@@ -66,44 +68,70 @@ export class BudgetComponent implements OnInit {
 	private generateChartData(operations: IOperation[], type: OperationType, label: string): any {
 		// Filter operations based on the specified type
 		const filteredOperations = operations.filter(op => op.type === type);
-	
-		// Group operations by category and sum amounts
+	  
+		// Calculate the total amount for the filtered operations
+		const totalAmount = filteredOperations.reduce((sum, op) => sum + op.amount, 0);
+	  
+		// Array to hold category data for easy access
+		const arr = [] as any[];
+	  
+		// Group operations by category, sum amounts, and calculate percentage
 		const categoryData = filteredOperations.reduce((acc, op) => {
-			const categoryName = op.category.name;
-			if (!acc[categoryName]) {
-				acc[categoryName] = { amount: 0, color: op.category.color };
-			}
-			acc[categoryName].amount += op.amount;
-			return acc;
-		}, {} as Record<string, { amount: number; color: string }>);
-	
+		  const categoryName = op.category.name;
+	  
+		  if (!acc[categoryName]) {
+			acc[categoryName] = { name: categoryName, amount: 0, color: op.category.color, percentage: 0 };
+		  }
+	  
+		  acc[categoryName].amount += op.amount;
+		  acc[categoryName].percentage = (acc[categoryName].amount / totalAmount) * 100;
+	  
+		  // Push only unique categories to `arr`
+		  if (!arr.includes(acc[categoryName])) {
+			arr.push(acc[categoryName]);
+		  }
+		  
+		  return acc;
+		}, {} as Record<string, { name: string, amount: number; color: string; percentage: number }>);
+	  
+		// Sort by percentage in descending order
+		arr.sort((a, b) => b.percentage - a.percentage);
+	  
+		if (type === OperationType.Expenses) {
+		  this.expenseCategories.set(arr as any);
+		} else {
+		  this.incomeCategories.set(arr as any);
+		}
+	  
 		// Generate labels, data, and colors arrays for the chart
-		const labels = Object.keys(categoryData);
-		const data = Object.values(categoryData).map(item => item.amount);
-		const backgroundColors = Object.values(categoryData).map(item => item.color);
-	
+		const labels = arr.map(item => item.name);
+		const data = arr.map(item => item.amount);
+		const backgroundColors = arr.map(item => item.color);
+	  
 		// Return chart configuration
 		return {
-			type: 'doughnut',
-			data: {
-				labels,
-				datasets: [
-					{
-						label,
-						data,
-						backgroundColor: backgroundColors,
-						hoverOffset: 4,
-					},
-				],
-			},
-			options: {   
-				plugins: {
-				  legend: {
-					display: true,
-					position: 'right'
-				  }
-				}
+		  type: 'doughnut',
+		  data: {
+			labels,
+			datasets: [
+			  {
+				label,
+				data,
+				backgroundColor: backgroundColors,
+				hoverOffset: 4,
+			  },
+			],
+		  },
+		  options: {
+			plugins: {
+			  legend: {
+				display: false,
+				position: 'right'
 			  }
+			}
+		  }
 		};
-	}
+	  }
+	  
+	  
 }

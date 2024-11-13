@@ -3,6 +3,7 @@ import { Chart, ChartConfiguration } from 'chart.js';
 
 @Component({
     selector: 'fp-chart',
+    styleUrls: ['./chart.component.scss'],
     templateUrl: './chart.component.html',
 })
 export class ChartComponent implements AfterViewInit {

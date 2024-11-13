@@ -23,12 +23,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ChartComponent } from 'app/shared/chart/chart.component';
 import { MatMenuModule } from '@angular/material/menu';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { IndicatorComponent } from 'app/shared';
-import { ToMoneyPipe } from 'app/shared/to-money';
 import {MatSelectModule} from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { SharedModule } from '@fp-shared/shared.module';
+import { ComponentsModule } from 'app/components/components.module';
 
 const routes: Routes = [{ path: '', component: BudgetComponent }];
 
@@ -41,12 +41,13 @@ const routes: Routes = [{ path: '', component: BudgetComponent }];
 		OperationModalDialogComponent,
 		ChartComponent,
 		IndicatorComponent,
-		ToMoneyPipe
 	],
 	providers: [CategoriesService, OperationsService, CurrencyPipe],
 	imports: [
 		CommonModule,
 		RouterModule.forChild(routes),
+		SharedModule,
+		ComponentsModule,
 		MatTableModule,
 		MatTabsModule,
 		MatProgressSpinnerModule,
@@ -60,7 +61,6 @@ const routes: Routes = [{ path: '', component: BudgetComponent }];
 		ReactiveFormsModule,
 		MatFormFieldModule,
 		MatMenuModule,
-		MatProgressBarModule,
 		MatSelectModule,
 		MatInputModule,
 		MatDatepickerModule

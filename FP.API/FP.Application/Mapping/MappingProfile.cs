@@ -9,6 +9,7 @@ namespace FP.Application.Mapping
         public MappingProfile() {
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Operation, OperationDto>().ReverseMap();
+            CreateMap<Account, AccountDto>().ReverseMap();
         }
     }
 }

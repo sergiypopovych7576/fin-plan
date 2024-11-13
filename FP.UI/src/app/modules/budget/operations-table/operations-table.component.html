@@ -29,7 +29,11 @@
 			<ng-container matColumnDef="category" [sticky]="true">
 				<th mat-header-cell *matHeaderCellDef>Category</th>
 				<td mat-cell *matCellDef="let element" style="width: 27%">
-					{{ element.category.name }}
+					<div class="d-flex align-center">
+						<mat-icon class="mr-1" [style.color]="element.category.color">{{ element.category.iconName }}</mat-icon>
+						{{ element.category.name }}
+					</div>
+				
 				</td>
 				<td mat-footer-cell *matFooterCellDef></td>
 			</ng-container>
@@ -38,11 +42,10 @@
 				<th mat-header-cell *matHeaderCellDef>Amount</th>
 				<td mat-cell *matCellDef="let element" style="width: 20%" [class.color-red]="element.type === 1"
 					[class.color-green]="element.type === 0" class="text-right">
-					{{ element.type === 1 ? '-' : '+'}}
 					{{ element.amount | toMoney:'EUR' }}
 				</td>
 				<td mat-footer-cell *matFooterCellDef><b [class.color-red]="total < 0" [class.color-green]="total > 0">
-						{{ total < 0 ? '-' : '+' }} {{total | toMoney:'EUR'}}</b>
+						{{total | toMoney:'EUR'}}</b>
 				</td>
 			</ng-container>
 
@@ -72,5 +75,5 @@
 			<tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
 		</table>
 	</div>
-	<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+	<fp-progress-bar *ngIf="loading" mode="indeterminate"></fp-progress-bar>
 </ng-template>

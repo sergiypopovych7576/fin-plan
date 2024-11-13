@@ -10,5 +10,6 @@ namespace FP.Application.DTOs
         public OperationType Type { get; set; }
 		public CategoryDto? Category { get; set; }
         public Guid CategoryId { get; set; }
+        public bool Applied { get; set; }
     }
 }

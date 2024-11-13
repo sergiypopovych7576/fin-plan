@@ -25,6 +25,7 @@
     "baseUrl": "src",
     "paths": {
       "@fp-core/*": ["app/core/*"],
+      "@fp-shared/*": ["app/shared/*"],
     }
   },
   "angularCompilerOptions": {

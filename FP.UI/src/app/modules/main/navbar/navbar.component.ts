@@ -5,6 +5,7 @@ import { filter, Subject, takeUntil } from 'rxjs';
 @Component({
 	selector: 'fp-navbar',
 	templateUrl: './navbar.component.html',
+	styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
 	private readonly _router = inject(Router);
@@ -13,7 +14,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	public currentRoute = signal('');
 	public menuItems = [
 		{
-			icon: 'dashboard',
+			icon: 'assessment',
 			path: '/dashboard',
 			label: 'Dashboard',
 			hidden: true,

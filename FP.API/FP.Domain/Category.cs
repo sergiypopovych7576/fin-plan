@@ -7,6 +7,7 @@ namespace FP.Domain
     {
         public string Name { get; set; }
         public string Color { get; set; }
+        public string IconName { get; set; }
         public OperationType Type { get; set; }
     }
 }

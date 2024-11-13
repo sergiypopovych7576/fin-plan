@@ -1,14 +1,25 @@
-$primary-color: #005cbb;
+$primary-color: #3366FF;
 $primary-color-light: lighten($primary-color, 25);
-$text-color: #555;
-$secondary-color: lightgray;
+
+$text-color: #999CA2;
+$secondary-color: #ececec;
+$background-color: #F6F8FA;
+
+.mat-mdc-table {
+	background-color: white !important;
+}
+
+.border {
+	border: solid 1px $secondary-color;
+	border-radius: 16px;
+}
 
 .color-red {
 	color: red;
 }
 
 .color-green {
-	color: green;
+	color: rgb(0, 169, 0);
 }
 
 .color-white {
@@ -92,6 +103,7 @@ $contrasts: 10, 15, 20;
 
 body {
 	color: $text-color;
+	background-color: $background-color;
 }
 
 hr {

@@ -22,6 +22,36 @@ namespace FP.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("FP.Domain.Account", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Accounts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("1096cb8b-4749-452d-aa08-a655d30ce2df"),
+                            Balance = 0m,
+                            IsDefault = true,
+                            Name = "Main"
+                        });
+                });
+
             modelBuilder.Entity("FP.Domain.Category", b =>
                 {
                     b.Property<Guid>("Id")
@@ -29,6 +59,10 @@ namespace FP.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IconName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -46,142 +80,170 @@ namespace FP.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dcdbc0c0-6399-4dbe-bfc6-39351b86763d"),
-                            Color = "#FF5733",
-                            Name = "Needs",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("79de3e51-3b72-48c1-9eb1-c48c7cdce746"),
-                            Color = "#FFC300",
-                            Name = "Wants",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("a32456f2-e734-47a0-b736-b734bd655226"),
-                            Color = "#28A745",
-                            Name = "Savings",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("3f1c9129-9a5e-4b04-b929-3e3dc2aca725"),
-                            Color = "#8E44AD",
-                            Name = "Subscriptions",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("4ed9c859-14c8-4866-a256-fd2b0aaa68e4"),
-                            Color = "#FF6347",
-                            Name = "Presents",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("9fb465b5-3097-4641-befe-43e8916a9d3b"),
-                            Color = "#3498DB",
+                            Id = new Guid("975dcdee-463e-45ab-a9c7-b61a5db39746"),
+                            Color = "#005CBB",
+                            IconName = "paid",
                             Name = "Salary",
                             Type = 0
                         },
                         new
                         {
-                            Id = new Guid("401f1c6d-9765-4341-81c7-87e16d09e93e"),
-                            Color = "#1ABC9C",
+                            Id = new Guid("6f5cd858-8065-40c1-938a-1d8213bd8c9c"),
+                            Color = "#228B22",
+                            IconName = "paid",
                             Name = "Investments",
                             Type = 0
                         },
                         new
                         {
-                            Id = new Guid("3e57aa1c-6763-4ad4-8093-1880069e914b"),
-                            Color = "#E74C3C",
-                            Name = "Loans",
-                            Type = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("4c3397c9-f22a-413d-b4f7-b45aa0369350"),
-                            Color = "#F39C12",
+                            Id = new Guid("53610993-b452-4aa1-95a4-528bd4e3964c"),
+                            Color = "#FFC300",
+                            IconName = "paid",
                             Name = "Bonuses",
                             Type = 0
                         },
                         new
                         {
-                            Id = new Guid("addc0b03-b632-4c50-98f4-94871bef630e"),
-                            Color = "#9B59B6",
-                            Name = "Entertainment",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("f6b969f9-5d39-4d46-a021-d17523980ce6"),
+                            Id = new Guid("4bd0535c-65ec-458a-af6b-bdf6e2112766"),
                             Color = "#2ECC71",
+                            IconName = "paid",
                             Name = "Freelance",
                             Type = 0
                         },
                         new
                         {
-                            Id = new Guid("f4743f89-f9da-4697-999b-45147423cce3"),
-                            Color = "#2980B9",
-                            Name = "Education",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("f536adb6-c623-43c4-abfb-635568ce941b"),
-                            Color = "#C0392B",
-                            Name = "Health",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("ce9f563c-a479-419c-a1e9-15cf38f00209"),
-                            Color = "#27AE60",
-                            Name = "Groceries",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("1dbbf7b0-c06e-4c5a-99fe-825010996a1b"),
-                            Color = "#34495E",
-                            Name = "Rent",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("3b7df4a1-9d8b-48a2-abd7-3cbaf1631d67"),
-                            Color = "#BDC3C7",
-                            Name = "Utilities",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("367116cf-fa31-4754-b989-8309c0d745a8"),
-                            Color = "#E67E22",
-                            Name = "Charity",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = new Guid("aa962b69-f3b7-4e43-bd96-093bbc0b71e9"),
+                            Id = new Guid("a2f0cc9b-ce0e-4134-861b-c9e2af759ff0"),
                             Color = "#8E44AD",
+                            IconName = "savings",
                             Name = "Interest",
                             Type = 0
                         },
                         new
                         {
-                            Id = new Guid("ab441d80-a897-4cd5-b50c-52fffda543d2"),
-                            Color = "#16A085",
-                            Name = "Side Hustle",
-                            Type = 0
+                            Id = new Guid("1aedf196-748a-47d5-8f98-3e605d56ca52"),
+                            Color = "#FFA500",
+                            IconName = "house",
+                            Name = "Rent",
+                            Type = 1
                         },
                         new
                         {
-                            Id = new Guid("862442fc-2473-47ab-8b92-9182f73f1bbd"),
+                            Id = new Guid("6cdd74dc-e30e-4eda-a738-6dfb0c3c2e47"),
+                            Color = "#E74C3C",
+                            IconName = "paid",
+                            Name = "Loans",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("3f5b9dd5-7ab3-4872-947a-e24955a0b53d"),
+                            Color = "#5D6D7E",
+                            IconName = "subscriptions",
+                            Name = "Subscriptions",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("39614ffb-5c28-47fb-8ef8-d00955318000"),
                             Color = "#D35400",
+                            IconName = "medical_information",
                             Name = "Insurance",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("fd522056-8512-4a5c-9a87-6f1d53193af7"),
+                            Color = "#27AE60",
+                            IconName = "local_grocery_store",
+                            Name = "Groceries",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("b51b9690-1c03-46c0-aa3f-d5113ca5b450"),
+                            Color = "#C0392B",
+                            IconName = "medical_information",
+                            Name = "Health",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("e5e9f603-5f0c-4c57-93f0-d7ce03e1b8d0"),
+                            Color = "#2980B9",
+                            IconName = "school",
+                            Name = "Education",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("1f950a9b-ca55-4dc1-b2d1-a443ff406216"),
+                            Color = "#FF6347",
+                            IconName = "redeem",
+                            Name = "Presents",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("9fccf2dc-300f-4eea-ae49-94f990b696b9"),
+                            Color = "#9B59B6",
+                            IconName = "sports_esports",
+                            Name = "Entertainment",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("c42eedc8-b1d8-44fd-ae0d-834dc523de24"),
+                            Color = "#1ABC9C",
+                            IconName = "drive_eta",
+                            Name = "Transport",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("f6f14b4d-5418-4f40-9909-896428fa6d86"),
+                            Color = "#E74C3C",
+                            IconName = "restaurant",
+                            Name = "Restaurants",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("3edb33ba-29f5-485b-ac98-b2755216644f"),
+                            Color = "#8E44AD",
+                            IconName = "fitness_center",
+                            Name = "Hobby",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("b95c2a2c-800d-4e9b-bf02-309cfef03de1"),
+                            Color = "#3498DB",
+                            IconName = "local_taxi",
+                            Name = "Taxi",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("1c258957-8e7a-4ed3-9594-5f5e3d9cea73"),
+                            Color = "#F1C40F",
+                            IconName = "call",
+                            Name = "Communication",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("11fd6637-e7c1-42b1-a930-54f1781c6335"),
+                            Color = "#16A085",
+                            IconName = "pets",
+                            Name = "Pets",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("f552e38a-642f-4e61-9ab6-0b4f64320e43"),
+                            Color = "#F39C12",
+                            IconName = "volunteer_activism",
+                            Name = "Charity",
                             Type = 1
                         });
                 });
@@ -194,6 +256,9 @@ namespace FP.Infrastructure.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
+
+                    b.Property<bool>("Applied")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");

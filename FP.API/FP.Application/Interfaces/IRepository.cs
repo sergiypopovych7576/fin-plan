@@ -9,6 +9,7 @@ namespace FP.Application.Interfaces
         Task<List<T>> GetAllAsync();
         Task AddAsync(T entity);
         void Update(T entity);
+        void Update(IEnumerable<T> entities);
         void Remove(T entity);
         Task SaveChangesAsync();
 	}

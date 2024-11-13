@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FP.Application.DTOs;
 using FP.Application.Services;
+using FP.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FP.Api.Controllers
