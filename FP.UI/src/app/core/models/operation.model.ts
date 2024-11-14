@@ -8,4 +8,5 @@ export interface IOperation extends IBaseModel {
 	date: string;
 	type: OperationType;
 	category: ICategory;
+	applied: boolean;
 }

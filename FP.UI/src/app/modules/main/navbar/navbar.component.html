@@ -4,13 +4,12 @@
 	</div>
 	<hr class="mt-4">
 	<div class="d-flex f-column h-100 justify-center mt-2">
-		<div class="d-flex mt-1 justify-center" *ngFor="let item of menuItems">
-			<button class="w-100" mat-flat-button *ngIf="matchesRoute(item.path)" [routerLink]="item.path">
-				<mat-icon [fontIcon]="item.icon"></mat-icon>{{ item.label }}
-			</button>
-			<button class="w-100" mat-stroked-button *ngIf="!matchesRoute(item.path)" [routerLink]="item.path">
-				<mat-icon [fontIcon]="item.icon"></mat-icon>{{ item.label }}
-			</button>
+		<div class="d-flex mb-2 justify-left select-none" *ngFor="let item of menuItems"
+			[class.color-primary]="matchesRoute(item.path)">
+			<mat-icon [fontIcon]="item.icon"></mat-icon>
+			<span class="link pointer mb-auto mt-auto ml-1" [class.underline]="matchesRoute(item.path)" [routerLink]="item.path">
+				{{ item.label }}
+			</span>
 		</div>
 		<div class="mt-auto d-flex f-column">
 			<div class="text-center">

@@ -26,9 +26,9 @@ namespace FP.Application.Services
 
         public async Task<List<CategoryDto>> Get()
         {
-            //var cached = await _cache.Get<List<CategoryDto>>("Categories");
-            //if (cached != null)
-            //    return cached;
+            var cached = await _cache.Get<List<CategoryDto>>("Categories");
+            if (cached != null)
+                return cached;
             var categories = await _mapper.ProjectTo<CategoryDto>(_repo.GetAll().OrderBy(c => c.Type).ThenBy(c => c.Name).AsNoTracking()).ToListAsync();
             await _cache.Set("Categories", categories, 60);
             return categories;

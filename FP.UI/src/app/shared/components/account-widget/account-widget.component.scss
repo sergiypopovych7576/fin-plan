@@ -1,0 +1,16 @@
+:host {
+    .content {
+        .buttons {
+            display: flex;
+            visibility: hidden;
+        }
+    }
+}
+
+:host:hover {
+    .content {
+        .buttons {
+            visibility: visible;
+        }
+    }
+}

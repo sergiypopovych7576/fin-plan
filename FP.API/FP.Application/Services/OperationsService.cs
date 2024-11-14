@@ -2,7 +2,6 @@
 using FP.Application.DTOs;
 using FP.Application.Interfaces;
 using FP.Domain;
-using FP.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace FP.Application.Services
@@ -17,18 +16,16 @@ namespace FP.Application.Services
 
     public class OperationsService : IOperationsService
     {
-        private readonly IRepository<Account> _accRepo;
         private readonly IRepository<Operation> _repo;
         private readonly IAccountService _accService;
         private readonly IMapper _mapper;
 
-        public OperationsService(IRepository<Operation> repo, IAccountService accService, IRepository<Account> accRepo,
+        public OperationsService(IRepository<Operation> repo, IAccountService accService,
             IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;
             _accService = accService;
-            _accRepo = accRepo;
         }
 
         public async Task Delete(Guid id)
@@ -41,12 +38,7 @@ namespace FP.Application.Services
                 return;
             }
             var defaultAccount = await _accService.GetDefault();
-            var amount = operation.Amount;
-            if (operation.Type == OperationType.Income)
-            {
-                amount = -amount;
-            }
-            defaultAccount.Balance += amount;
+            defaultAccount.Balance = OperationCalcService.RemoveOperation(defaultAccount.Balance, operation);
             await _accService.Update(defaultAccount);
         }
 
@@ -60,12 +52,7 @@ namespace FP.Application.Services
                 await _repo.SaveChangesAsync();
                 return;
             }
-            var amount = operation.Amount;
-            if (operation.Type == OperationType.Expense)
-            {
-                amount = -amount;
-            }
-            defaultAccount.Balance += amount;
+            defaultAccount.Balance = OperationCalcService.ApplyOperation(defaultAccount.Balance, operation);
             mappedOp.Applied = true;
             await _repo.AddAsync(mappedOp);
             await _accService.Update(defaultAccount);
@@ -73,17 +60,13 @@ namespace FP.Application.Services
 
         public async Task Sync()
         {
-            var notAppliedOperations = await _repo.GetAll().Where(o => !o.Applied 
-            //&& o.Date <= DateTime.UtcNow
+            var notAppliedOperations = await _repo.GetAll().Where(o => !o.Applied
+                && o.Date <= DateTime.UtcNow
             ).ToListAsync();
             var defaultAccount = await _accService.GetDefault();
-            foreach (var operation in notAppliedOperations) {
-                var amount = operation.Amount;
-                if (operation.Type == OperationType.Expense)
-                {
-                    amount = -amount;
-                }
-                defaultAccount.Balance += amount;
+            foreach (var operation in notAppliedOperations)
+            {
+                defaultAccount.Balance = OperationCalcService.ApplyOperation(defaultAccount.Balance, operation);
                 operation.Applied = true;
             }
             _repo.Update(notAppliedOperations);
@@ -92,7 +75,7 @@ namespace FP.Application.Services
 
         public async Task<List<OperationDto>> GetMonthlyOperations(int year, int month, CancellationToken cancellationToken)
         {
-            return await _mapper.ProjectTo<OperationDto>(_repo.GetAll().Include(c => c.Category)
+            return await _mapper.ProjectTo<OperationDto>(_repo.GetAll().AsNoTracking().Include(c => c.Category)
               .Where(o => o.Date.Month == month && o.Date.Year == year).OrderBy(c => c.Date))
               .ToListAsync(cancellationToken);
         }

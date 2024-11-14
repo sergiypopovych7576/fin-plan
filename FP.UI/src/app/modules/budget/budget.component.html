@@ -1,59 +1,45 @@
-<div class="d-flex w-100 f-column">
-
-	<div class="d-flex w-100">
-		<div class="w-60">
-			<div class="d-flex justify-center">
-				<fp-month-selector (dateChanged)="onDateChange($event)"></fp-month-selector>
-			</div>
-			<div class="mt-2 p-2 border bg-color-white">
-				<fp-operations-table [operations]="operations()" (onDelete)="onOperationDelete($event)"
-					[loading]="operationsLoading()"></fp-operations-table>
-			</div>
-			<button class="mt-2" mat-flat-button (click)="onAddOperation()">
-				<mat-icon>add</mat-icon>
-				Add
+<div class="d-flex w-100 h-100">
+	<div class="w-60">
+		<div class="d-flex justify-between" style="height: 10%;">
+			<fp-month-selector class="mt-auto mb-auto" (dateChanged)="onDateChange($event)"></fp-month-selector>
+			<button class="text-center mt-auto mb-auto" mat-flat-button (click)="onAddOperation()">
+				<mat-icon class="m-0">add</mat-icon>
 			</button>
-			<div class="d-flex justify-center">
-				<div class="w-50 p-2 border bg-color-white">
-					<fp-month-summary [operations]="operations()"></fp-month-summary>
-				</div>
-			</div>
 		</div>
-		<div class="w-40 pl-5 d-flex f-column">
-			<div class="w-100 d-flex f-column justify-center">
-				<div class="w-100 border bg-color-white">
-					<mat-tab-group animationDuration="0ms">
-						<mat-tab label="Incomes"> 
-							<div class="p-4">
-								<fp-chart class="w-50 m-auto" [config]="incomesChartData">
-								</fp-chart>
-								<div class="mt-4">
-									<p>Categories</p>
-									<div *ngFor="let cat of incomeCategories()" class="mt-2">
-										<span>{{cat.name}}</span>
-										<fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage"
-											[color]="cat.color"></fp-progress-bar>
-									</div>
-								</div>
-							</div>
-						</mat-tab>
-						<mat-tab label="Expenses">
-							<div class="p-4">
-								<fp-chart class="w-50 m-auto" [config]="expensesChartData">
-								</fp-chart>
-								<div class="mt-4">
-									<p>Categories</p>
-									<div *ngFor="let cat of expenseCategories()" class="mt-2">
-										<span>{{cat.name}}</span>
-										<fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage"
-											[color]="cat.color"></fp-progress-bar>
-									</div>
-								</div>
-							</div>
-						</mat-tab>
-					</mat-tab-group>
-				</div>
-			</div>
+		<div class="p-2 border bg-color-white" style="height: 90%;">
+			<fp-operations-table [operations]="operations()" (onDelete)="onOperationDelete($event)"
+				[loading]="operationsLoading()"></fp-operations-table>
+		</div>
+	</div>
+	<div class="w-40 pl-5 d-flex f-column justify-between">
+		<div class="w-100 border bg-color-white" style="max-height: 80%;">
+			<mat-tab-group animationDuration="0ms">
+				<mat-tab label="Incomes">
+					<div class="p-5 text-center" *ngIf="!incomeCategories().length">
+						No Data
+					</div>
+					<div *ngIf="incomeCategories().length" class="p-4">
+						<fp-chart class="w-50 m-auto" [config]="incomesChartData">
+						</fp-chart>
+						<fp-categories-progress-list [categories]="incomeCategories">
+						</fp-categories-progress-list>
+					</div>
+				</mat-tab>
+				<mat-tab label="Expenses">
+					<div class="p-5 text-center" *ngIf="!expenseCategories().length">
+						No Data
+					</div>
+					<div *ngIf="expenseCategories().length" class="p-4">
+						<fp-chart class="w-50 m-auto" [config]="expensesChartData">
+						</fp-chart>
+						<fp-categories-progress-list [categories]="expenseCategories">
+						</fp-categories-progress-list>
+					</div>
+				</mat-tab>
+			</mat-tab-group>
+		</div>
+		<div class="w-100 p-2 border bg-color-white" style="max-height: 20%;">
+			<fp-month-summary [year]="selectedYear" [month]="selectedMonthNumber"></fp-month-summary>
 		</div>
 	</div>
 </div>

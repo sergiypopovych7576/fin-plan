@@ -1,6 +1,7 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { IAccount, IOperation, OperationType } from '@fp-core/models';
+import { Component, inject, Input, OnInit, signal, WritableSignal } from '@angular/core';
+import { IAccount, IAccountBalance, IOperation, OperationType } from '@fp-core/models';
 import { AccountsService } from '@fp-core/services';
+import moment from 'moment';
 
 @Component({
 	selector: 'fp-month-summary',
@@ -8,31 +9,29 @@ import { AccountsService } from '@fp-core/services';
 	styleUrl: './month-summary.component.scss',
 })
 export class MonthSummaryComponent implements OnInit {
+	private readonly _accountsService = inject(AccountsService);
 	private _operations?: IOperation[];
 	public expenses = 0;
 	public incomes = 0;
 	public startingBalance = 0;
+	public endBalance = 0;
+	public today = moment();
+
+	public selectedToday = signal(true);
 
 	public accounts: IAccount[] = [];
+	public balance: WritableSignal<null | IAccountBalance> = signal(null);
 
 	@Input()
-	public set operations(value: IOperation[]) {
-		this._operations = value;
-		this.expenses = this.operations.filter(c => c.type === OperationType.Expenses).reduce((sum, operation) => sum + operation.amount, 0);
-		this.incomes = this.operations.filter(c => c.type === OperationType.Incomes).reduce((sum, operation) => sum + operation.amount, 0);
-	}
+	public year: any;
 
-	public get operations(): IOperation[] {
-		return this._operations!;
-	}
+	@Input()
+	public set month(month: number) {
+		this.selectedToday.set(this.today.year() === this.year && this.today.month() + 1 === month);
 
-	private readonly _accountsService = inject(AccountsService);
+		this._accountsService.getBalance(moment({ year: this.year, month: month - 1 }).endOf('month').toISOString()).subscribe(c => this.balance.set(c));
+	}
 
 	public ngOnInit(): void {
-		this._accountsService.get().subscribe(c => { 
-			this.accounts = c;
-			const defaultAccount = c.find(a => a.isDefault) as IAccount;
-			this.startingBalance = defaultAccount.balance;
-		});
 	}
 }

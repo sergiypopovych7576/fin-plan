@@ -31,6 +31,10 @@ namespace FP.Infrastructure.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
 
@@ -47,6 +51,7 @@ namespace FP.Infrastructure.Migrations
                         {
                             Id = new Guid("1096cb8b-4749-452d-aa08-a655d30ce2df"),
                             Balance = 0m,
+                            Currency = "$",
                             IsDefault = true,
                             Name = "Main"
                         });
@@ -81,7 +86,7 @@ namespace FP.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("975dcdee-463e-45ab-a9c7-b61a5db39746"),
-                            Color = "#005CBB",
+                            Color = "#3366FF",
                             IconName = "paid",
                             Name = "Salary",
                             Type = 0

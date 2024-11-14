@@ -20,7 +20,8 @@ namespace FP.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Balance = table.Column<decimal>(type: "numeric", nullable: false),
-                    IsDefault = table.Column<bool>(type: "boolean", nullable: false)
+                    IsDefault = table.Column<bool>(type: "boolean", nullable: false),
+                    Currency = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,8 +68,8 @@ namespace FP.Infrastructure.Migrations
 
             migrationBuilder.InsertData(
                 table: "Accounts",
-                columns: new[] { "Id", "Balance", "IsDefault", "Name" },
-                values: new object[] { new Guid("1096cb8b-4749-452d-aa08-a655d30ce2df"), 0m, true, "Main" });
+                columns: new[] { "Id", "Balance", "Currency", "IsDefault", "Name" },
+                values: new object[] { new Guid("1096cb8b-4749-452d-aa08-a655d30ce2df"), 0m, "$", true, "Main" });
 
             migrationBuilder.InsertData(
                 table: "Categories",
@@ -86,7 +87,7 @@ namespace FP.Infrastructure.Migrations
                     { new Guid("53610993-b452-4aa1-95a4-528bd4e3964c"), "#FFC300", "paid", "Bonuses", 0 },
                     { new Guid("6cdd74dc-e30e-4eda-a738-6dfb0c3c2e47"), "#E74C3C", "paid", "Loans", 1 },
                     { new Guid("6f5cd858-8065-40c1-938a-1d8213bd8c9c"), "#228B22", "paid", "Investments", 0 },
-                    { new Guid("975dcdee-463e-45ab-a9c7-b61a5db39746"), "#005CBB", "paid", "Salary", 0 },
+                    { new Guid("975dcdee-463e-45ab-a9c7-b61a5db39746"), "#3366FF", "paid", "Salary", 0 },
                     { new Guid("9fccf2dc-300f-4eea-ae49-94f990b696b9"), "#9B59B6", "sports_esports", "Entertainment", 1 },
                     { new Guid("a2f0cc9b-ce0e-4134-861b-c9e2af759ff0"), "#8E44AD", "savings", "Interest", 0 },
                     { new Guid("b51b9690-1c03-46c0-aa3f-d5113ca5b450"), "#C0392B", "medical_information", "Health", 1 },

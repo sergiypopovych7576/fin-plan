@@ -33,7 +33,7 @@
 		<mat-form-field class="w-100">
 			<mat-label>Type</mat-label>
 			<mat-select formControlName="categoryId">
-				<mat-option *ngFor="let cat of categories(); trackBy: trackByCategory" [value]="cat.id">
+				<mat-option *ngFor="let cat of filteredCategories(); trackBy: trackByCategory" [value]="cat.id">
 					{{ cat.name }}
 				</mat-option>
 			</mat-select>

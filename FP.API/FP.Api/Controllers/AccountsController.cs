@@ -1,9 +1,6 @@
-﻿using AutoMapper;
-using FP.Application.DTOs;
-using FP.Application.Interfaces;
-using FP.Domain;
+﻿using FP.Application.DTOs;
+using FP.Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FP.Api.Controllers
 {
@@ -11,40 +8,42 @@ namespace FP.Api.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
-        private readonly IRepository<Account> _repo;
-        private readonly IMapper _mapper;
+        private readonly IAccountService _service;
 
-        public AccountsController(IRepository<Account> repo, IMapper mapper)
+        public AccountsController(IAccountService service)
         {
-            _repo = repo;
-            _mapper = mapper;
+            _service = service;
+        }
+
+        [HttpGet]
+        [Route("balance")]
+        public Task<AccountMonthBalanceSummaryDto> Get([FromQuery] DateTime targetDate)
+        {
+            return _service.GetBalanceSummary(targetDate);
         }
 
         [HttpGet]
         public Task<List<AccountDto>> Get()
         {
-            return _mapper.ProjectTo<AccountDto>(_repo.GetAll().AsNoTracking()).ToListAsync();
+            return _service.Get();
         }
 
         [HttpPost]
         public Task Post(AccountDto account)
         {
-            _repo.AddAsync(_mapper.Map<Account>(account));
-            return _repo.SaveChangesAsync();
+            return _service.Create(account);
         }
 
         [HttpPut]
         public Task Put(AccountDto account)
         {
-            _repo.Update(_mapper.Map<Account>(account));
-            return _repo.SaveChangesAsync();
+            return _service.Update(account);
         }
 
         [HttpDelete("{id}")]
         public Task Delete(Guid id)
         {
-            _repo.Remove(new Account { Id = id });
-            return _repo.SaveChangesAsync();
+            return _service.Delete(id);
         }
     }
 }

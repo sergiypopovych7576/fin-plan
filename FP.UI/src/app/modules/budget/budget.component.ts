@@ -14,7 +14,6 @@ import { timer } from 'rxjs';
 export class BudgetComponent implements OnInit {
 	public operations: WritableSignal<IOperation[]> = signal([]);
 	public chart: any;
-	public categories: ICategory[] = [];
 	public operationsLoading = signal(false);
 	private readonly _categoriesService = inject(CategoriesService);
 	public expensesChartData: unknown;
@@ -23,12 +22,12 @@ export class BudgetComponent implements OnInit {
 	private readonly _operationsService = inject(OperationsService);
 	public incomeCategories = signal([] as any[]);
 	public expenseCategories= signal([] as any[])
+	public categories: WritableSignal<ICategory[]> = this._categoriesService.categories;
 
-	private _selectedYear = 2024;
-	private _selectedMonthNumber = 11;
+	public selectedYear = 2024;
+	public selectedMonthNumber = 11;
 
 	public ngOnInit(): void {
-		this._categoriesService.get().subscribe(c => this.categories = c);
 		this.refreshOperations();
 	}
 
@@ -46,7 +45,9 @@ export class BudgetComponent implements OnInit {
 	}
 
 	public refreshOperations(): void {
-		this._operationsService.get(this._selectedYear, this._selectedMonthNumber).subscribe((operations) => {
+		//this.operations = this._operationsService.getOperationSignal(this.selectedYear, this.selectedMonthNumber);
+
+		this._operationsService.get(this.selectedYear, this.selectedMonthNumber).subscribe((operations) => {
 			this.operations.set(operations);
 			this.incomesChartData = this.generateChartData(operations, OperationType.Incomes, 'Incomes');
 			this.expensesChartData = this.generateChartData(operations, OperationType.Expenses, 'Expenses');
@@ -55,8 +56,8 @@ export class BudgetComponent implements OnInit {
 	}
 
 	public onDateChange(event: IDateChange): void {
-		this._selectedMonthNumber = event.month;
-		this._selectedYear = event.year;
+		this.selectedMonthNumber = event.month;
+		this.selectedYear = event.year;
 		this.refreshOperations();
 	}
 

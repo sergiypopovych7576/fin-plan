@@ -6,6 +6,13 @@
     }
 
     .mat-drawer {
-        width: 10%;
+        width: 15vw;
+    }
+
+    .mat-drawer-content {
+        max-height: 100vh;
+        height: 100vh !important;
+        overflow: hidden !important;
+        width: 85vw;
     }
 }

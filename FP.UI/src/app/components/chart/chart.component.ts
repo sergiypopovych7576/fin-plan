@@ -13,6 +13,8 @@ export class ChartComponent implements AfterViewInit {
     @ViewChild('canvas')
     private _canvas!: ElementRef<HTMLCanvasElement>;
 
+    public chart!: Chart;
+
     @Input()
     public title = '';
 
@@ -27,11 +29,9 @@ export class ChartComponent implements AfterViewInit {
         return this._config;
     }
 
-    public chart!: Chart;
-
     public renderChart(): void {
         if (this.config && this._canvas?.nativeElement && !this._rendered) {
-            if(!this.chart) {
+            if (!this.chart) {
                 this.chart = new Chart(this._canvas.nativeElement, this.config as ChartConfiguration);
             } else {
                 this.chart.data = this.config['data'];

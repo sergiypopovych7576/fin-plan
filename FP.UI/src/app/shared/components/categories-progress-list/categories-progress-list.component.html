@@ -1,0 +1,8 @@
+<div class="mt-4" style="overflow: auto; max-height: 12rem;">
+    <p>Categories</p>
+    <div *ngFor="let cat of categories()" class="mt-2">
+        <span>{{cat.name}}</span>
+        <fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage"
+            [color]="cat.color"></fp-progress-bar>
+    </div>
+</div>

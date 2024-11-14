@@ -3,6 +3,7 @@
 @use 'styles/utils.scss';
 @use 'styles/theme.scss';
 @use 'styles/m3-theme.scss' as m3;
+@use 'styles/breakpoints.scss' as bp;
 
 @include mat.core();
 
@@ -13,6 +14,43 @@
 }
 
 html {
+	font-size: 90%;
 	height: 100%;
 	@include mat.all-component-themes(m3.$light-theme);
+}
+
+@media (max-width: bp.$medium-desktop) {
+	html {
+		font-size: 80%;
+	}
+}
+
+@media (max-width: bp.$small-desktop) {
+	html {
+		font-size: 70%;
+	}
+}
+
+@media (max-width: bp.$medium-tablet) {
+	html {
+		font-size: 60%;
+	}
+}
+
+@media (max-width: bp.$small-tablet) {
+	html {
+		font-size: 50%;
+	}
+}
+
+@media (max-width: bp.$medium-phone) {
+	html {
+		font-size: 50%;
+	}
+}
+
+@media (max-width: bp.$small-phone) {
+	html {
+		font-size: 42%;
+	}
 }

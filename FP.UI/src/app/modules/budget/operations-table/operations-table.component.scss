@@ -17,6 +17,12 @@
 }
 
 .table-container {
-    max-height: 70vh;
     overflow-y: auto;
+
+    .item {
+        .col {
+            display: flex;
+            margin: auto;
+        }
+    }
 }

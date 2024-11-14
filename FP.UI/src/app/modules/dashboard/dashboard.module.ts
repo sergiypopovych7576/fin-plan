@@ -2,16 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
-import { MetricComponent } from '@fp-shared/metric';
-import { ToMoneyPipe } from '@fp-shared/to-money';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedModule } from '@fp-shared/shared.module';
+import { ComponentsModule } from 'app/components/components.module';
 
 const routes: Routes = [{ path: '', component: DashboardComponent }];
 
 @NgModule({
-	declarations: [DashboardComponent, MetricComponent],
+	declarations: [DashboardComponent],
 	providers: [CurrencyPipe],
-	imports: [CommonModule, RouterModule.forChild(routes), MatIconModule, SharedModule],
+	imports: [CommonModule, RouterModule.forChild(routes), MatIconModule, SharedModule, ComponentsModule],
 })
-export class DashboardModule {}
+export class DashboardModule { }

@@ -10,18 +10,25 @@ import { IOperation, OperationType } from '@fp-core/models';
 export class OperationsTableComponent {
 	private _operations!: IOperation[];
 
-	public displayedColumns: string[] = ['color', 'name', 'category', 'amount', 'date', 'actions'];
+	public displayedColumns: any[] = [
+		{ width: 5, title: '' }, 
+		{ width: 27, title: 'Name' }, 
+		{ width: 27, title: 'Category' }, 
+		{ width: 20, title: 'Amount' },
+		{ width: 15, title: 'Date' }, 
+		{ width: 5, title: '' }
+	];
 	public total = 0;
 
 	@Input()
 	public set operations(operations: IOperation[]) {
 		this._operations = operations;
-		this.total = this.operations.reduce((sum, operation) => { 
+		this.total = this.operations.reduce((sum, operation) => {
 			let val = operation.amount;
-			if(operation.type === OperationType.Expenses) {
+			if (operation.type === OperationType.Expenses) {
 				val = -val;
 			}
-			return sum + val; 
+			return sum + val;
 		}, 0);
 	}
 

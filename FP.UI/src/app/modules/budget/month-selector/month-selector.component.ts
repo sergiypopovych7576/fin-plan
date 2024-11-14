@@ -24,9 +24,9 @@ export class MonthSelectorComponent implements OnInit {
 			this.selectedDate.month() === this.currentMonthNumber &&
 			this.selectedDate.year() === this.currentYear;
 		this.currentMonth = this.selectedDate.format('MMMM YYYY');
-		this.selectedMonthNumber = this.selectedDate.month();
+		this.selectedMonthNumber = this.selectedDate.month() + 1;
 		this.selectedYear = this.selectedDate.year();
-		this.dateChanged.emit({ year: this.selectedYear, month: this.selectedMonthNumber + 1 });
+		this.dateChanged.emit({ year: this.selectedYear, month: this.selectedMonthNumber });
 	}
 
 	public ngOnInit(): void {

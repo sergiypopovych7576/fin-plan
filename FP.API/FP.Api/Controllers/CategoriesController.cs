@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using FP.Application.DTOs;
+﻿using FP.Application.DTOs;
 using FP.Application.Services;
-using FP.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FP.Api.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
@@ -14,13 +12,13 @@ namespace FP.Api.Controllers
 
         public CategoriesController(ICategoryService service)
         {
-			_service = service;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<List<CategoryDto>> Get()
+        public Task<List<CategoryDto>> Get()
         {
-            return await _service.Get();
+            return _service.Get();
         }
     }
 }

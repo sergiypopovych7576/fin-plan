@@ -1,18 +1,5 @@
-<div class="d-flex">
-    <fp-metric *ngFor="let account of accounts()" class="w-25">
-        <div class="d-flex color-primary" header>
-            <p>
-                <b>
-                    {{ account.name }}
-                </b>
-            </p>
-            <mat-icon class="ml-auto">credit_card</mat-icon>
-        </div>
-        <div content class="d-flex justify-between">
-            Balance:
-            <b [class.color-green]="account.balance > 0" [class.color-red]="account.balance < 0">
-                {{ account.balance | toMoney:'EUR' }}
-            </b>
-        </div>
-    </fp-metric>
+<div class="h-100 d-flex f-column">
+    <fp-account-list>
+    </fp-account-list>
 </div>
+

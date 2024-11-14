@@ -4,4 +4,5 @@ export interface IAccount extends IBaseModel {
 	name: string;
     balance: number;
     isDefault: boolean;
+    currency: string;
 }

@@ -4,5 +4,6 @@ import { OperationType } from './operation-type.model';
 export interface ICategory extends IBaseModel {
 	name: string;
 	color: string;
-	type: OperationType
+	type: OperationType;
+	iconName: string;
 }

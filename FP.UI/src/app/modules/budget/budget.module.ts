@@ -21,9 +21,7 @@ import { OperationModalDialogComponent } from './operation-modal';
 import { CategoriesService, OperationsService } from '@fp-core/services';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ChartComponent } from 'app/shared/chart/chart.component';
 import { MatMenuModule } from '@angular/material/menu';
-import { IndicatorComponent } from 'app/shared';
 import {MatSelectModule} from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -32,6 +30,8 @@ import { ComponentsModule } from 'app/components/components.module';
 
 const routes: Routes = [{ path: '', component: BudgetComponent }];
 
+const MATERIAL_MODULES = []
+
 @NgModule({
 	declarations: [
 		BudgetComponent,
@@ -39,8 +39,6 @@ const routes: Routes = [{ path: '', component: BudgetComponent }];
 		MonthSelectorComponent,
 		MonthSummaryComponent,
 		OperationModalDialogComponent,
-		ChartComponent,
-		IndicatorComponent,
 	],
 	providers: [CategoriesService, OperationsService, CurrencyPipe],
 	imports: [
