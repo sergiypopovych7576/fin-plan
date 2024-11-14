@@ -1,4 +1,4 @@
-import { Component, Input, WritableSignal } from '@angular/core';
+import { Component, Input, Signal } from '@angular/core';
 
 @Component({
     selector: 'fp-categories-progress-list',
@@ -6,5 +6,5 @@ import { Component, Input, WritableSignal } from '@angular/core';
 })
 export class CategoriesProgressListComponent {
     @Input()
-    public categories!: WritableSignal<any[]>;
+    public categories: any[] = [];
 }

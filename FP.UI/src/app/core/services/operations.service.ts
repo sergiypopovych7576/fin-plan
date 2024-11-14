@@ -19,6 +19,15 @@ export class OperationsService extends BaseService {
 		return keySignal;
 	}
 
+	public refreshOperations(year: number, month: number): void {
+		const key = `${year}-${month}`;
+		const signal = this.operationsDictionary.get(key);
+		if(!signal) {
+			return;
+		}
+		this.get(year, month).subscribe(c => signal.set(c));
+	}
+
 	public get(year: number, month: number): Observable<IOperation[]> {
 		return this._httpClient.get<IOperation[]>(
 			`operations?year=${year}&month=${month}`,

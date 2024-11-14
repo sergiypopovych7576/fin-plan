@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Chart, ChartConfiguration } from 'chart.js';
 
 @Component({
     selector: 'fp-chart',
     styleUrls: ['./chart.component.scss'],
     templateUrl: './chart.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChartComponent implements AfterViewInit {
     private _config: unknown;

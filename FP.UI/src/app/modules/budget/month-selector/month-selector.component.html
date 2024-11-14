@@ -2,13 +2,13 @@
 	<button mat-icon-button (click)="onPreviousMonth()" class="mr-3">
 		<mat-icon>arrow_back</mat-icon>
 	</button>
-	<div class="d-flex date" [class.color-primary]="monthIsCurrent">
+	<div class="d-flex date" [class.color-primary]="monthIsCurrent()">
 		<p class="m-auto">
-			{{ currentMonth }}
+			{{ selectedDateTitle() }}
 		</p>
 	</div>
 	<button mat-icon-button (click)="onCurrentMonth()">
-		<mat-icon [class.color-primary]="monthIsCurrent">today</mat-icon>
+		<mat-icon [class.color-primary]="monthIsCurrent()">today</mat-icon>
 	</button>
 	<button mat-icon-button (click)="onNextMonth()" class="ml-3">
 		<mat-icon>arrow_forward</mat-icon>

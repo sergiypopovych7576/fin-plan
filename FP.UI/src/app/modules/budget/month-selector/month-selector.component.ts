@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Output, signal } from '@angular/core';
 import { IDateChange } from './date-change.model';
 import moment from 'moment';
 
@@ -7,47 +7,37 @@ import moment from 'moment';
 	templateUrl: './month-selector.component.html',
 	styleUrls: ['./month-selector.component.scss'],
 })
-export class MonthSelectorComponent implements OnInit {
-	public selectedDate = moment();
-	public currentMonth = '';
-	public monthIsCurrent = true;
+export class MonthSelectorComponent {
 	public currentMonthNumber = moment().month();
 	public currentYear = moment().year();
-	public selectedMonthNumber!: number;
-	public selectedYear!: number;
+	public selectedDate = signal(moment());
+	public selectedDateTitle = computed(() => this.selectedDate().format('MMMM YYYY'));
+	public selectedMonthNumber = computed(() => this.selectedDate().month() + 1);
+	public selectedYear = computed(() => this.selectedDate().year());
+	public monthIsCurrent = computed(() => {
+		return this.selectedDate().month() === this.currentMonthNumber &&
+			this.selectedDate().year() === this.currentYear
+	});
 
 	@Output()
 	public dateChanged = new EventEmitter<IDateChange>();
 
-	private _formMonth(): void {
-		this.monthIsCurrent =
-			this.selectedDate.month() === this.currentMonthNumber &&
-			this.selectedDate.year() === this.currentYear;
-		this.currentMonth = this.selectedDate.format('MMMM YYYY');
-		this.selectedMonthNumber = this.selectedDate.month() + 1;
-		this.selectedYear = this.selectedDate.year();
-		this.dateChanged.emit({ year: this.selectedYear, month: this.selectedMonthNumber });
-	}
-
-	public ngOnInit(): void {
-		this._formMonth();
+	private _emitDateChange(): void {
+		this.dateChanged.emit({ year: this.selectedYear(), month: this.selectedMonthNumber() });
 	}
 
 	public onNextMonth(): void {
-		this.monthIsCurrent = false;
-		this.selectedDate = this.selectedDate.clone().add(1, 'month');
-		this._formMonth();
+		this.selectedDate.set(this.selectedDate().clone().add(1, 'month'));
+		this._emitDateChange();
 	}
 
 	public onPreviousMonth(): void {
-		this.monthIsCurrent = false;
-		this.selectedDate = this.selectedDate.clone().subtract(1, 'month');
-		this._formMonth();
+		this.selectedDate.set(this.selectedDate().clone().subtract(1, 'month'));
+		this._emitDateChange();
 	}
 
 	public onCurrentMonth(): void {
-		this.selectedDate = moment();
-		this.monthIsCurrent = true;
-		this._formMonth();
+		this.selectedDate.set(moment());
+		this._emitDateChange();
 	}
 }

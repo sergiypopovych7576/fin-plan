@@ -67,11 +67,14 @@ namespace FP.Application.Services
                 }
                 endBalance += amount;
             }
+            var monthExpenses = currentMonthOperations.Where(c => c.Type == OperationType.Expense).Sum(c => c.Amount);
+            var monthIncomes = currentMonthOperations.Where(c => c.Type == OperationType.Income).Sum(c => c.Amount);
             return new AccountMonthBalanceSummaryDto
             {
                 Balance = startingBalance,
-                Expenses = currentMonthOperations.Where(c => c.Type == OperationType.Expense).Sum(c => c.Amount),
-                Incomes = currentMonthOperations.Where(c => c.Type == OperationType.Income).Sum(c => c.Amount),
+                Expenses = monthExpenses,
+                Incomes = monthIncomes,
+                MonthBalance = monthIncomes - monthExpenses,
                 EndMonthBalance = endBalance,
             };
         }

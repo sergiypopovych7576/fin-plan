@@ -15,31 +15,17 @@
 		<div class="w-100 border bg-color-white" style="max-height: 80%;">
 			<mat-tab-group animationDuration="0ms">
 				<mat-tab label="Incomes">
-					<div class="p-5 text-center" *ngIf="!incomeCategories().length">
-						No Data
-					</div>
-					<div *ngIf="incomeCategories().length" class="p-4">
-						<fp-chart class="w-50 m-auto" [config]="incomesChartData">
-						</fp-chart>
-						<fp-categories-progress-list [categories]="incomeCategories">
-						</fp-categories-progress-list>
-					</div>
+					<fp-operations-widget [operations]="incomeOperations">
+					</fp-operations-widget>
 				</mat-tab>
 				<mat-tab label="Expenses">
-					<div class="p-5 text-center" *ngIf="!expenseCategories().length">
-						No Data
-					</div>
-					<div *ngIf="expenseCategories().length" class="p-4">
-						<fp-chart class="w-50 m-auto" [config]="expensesChartData">
-						</fp-chart>
-						<fp-categories-progress-list [categories]="expenseCategories">
-						</fp-categories-progress-list>
-					</div>
+					<fp-operations-widget [operations]="expenseOperations">
+					</fp-operations-widget>
 				</mat-tab>
 			</mat-tab-group>
 		</div>
 		<div class="w-100 p-2 border bg-color-white" style="max-height: 20%;">
-			<fp-month-summary [year]="selectedYear" [month]="selectedMonthNumber"></fp-month-summary>
+			<fp-month-summary [selectedToday]="selectedToday()" [balance]="balance()"></fp-month-summary>
 		</div>
 	</div>
 </div>

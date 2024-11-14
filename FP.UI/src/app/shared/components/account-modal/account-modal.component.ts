@@ -1,14 +1,13 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { IAccount, IOperation } from '@fp-core/models';
+import { IAccount } from '@fp-core/models';
 
 @Component({
     selector: 'fp-account-modal-dialog',
     templateUrl: 'account-modal.component.html',
 })
 export class AccountModalDialogComponent implements OnInit {
-    private readonly _cdk = inject(ChangeDetectorRef);
     public readonly dialogRef = inject(MatDialogRef<AccountModalDialogComponent>);
     public readonly data = inject<IAccount>(MAT_DIALOG_DATA);
     public accountForm = new FormGroup({

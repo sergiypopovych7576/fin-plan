@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { AccountListComponent, AccountModalDialogComponent, AccountWidgetComponent, CategoriesProgressListComponent } from "./components";
+import { AccountListComponent, AccountModalDialogComponent, AccountWidgetComponent, CategoriesProgressListComponent, OperationsWidgetComponent } from "./components";
 import { ComponentsModule } from "app/components";
 import { MatIconModule } from "@angular/material/icon";
 import { CommonModule } from "@angular/common";
@@ -28,6 +28,7 @@ const COMPONENTS = [
 	AccountModalDialogComponent,
 	AccountListComponent,
 	CategoriesProgressListComponent,
+	OperationsWidgetComponent,
 	ToOpCurrencyPipe
 ];
 

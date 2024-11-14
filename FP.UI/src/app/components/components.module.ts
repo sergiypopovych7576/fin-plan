@@ -8,7 +8,12 @@ import { IndicatorComponent } from "./indicator";
 const MATERIAL_MODULES = [
     MatProgressBarModule
 ];
-const COMPONENTS = [ProgressBar, ChartComponent, ProgressBar, MetricComponent, IndicatorComponent];
+const COMPONENTS = [
+    ProgressBar,
+    ChartComponent, 
+    MetricComponent, 
+    IndicatorComponent
+];
 
 @NgModule({
     declarations: COMPONENTS,

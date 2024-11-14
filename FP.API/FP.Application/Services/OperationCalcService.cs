@@ -8,29 +8,31 @@ namespace FP.Application.Services
     {
         public static decimal ApplyOperation(decimal startAmount, Operation operation)
         {
-            var amount = operation.Amount;
             if (operation.Type == OperationType.Expense)
             {
-                amount = -amount;
+                return startAmount - operation.Amount;
             }
-            startAmount += amount;
-            return startAmount;
+            else
+            {
+                return startAmount + operation.Amount;
+            }
         }
 
         public static decimal RemoveOperation(decimal startAmount, Operation operation)
         {
-            var amount = operation.Amount;
-            if (operation.Type == OperationType.Income)
+            if (operation.Type == OperationType.Expense)
             {
-                amount = -amount;
+                return startAmount + operation.Amount;
             }
-            startAmount += amount;
-            return startAmount;
+            else
+            {
+                return startAmount - operation.Amount;
+            }
         }
 
         public static decimal ApplyOperation(decimal startAmount, OperationDto operation)
         {
-            return ApplyOperation(startAmount, new Operation { Amount = operation.Amount });
+            return ApplyOperation(startAmount, new Operation { Amount = operation.Amount, Type = operation.Type });
         }
     }
 }

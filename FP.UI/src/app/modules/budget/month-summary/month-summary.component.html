@@ -1,21 +1,27 @@
-<div class="d-flex">
-	<div>{{ selectedToday() ? 'Current balance' : 'Start month balance'}}:</div>
-	<div class="ml-auto">{{ balance()?.balance| currency:'EUR' }}</div>
-</div>
-<div class="d-flex mt-1" style="color: green">
-	<div>Incomes:</div>
-	<div class="ml-auto">{{balance()?.incomes | currency:'EUR'}}</div>
-</div>
-<div class="d-flex mt-1" style="color: red">
-	<div>Expenses:</div>
-	<div class="ml-auto">{{balance()?.expenses| currency:'EUR'}}</div>
-</div>
-<hr class="mt-1">
-<div class="d-flex mt-1" [class.color-green]="endBalance > 0" [class.color-red]="endBalance < 0">
-	<div>
-		End month balance:
+<ng-container *ngIf="balance">
+	<div class="d-flex">
+		<div>{{ selectedToday ? 'Current balance' : 'Start month balance'}}:</div>
+		<div class="ml-auto">{{ balance.balance | currency:'EUR' }}</div>
 	</div>
-	<div class="ml-auto">
-		{{balance()?.endMonthBalance| currency:'EUR'}}
+	<div class="d-flex mt-1" style="color: green">
+		<div>Incomes:</div>
+		<div class="ml-auto">{{balance.incomes | currency:'EUR'}}</div>
 	</div>
-</div>
+	<div class="d-flex mt-1" style="color: red">
+		<div>Expenses:</div>
+		<div class="ml-auto">{{balance.expenses | currency:'EUR'}}</div>
+	</div>
+	<div class="d-flex mt-1">
+		<div>Month balance:</div>
+		<div class="ml-auto" [class.color-green]="balance.monthBalance > 0" [class.color-red]="balance.monthBalance < 0">{{balance.monthBalance | currency:'EUR'}}</div>
+	</div>
+	<hr class="mt-1">
+	<div class="d-flex mt-1">
+		<div>
+			End month balance:
+		</div>
+		<div class="ml-auto" [class.color-green]="balance.endMonthBalance > 0" [class.color-red]="balance.endMonthBalance < 0">
+			{{balance.endMonthBalance | currency:'EUR'}}
+		</div>
+	</div>
+</ng-container>
