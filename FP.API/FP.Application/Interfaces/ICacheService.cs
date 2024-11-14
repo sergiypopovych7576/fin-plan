@@ -3,6 +3,7 @@
 	public interface ICacheService
 	{
 		Task Set(string key, object value, int minutes);
-		Task<T?> Get<T>(string key);
+		Task Reset(string key);
+		Task<T> Get<T>(string key);
 	}
 }

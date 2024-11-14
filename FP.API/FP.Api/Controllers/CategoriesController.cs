@@ -10,6 +10,9 @@ namespace FP.Api.Controllers
     [ApiController]
     public class CategoriesController : BaseCRUDController<Category, CategoryDto>
     {
-        public CategoriesController(IRepository<Category> repository, IMapper mapper) : base(repository, mapper) { }
+        public CategoriesController(IRepository<Category> repository, IMapper mapper, ICacheService cache) : base(repository, mapper, cache)
+        {
+            _cacheKey = "Categoires";
+        }
     }
 }

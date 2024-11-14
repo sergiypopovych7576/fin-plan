@@ -9,39 +9,52 @@ namespace FP.Api.Controllers
     public class BaseCRUDController<T, G> : ControllerBase where T : BaseEntity, new()
     {
         private readonly IMapper _mapper;
+        private readonly ICacheService _cache;
         private readonly IRepository<T> _repo;
 
-        public BaseCRUDController(IRepository<T> repo, IMapper mapper)
+        protected string _cacheKey;
+
+        public BaseCRUDController(IRepository<T> repo, IMapper mapper, ICacheService cache)
         {
             _mapper = mapper;
             _repo = repo;
+            _cache = cache;
         }
 
         [HttpGet]
-        public Task<List<G>> Get(CancellationToken cancellationToken)
+        public async Task<List<G>> Get(CancellationToken cancellationToken)
         {
-            return _mapper.ProjectTo<G>(_repo.GetAll()).ToListAsync(cancellationToken);
+            var results = await _cache.Get<List<G>>(_cacheKey);
+            if (results == null)
+            {
+                results = await _mapper.ProjectTo<G>(_repo.GetAll()).ToListAsync(cancellationToken);
+            }
+            await _cache.Set(_cacheKey, results, 20);
+            return results;
         }
 
         [HttpPost]
-        public Task Post(G entity)
+        public async Task Post(G entity)
         {
-            _repo.AddAsync(_mapper.Map<T>(entity));
-            return _repo.SaveChangesAsync();
+            await _repo.AddAsync(_mapper.Map<T>(entity));
+            await _repo.SaveChangesAsync();
+            await _cache.Reset(_cacheKey);
         }
 
         [HttpPut]
-        public Task Put(G entity)
+        public async Task Put(G entity)
         {
             _repo.Update(_mapper.Map<T>(entity));
-            return _repo.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
+            await _cache.Reset(_cacheKey);
         }
 
         [HttpDelete("{id}")]
-        public Task Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             _repo.Remove(new T { Id = id });
-            return _repo.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
+            await _cache.Reset(_cacheKey);
         }
     }
 }

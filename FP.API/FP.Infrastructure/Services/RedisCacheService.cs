@@ -12,7 +12,7 @@ namespace FP.Infrastructure.Services
 			_db = redis.GetDatabase();
 		}
 
-		public async Task<T?> Get<T>(string key) {
+		public async Task<T> Get<T>(string key) {
 			var value = await _db.StringGetAsync(key);
 			if (string.IsNullOrEmpty(value)) {
 				return default;
@@ -25,5 +25,10 @@ namespace FP.Infrastructure.Services
 			var json = JsonSerializer.Serialize(value);
 			await _db.StringSetAsync(key, json, TimeSpan.FromMinutes(minutes));
 		}
-	}
+
+		public Task Reset(string key)
+		{
+			return _db.KeyDeleteAsync(key);
+        }
+    }
 }
