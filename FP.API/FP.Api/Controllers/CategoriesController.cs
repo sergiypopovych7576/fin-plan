@@ -1,24 +1,15 @@
-﻿using FP.Application.DTOs;
-using FP.Application.Services;
+﻿using AutoMapper;
+using FP.Application.DTOs;
+using FP.Application.Interfaces;
+using FP.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FP.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase
+    public class CategoriesController : BaseCRUDController<Category, CategoryDto>
     {
-        private readonly ICategoryService _service;
-
-        public CategoriesController(ICategoryService service)
-        {
-            _service = service;
-        }
-
-        [HttpGet]
-        public Task<List<CategoryDto>> Get()
-        {
-            return _service.Get();
-        }
+        public CategoriesController(IRepository<Category> repository, IMapper mapper) : base(repository, mapper) { }
     }
 }
