@@ -16,6 +16,7 @@ namespace FP.Infrastructure.Data
                 new Category { Id = Guid.Parse("a2f0cc9b-ce0e-4134-861b-c9e2af759ff0"), Name = "Interest", Color = "#8E44AD", IconName = "savings", Type = OperationType.Income },
 
                 new Category { Id = Guid.Parse("1aedf196-748a-47d5-8f98-3e605d56ca52"), Name = "Rent", Color = "#FFA500", IconName = "house", Type = OperationType.Expense },
+                new Category { Id = Guid.Parse("6cdd74dc-e30e-4eda-a738-6dfb0c3c2e47"), Name = "Bills", Color = "#EE4B2B", IconName = "payments", Type = OperationType.Expense },
                 new Category { Id = Guid.Parse("6cdd74dc-e30e-4eda-a738-6dfb0c3c2e47"), Name = "Loans", Color = "#E74C3C", IconName = "paid", Type = OperationType.Expense },
                 new Category { Id = Guid.Parse("3f5b9dd5-7ab3-4872-947a-e24955a0b53d"), Name = "Subscriptions", Color = "#5D6D7E", IconName = "subscriptions", Type = OperationType.Expense },
                 new Category { Id = Guid.Parse("39614ffb-5c28-47fb-8ef8-d00955318000"), Name = "Insurance", Color = "#D35400", IconName = "medical_information", Type = OperationType.Expense },
