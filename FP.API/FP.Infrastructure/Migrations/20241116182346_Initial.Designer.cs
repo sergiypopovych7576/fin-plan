@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FP.Infrastructure.Migrations
 {
     [DbContext(typeof(BudgetDbContext))]
-    [Migration("20241113135040_Initial")]
+    [Migration("20241116182346_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -132,6 +132,14 @@ namespace FP.Infrastructure.Migrations
                             Color = "#FFA500",
                             IconName = "house",
                             Name = "Rent",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("391b742e-b375-4f90-b1e2-c367dc81ad45"),
+                            Color = "#EE4B2B",
+                            IconName = "payments",
+                            Name = "Bills",
                             Type = 1
                         },
                         new
@@ -271,12 +279,15 @@ namespace FP.Infrastructure.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("DATE");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("ScheduledOperationId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -285,10 +296,67 @@ namespace FP.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("ScheduledOperationId");
+
                     b.ToTable("Operations");
                 });
 
+            modelBuilder.Entity("FP.Domain.ScheduledOperation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("DATE");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("DATE");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("ScheduledOperations");
+                });
+
             modelBuilder.Entity("FP.Domain.Operation", b =>
+                {
+                    b.HasOne("FP.Domain.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FP.Domain.ScheduledOperation", "ScheduledOperation")
+                        .WithMany()
+                        .HasForeignKey("ScheduledOperationId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("ScheduledOperation");
+                });
+
+            modelBuilder.Entity("FP.Domain.ScheduledOperation", b =>
                 {
                     b.HasOne("FP.Domain.Category", "Category")
                         .WithMany()

@@ -19,6 +19,8 @@ export class OperationsTableComponent {
 		{ width: 5, title: '' }
 	];
 	public total = 0;
+	@Input()
+	public currency? = '';
 
 	@Input()
 	public set operations(operations: IOperation[]) {

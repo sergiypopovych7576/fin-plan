@@ -17,7 +17,11 @@
 	</mat-form-field>
 	<mat-form-field class="w-100">
 		<mat-label>Currency</mat-label>
-		<input matInput formControlName="currency">
+		<mat-select formControlName="currency">
+			<mat-option *ngFor="let currency of currenciesList" [value]="currency.symbol">
+				{{ currency.name + ' - ' + currency.symbol }}
+			</mat-option>
+		</mat-select>
 		@if (accountForm.controls.currency.invalid) {
 			<mat-error>Currency is not valid</mat-error>
 		}

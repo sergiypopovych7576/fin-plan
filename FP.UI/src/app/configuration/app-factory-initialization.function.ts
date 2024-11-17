@@ -1,4 +1,4 @@
-import { ConfigurationService } from '@fp-core/services';
+import { ConfigurationService, OperationsService } from '@fp-core/services';
 import { Chart, registerables } from 'chart.js';
 import { configInitialization } from './config-initalization.function';
 

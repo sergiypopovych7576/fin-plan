@@ -23,9 +23,9 @@ namespace FP.Api.Controllers
         }
 
         [HttpGet]
-        public Task<List<OperationDto>> Get([FromQuery] int year, [FromQuery] int month, CancellationToken cancellationToken)
+        public Task<List<OperationDto>> Get([FromQuery] DateOnly date, CancellationToken cancellationToken)
         {
-            return _service.GetMonthlyOperations(year, month, cancellationToken);
+            return _service.GetMonthlyOperations(date, cancellationToken);
         }
 
         [HttpPost]

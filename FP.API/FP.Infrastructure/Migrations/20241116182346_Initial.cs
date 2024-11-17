@@ -44,16 +44,42 @@ namespace FP.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ScheduledOperations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "DATE", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "DATE", nullable: true),
+                    Frequency = table.Column<int>(type: "integer", nullable: false),
+                    Interval = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScheduledOperations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ScheduledOperations_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Operations",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Applied = table.Column<bool>(type: "boolean", nullable: false),
+                    Date = table.Column<DateOnly>(type: "DATE", nullable: false),
+                    ScheduledOperationId = table.Column<Guid>(type: "uuid", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Applied = table.Column<bool>(type: "boolean", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,6 +90,11 @@ namespace FP.Infrastructure.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Operations_ScheduledOperations_ScheduledOperationId",
+                        column: x => x.ScheduledOperationId,
+                        principalTable: "ScheduledOperations",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -80,6 +111,7 @@ namespace FP.Infrastructure.Migrations
                     { new Guid("1aedf196-748a-47d5-8f98-3e605d56ca52"), "#FFA500", "house", "Rent", 1 },
                     { new Guid("1c258957-8e7a-4ed3-9594-5f5e3d9cea73"), "#F1C40F", "call", "Communication", 1 },
                     { new Guid("1f950a9b-ca55-4dc1-b2d1-a443ff406216"), "#FF6347", "redeem", "Presents", 1 },
+                    { new Guid("391b742e-b375-4f90-b1e2-c367dc81ad45"), "#EE4B2B", "payments", "Bills", 1 },
                     { new Guid("39614ffb-5c28-47fb-8ef8-d00955318000"), "#D35400", "medical_information", "Insurance", 1 },
                     { new Guid("3edb33ba-29f5-485b-ac98-b2755216644f"), "#8E44AD", "fitness_center", "Hobby", 1 },
                     { new Guid("3f5b9dd5-7ab3-4872-947a-e24955a0b53d"), "#5D6D7E", "subscriptions", "Subscriptions", 1 },
@@ -103,6 +135,16 @@ namespace FP.Infrastructure.Migrations
                 name: "IX_Operations_CategoryId",
                 table: "Operations",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Operations_ScheduledOperationId",
+                table: "Operations",
+                column: "ScheduledOperationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledOperations_CategoryId",
+                table: "ScheduledOperations",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -113,6 +155,9 @@ namespace FP.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Operations");
+
+            migrationBuilder.DropTable(
+                name: "ScheduledOperations");
 
             migrationBuilder.DropTable(
                 name: "Categories");

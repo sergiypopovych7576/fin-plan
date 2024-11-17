@@ -17,7 +17,7 @@ namespace FP.Api.Controllers
 
         [HttpGet]
         [Route("balance")]
-        public Task<AccountMonthBalanceSummaryDto> Get([FromQuery] DateTime targetDate)
+        public Task<AccountMonthBalanceSummaryDto> Get([FromQuery] DateOnly targetDate)
         {
             return _service.GetBalanceSummary(targetDate);
         }

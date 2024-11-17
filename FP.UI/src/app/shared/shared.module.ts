@@ -9,6 +9,7 @@ import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogModule, Ma
 import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
 
 const MATERIAL_MODULES = [
 	MatIconModule,
@@ -20,7 +21,8 @@ const MATERIAL_MODULES = [
 	MatDialogContent,
 	ReactiveFormsModule,
 	MatFormFieldModule,
-	MatInputModule
+	MatInputModule,
+	MatSelectModule
 ];
 
 const COMPONENTS = [

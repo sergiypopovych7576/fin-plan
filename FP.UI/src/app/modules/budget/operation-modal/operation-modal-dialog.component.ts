@@ -12,7 +12,7 @@ import moment from 'moment';
 export class OperationModalDialogComponent implements OnInit {
 	private readonly _categoriesService = inject(CategoriesService);
 	public readonly dialogRef = inject(MatDialogRef<OperationModalDialogComponent>);
-	public readonly data = inject<IOperation>(MAT_DIALOG_DATA);
+	public readonly data = inject< { month: number, year: number}>(MAT_DIALOG_DATA);
 	public operation = this.data;
 	public categories: WritableSignal<ICategory[]> = this._categoriesService.categories;
 	public selectedOperationType = signal(OperationType.Expenses);
@@ -26,6 +26,10 @@ export class OperationModalDialogComponent implements OnInit {
 		amount: new FormControl(),
 		categoryId: new FormControl(),
 		date: new FormControl(moment()),
+		startDate: new FormControl(moment()),
+		endDate: new FormControl(),
+		frequency: new FormControl(),
+		interval: new FormControl()
 	});
 
 	public ngOnInit(): void {
@@ -34,6 +38,12 @@ export class OperationModalDialogComponent implements OnInit {
 				this.selectedOperationType.set(c);
 			}
 		});
+		let date = moment().year(this.data.year).month(this.data.month).startOf('month');
+		const today = moment();
+		if(date < today) {
+			date = today;
+		}
+		this.categoryForm.controls.date.setValue(date);
 	}
 
 	trackByCategory(index: number, category: any): number {
@@ -43,7 +53,9 @@ export class OperationModalDialogComponent implements OnInit {
 	public onYesClick(): void {
 		this.dialogRef.close({
 			...this.categoryForm.value,
-			date: this.categoryForm.value.date?.hours(12).minutes(0).second(0)
+			date: this.categoryForm.value.date?.toISOString(true).split('T')[0],
+			startDate: this.categoryForm.value.startDate?.toISOString(true).split('T')[0],
+			endDate: this.categoryForm.value.endDate?.toISOString(true).split('T')[0]
 		});
 	}
 

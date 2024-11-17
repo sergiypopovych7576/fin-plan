@@ -12,7 +12,7 @@ export class MonthSelectorComponent {
 	public currentYear = moment().year();
 	public selectedDate = signal(moment());
 	public selectedDateTitle = computed(() => this.selectedDate().format('MMMM YYYY'));
-	public selectedMonthNumber = computed(() => this.selectedDate().month() + 1);
+	public selectedMonthNumber = computed(() => this.selectedDate().month());
 	public selectedYear = computed(() => this.selectedDate().year());
 	public monthIsCurrent = computed(() => {
 		return this.selectedDate().month() === this.currentMonthNumber &&

@@ -7,30 +7,41 @@ import { BaseService } from './base.service';
 export class OperationsService extends BaseService {
 	public operationsDictionary = new Map<string, WritableSignal<IOperation[]>>();
 
-	public getOperationSignal(year: number, month: number): WritableSignal<IOperation[]> {
-		const key = `${year}-${month}`;
+	public getOperationSignal(date: string): WritableSignal<IOperation[]> {
+		const key = date;
 		const exists = this.operationsDictionary.get(key);
 		if(exists) {
 			return exists;
 		}
 		const keySignal = signal([]) as WritableSignal<IOperation[]>;
-		this.get(year, month).subscribe(c => keySignal.set(c));
+		this.get(date).subscribe(c => keySignal.set(c));
 		this.operationsDictionary.set(key, keySignal);
 		return keySignal;
 	}
 
-	public refreshOperations(year: number, month: number): void {
-		const key = `${year}-${month}`;
+	public refreshOperations(date: string): void {
+		const key = `${date}`;
 		const signal = this.operationsDictionary.get(key);
 		if(!signal) {
 			return;
 		}
-		this.get(year, month).subscribe(c => signal.set(c));
+		this.get(date).subscribe(c => signal.set(c));
 	}
 
-	public get(year: number, month: number): Observable<IOperation[]> {
+	public refreshAllOperations(): void {
+		this.operationsDictionary.clear();
+	}
+
+	public get(date: string): Observable<IOperation[]> {
 		return this._httpClient.get<IOperation[]>(
-			`operations?year=${year}&month=${month}`,
+			`operations?date=${date}`,
+		);
+	}
+
+	public sync(): Observable<unknown> {
+		return this._httpClient.post(
+			'operations/sync',
+			{}
 		);
 	}
 

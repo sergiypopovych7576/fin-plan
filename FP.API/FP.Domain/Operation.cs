@@ -1,16 +1,12 @@
 ﻿using FP.Domain.Base;
-using FP.Domain.Enums;
 
 namespace FP.Domain
 {
-    public class Operation : BaseEntity
+    public class Operation : BaseOperation
     {
-        public string Name { get; set; }
-        public decimal Amount { get; set; }
-        public DateTime Date { get; set; }
-        public OperationType Type { get; set; }
-        public Category Category { get; set; }
-		public Guid CategoryId { get; set; }
         public bool Applied { get; set; }
+        public DateOnly Date { get; set; }
+        public Guid? ScheduledOperationId { get; set; }
+        public ScheduledOperation ScheduledOperation { get; set; }
     }
 }

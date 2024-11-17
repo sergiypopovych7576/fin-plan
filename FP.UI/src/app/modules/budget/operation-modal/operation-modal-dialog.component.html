@@ -1,43 +1,77 @@
 <h2 mat-dialog-title>Operation</h2>
 <mat-dialog-content>
 	<form [formGroup]="categoryForm">
-		<mat-form-field class="w-100">
-			<mat-label>Title</mat-label>
-			<input matInput formControlName="name">
-		</mat-form-field>
-		<br>
-		<mat-form-field class="w-100">
-			<mat-label>Amount</mat-label>
-			<input matInput type="number" min="0" formControlName="amount">
-		</mat-form-field>
-		<br>
-		<mat-form-field class="w-100">
-			<mat-label>Type</mat-label>
-			<mat-select formControlName="type">
-				<mat-option [value]="0">
-					Income
-				</mat-option>
-				<mat-option [value]="1">
-					Expenses
-				</mat-option>
-			</mat-select>
-		</mat-form-field>
-		<br>
-		<mat-form-field>
-			<mat-label>Date</mat-label>
-			<input matInput [matDatepicker]="picker" formControlName="date">
-			<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-			<mat-datepicker #picker></mat-datepicker>
-		</mat-form-field>
-		<br>
-		<mat-form-field class="w-100">
-			<mat-label>Type</mat-label>
-			<mat-select formControlName="categoryId">
-				<mat-option *ngFor="let cat of filteredCategories(); trackBy: trackByCategory" [value]="cat.id">
-					{{ cat.name }}
-				</mat-option>
-			</mat-select>
-		</mat-form-field>
+		<div class="d-flex">
+			<div class="w-50">
+				<mat-form-field class="w-100">
+					<mat-label>Title</mat-label>
+					<input matInput formControlName="name">
+				</mat-form-field>
+				<br>
+				<mat-form-field class="w-100">
+					<mat-label>Amount</mat-label>
+					<input matInput type="number" min="0" formControlName="amount">
+				</mat-form-field>
+				<br>
+				<mat-form-field class="w-100">
+					<mat-label>Type</mat-label>
+					<mat-select formControlName="type">
+						<mat-option [value]="0">
+							Income
+						</mat-option>
+						<mat-option [value]="1">
+							Expenses
+						</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<br>
+				<div class="w-100">
+					<mat-form-field>
+						<mat-label>Date</mat-label>
+						<input matInput [matDatepicker]="picker" formControlName="date">
+						<mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+						<mat-datepicker #picker></mat-datepicker>
+					</mat-form-field>
+				</div>
+
+				<br>
+				<mat-form-field class="w-100">
+					<mat-label>Type</mat-label>
+					<mat-select formControlName="categoryId">
+						<mat-option *ngFor="let cat of filteredCategories(); trackBy: trackByCategory" [value]="cat.id">
+							{{ cat.name }}
+						</mat-option>
+					</mat-select>
+				</mat-form-field>
+			</div>
+			<div class="w-50">
+				Scheduled options
+				<mat-form-field>
+					<mat-label>Start Date</mat-label>
+					<input matInput [matDatepicker]="startDatePicker" formControlName="startDate">
+					<mat-datepicker-toggle matIconSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+					<mat-datepicker #startDatePicker></mat-datepicker>
+				</mat-form-field>
+				<mat-form-field>
+					<mat-label>End Date</mat-label>
+					<input matInput [matDatepicker]="endDatePicker" formControlName="endDate">
+					<mat-datepicker-toggle matIconSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+					<mat-datepicker #endDatePicker></mat-datepicker>
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<mat-label>Frequency</mat-label>
+					<mat-select formControlName="frequency">
+						<mat-option [value]="2">
+							Monthly
+						</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<mat-label>Interval</mat-label>
+					<input matInput type="number" min="0" formControlName="interval">
+				</mat-form-field>
+			</div>
+		</div>
 	</form>
 </mat-dialog-content>
 <mat-dialog-actions>

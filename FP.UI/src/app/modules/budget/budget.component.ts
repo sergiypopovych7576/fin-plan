@@ -21,42 +21,59 @@ export class BudgetComponent implements OnInit {
 	public incomeOperations = computed(() => this.operations().filter(c => c.type === OperationType.Incomes) || []);
 	public expenseOperations = computed(() => this.operations().filter(c => c.type === OperationType.Expenses) || []);
 
-	public selectedYear = 2024;
-	public selectedMonthNumber = 11;
-
 	public today = moment();
-	public selectedToday = computed(() => this.today.year() === this.selectedYear && this.today.month() + 1 === this.selectedMonthNumber);
+	public selectedYear = signal(this.today.year());
+	public selectedMonthNumber = signal(this.today.month());
+	public defaultAccCurrency = computed(() => this._accountsService.accounts().find(c => c.isDefault)?.currency);
+
+	public selectedToday = computed(() => this.today.year() === this.selectedYear() && this.today.month() === this.selectedMonthNumber());
 	public balance: WritableSignal<IAccountBalance | undefined> = signal(undefined);
 
 	public ngOnInit(): void {
 		this.loadOperations();
+
 	}
 
 	public loadOperations(): void {
-		this.operations = this._operationsService.getOperationSignal(this.selectedYear, this.selectedMonthNumber);
+		const date = moment({ year: this.selectedYear(), month: this.selectedMonthNumber() }).endOf('month').toISOString().split('T')[0];
+		this.operations = this._operationsService.getOperationSignal(date);
 		this.incomeOperations = computed(() => this.operations().filter(c => c.type === OperationType.Incomes) || []);
 		this.expenseOperations = computed(() => this.operations().filter(c => c.type === OperationType.Expenses) || []);
-		this._accountsService.getBalance(moment({ year: this.selectedYear, month: this.selectedMonthNumber - 1 }).endOf('month').toISOString()).subscribe(c => this.balance.set(c));
+		this._accountsService.getBalance(date).subscribe(c => this.balance.set(c));
 	}
 
-	public refreshOperations(): void {
-		this._operationsService.refreshOperations(this.selectedYear, this.selectedMonthNumber);
-		this._accountsService.getBalance(moment({ year: this.selectedYear, month: this.selectedMonthNumber - 1 }).endOf('month').toISOString()).subscribe(c => this.balance.set(c));
+	public refreshOperations(all = false): void {
+		const date = moment({ year: this.selectedYear(), month: this.selectedMonthNumber() }).endOf('month').toISOString().split('T')[0];
+		if(all) {
+			this._operationsService.refreshAllOperations();
+			this.loadOperations();
+		}else {
+			this._operationsService.refreshOperations(date);
+		}
+	
+		this._accountsService.getBalance(date).subscribe(c => this.balance.set(c));
 		timer(500).subscribe(() => this.operationsLoading.set(false));
 	}
 
 	public onDateChange(event: IDateChange): void {
-		this.selectedMonthNumber = event.month;
-		this.selectedYear = event.year;
+		this.selectedMonthNumber.set(event.month);
+		this.selectedYear.set(event.year);
 		this.loadOperations();
 	}
 
+	public onSync() : void {
+		this._operationsService.sync().subscribe(() => {
+			this.refreshOperations();
+		})
+	}
+
 	public onAddOperation(): void {
-		const dialogRef = this._dialog.open(OperationModalDialogComponent, {});
+		const dialogRef = this._dialog.open(OperationModalDialogComponent, { data: { month: this.selectedMonthNumber, year: this.selectedYear } });
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result) {
+				const isCreatedScheduled = !!result.interval;
 				this._operationsService.create(result).subscribe(() => {
-					this.refreshOperations();
+					this.refreshOperations(isCreatedScheduled);
 				})
 			}
 		});

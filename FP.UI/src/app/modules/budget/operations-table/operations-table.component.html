@@ -27,7 +27,7 @@
 				</div>
 			</div>
 			<div [style.width.%]="displayedColumns[3].width" [class.color-red]="element.type === 1" [class.color-green]="element.type === 0" class="col">
-				{{ element | toOpCurrency:'EUR' }}
+				{{ element | toOpCurrency:currency }}
 			</div>
 			<div class="col" [style.width.%]="displayedColumns[4].width">
 				{{ element.date | date: 'dd/MM/yyyy'}}
