@@ -34,7 +34,7 @@ export class OperationsService extends BaseService {
 
 	public get(date: string): Observable<IOperation[]> {
 		return this._httpClient.get<IOperation[]>(
-			`operations?date=${date}`,
+			`operations/month/${date}`,
 		);
 	}
 

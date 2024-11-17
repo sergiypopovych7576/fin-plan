@@ -9,4 +9,5 @@ export interface IOperation extends IBaseModel {
 	type: OperationType;
 	category: ICategory;
 	applied: boolean;
+	scheduledOperationId: string;
 }

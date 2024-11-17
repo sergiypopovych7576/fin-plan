@@ -80,6 +80,8 @@ export class BudgetComponent implements OnInit {
 	}
 
 	public onOperationDelete(operation: IOperation): void {
-		this._operationsService.delete(operation.id).subscribe(() => this.refreshOperations());
+		if(!operation.scheduledOperationId) {
+			this._operationsService.delete(operation.id).subscribe(() => this.refreshOperations());
+		}
 	}
 }

@@ -18,7 +18,7 @@ import {
 	MatDialogTitle,
 } from '@angular/material/dialog';
 import { OperationModalDialogComponent } from './operation-modal';
-import { CategoriesService, OperationsService } from '@fp-core/services';
+import { OperationsService } from '@fp-core/services';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatMenuModule } from '@angular/material/menu';
@@ -41,7 +41,7 @@ const MATERIAL_MODULES = []
 		MonthSummaryComponent,
 		OperationModalDialogComponent,
 	],
-	providers: [CategoriesService, OperationsService, CurrencyPipe],
+	providers: [OperationsService, CurrencyPipe],
 	imports: [
 		CommonModule,
 		RouterModule.forChild(routes),
