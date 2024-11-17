@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { IAccount } from '@fp-core/models';
 import { AccountsService } from '@fp-core/services';
-import { AccountModalDialogComponent } from '@fp-shared/components';
+import { AccountModalDialogComponent, ConfirmationModalDialogComponent } from '@fp-shared/components';
 
 @Component({
 	selector: 'fp-account-list',
@@ -36,6 +36,11 @@ export class AccountListComponent {
 	}
 
 	public onDeleteAccount(account: IAccount): void {
-		this._accService.delete(account.id).subscribe();
+		const dialogRef = this._dialog.open(ConfirmationModalDialogComponent, { data: 'Are you sure you want to delete this account?'});
+		dialogRef.afterClosed().subscribe((result) => {
+			if (result) {
+				this._accService.delete(account.id).subscribe();
+			}
+		});
 	}
 }
