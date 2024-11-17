@@ -27,6 +27,7 @@ import { MatInputModule } from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { SharedModule } from '@fp-shared/shared.module';
 import { ComponentsModule } from 'app/components/components.module';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 const routes: Routes = [{ path: '', component: BudgetComponent }];
 
@@ -61,7 +62,8 @@ const MATERIAL_MODULES = []
 		MatMenuModule,
 		MatSelectModule,
 		MatInputModule,
-		MatDatepickerModule
+		MatDatepickerModule,
+		MatCheckboxModule
 	],
 })
 export class BudgetModule { }
