@@ -1,5 +1,22 @@
 <div class="h-100 d-flex f-column">
-    <fp-account-list>
+    <div class="w-100 d-flex">
+        <div class="w-50">
+            <fp-metric>
+                <div class="pl-2" content>
+                    <fp-chart [config]="expensesConfig()">
+                    </fp-chart>
+                </div>
+            </fp-metric>
+        </div>
+        <div class="w-50 ml-5">
+            <fp-metric>
+                <div class="pl-2" content>
+                    <fp-chart [config]="incomesConfig()">
+                    </fp-chart>
+                </div>
+            </fp-metric>
+        </div>
+    </div>
+    <fp-account-list class="mt-2">
     </fp-account-list>
 </div>
-

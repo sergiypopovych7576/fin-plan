@@ -11,6 +11,7 @@ namespace FP.Application.Services
         Task Create(ScheduledOperation operation);
         Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(DateOnly targeDate);
         Task<List<Operation>> GetPlannedScheduledOperationsForMonth(DateOnly targeDate);
+        Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly targeDate);
     }
 
     public class ScheduledOperationsService : IScheduledOperationsService
@@ -81,5 +82,52 @@ namespace FP.Application.Services
 
             return result;
         }
+
+        public async Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly endDate)
+        {
+            // Fetch scheduled operations that overlap with the date range
+            var scheduledOperations = await _repository.GetAll()
+                .Where(s => s.StartDate <= endDate && (s.EndDate == null || s.EndDate >= startDate) && s.Interval > 0)
+                .Include(s => s.Category)
+                .ToListAsync();
+
+            var result = new List<Operation>();
+
+            foreach (var schedule in scheduledOperations)
+            {
+                // Determine the first applicable date within the range
+                var current = schedule.StartDate > startDate ? schedule.StartDate : startDate;
+
+                // Generate operations within the range
+                while (current <= endDate && (schedule.EndDate == null || current <= schedule.EndDate))
+                {
+                    result.Add(new Operation
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = schedule.Name,
+                        Amount = schedule.Amount,
+                        Date = current,
+                        Type = schedule.Type,
+                        Category = schedule.Category,
+                        CategoryId = schedule.CategoryId,
+                        ScheduledOperationId = schedule.Id,
+                        Applied = false
+                    });
+
+                    // Increment the current date based on the schedule frequency and interval
+                    current = schedule.Frequency switch
+                    {
+                        Frequency.Daily => current.AddDays(schedule.Interval),
+                        Frequency.Weekly => current.AddDays(7 * schedule.Interval),
+                        Frequency.Monthly => current.AddMonths(schedule.Interval),
+                        Frequency.Yearly => current.AddYears(schedule.Interval),
+                        _ => throw new InvalidOperationException("Invalid frequency")
+                    };
+                }
+            }
+
+            return result;
+        }
+
     }
 }

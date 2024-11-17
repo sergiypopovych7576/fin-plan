@@ -34,6 +34,13 @@ namespace FP.Api.Controllers
             return _service.GetMonthlyOperations(date, cancellationToken);
         }
 
+        [HttpGet]
+        [Route("month/summary")]
+        public Task<List<MonthSummaryDto>> GetSummaryByDateRange([FromQuery] DateOnly startDate, [FromQuery] DateOnly endDate, CancellationToken cancellationToken)
+        {
+            return _service.GetSummaryByDateRange(startDate, endDate, cancellationToken);
+        }
+
         [HttpPost]
         public override Task Post(OperationDto operation)
         {

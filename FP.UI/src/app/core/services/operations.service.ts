@@ -1,6 +1,6 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { IOperation } from '../models';
+import { IMonthSummary, IOperation } from '../models';
 import { BaseService } from './base.service';
 
 @Injectable({ providedIn: 'root' })
@@ -35,6 +35,12 @@ export class OperationsService extends BaseService {
 	public get(date: string): Observable<IOperation[]> {
 		return this._httpClient.get<IOperation[]>(
 			`operations/month/${date}`,
+		);
+	}
+
+	public getSummaryByRange(startDate: string, endDate: string): Observable<IMonthSummary[]> {
+		return this._httpClient.get<IMonthSummary[]>(
+			`operations/month/summary?startDate=${startDate}&endDate=${endDate}`,
 		);
 	}
 
