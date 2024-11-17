@@ -10,11 +10,10 @@ namespace FP.Application.Services
     public interface IAccountService : IBaseService
     {
         Task<AccountMonthBalanceSummaryDto> GetBalanceSummary(DateOnly targetDate);
-        Task<List<AccountDto>> Get();
-        Task<AccountDto> GetDefault();
-        Task Update(AccountDto account);
-        Task Create(AccountDto account);
-        Task Delete(Guid id);
+        Task ApplyOperation(Operation operation);
+        Task RemoveOperation(Operation operation);
+        Task ApplyOperations(List<Operation> operations);
+        Task RemoveOperations(List<Operation> operations);
     }
 
 
@@ -79,33 +78,41 @@ namespace FP.Application.Services
             };
         }
 
-        public Task<List<AccountDto>> Get()
+        public Task<Account> GetDefault()
         {
-            return _mapper.ProjectTo<AccountDto>(_accRepo.GetAll().AsNoTracking().OrderByDescending(c => c.IsDefault).ThenBy(c => c.Name)).ToListAsync();
+            return _accRepo.GetAll().AsNoTracking().FirstAsync(c => c.IsDefault);
         }
 
-        public async Task<AccountDto> GetDefault()
+        public async Task ApplyOperations(List<Operation> operations)
         {
-            var defaultAcc = await _accRepo.GetAll().AsNoTracking().FirstAsync(c => c.IsDefault);
-            return _mapper.Map<AccountDto>(defaultAcc);
-        }
-
-        public async Task Update(AccountDto account)
-        {
-            _accRepo.Update(_mapper.Map<Account>(account));
+            var defaultAccount = await GetDefault();
+            foreach (var operation in operations)
+            {
+                defaultAccount.Balance = OperationCalcService.ApplyOperation(defaultAccount.Balance, operation);
+            }
+            _accRepo.Update(defaultAccount);
             await _accRepo.SaveChangesAsync();
         }
 
-        public Task Create(AccountDto account)
+        public async Task RemoveOperations(List<Operation> operations)
         {
-            _accRepo.AddAsync(_mapper.Map<Account>(account));
-            return _accRepo.SaveChangesAsync();
+            var defaultAccount = await GetDefault();
+            foreach (var operation in operations)
+            {
+                defaultAccount.Balance = OperationCalcService.RemoveOperation(defaultAccount.Balance, operation);
+            }
+            _accRepo.Update(defaultAccount);
+            await _accRepo.SaveChangesAsync();
         }
 
-        public Task Delete(Guid id)
+        public Task ApplyOperation(Operation operation)
         {
-            _accRepo.Remove(new Account { Id = id });
-            return _accRepo.SaveChangesAsync();
+            return ApplyOperations(new List<Operation> { operation });
+        }
+
+        public Task RemoveOperation(Operation operation)
+        {
+            return RemoveOperations(new List<Operation> { operation });
         }
     }
 }

@@ -5,9 +5,9 @@ namespace FP.Application.DTOs
 {
     public class CategoryDto : BaseDto
     {
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public string IconName { get; set; }
+        public required string Name { get; set; }
+        public required string Color { get; set; }
+        public required string IconName { get; set; }
         public OperationType Type { get; set; }
     }
 

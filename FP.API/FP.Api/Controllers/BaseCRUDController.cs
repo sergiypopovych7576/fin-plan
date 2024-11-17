@@ -10,25 +10,32 @@ namespace FP.Api.Controllers
 {
     public class BaseCRUDController<T, G, V> : ControllerBase where T : BaseEntity, new() where V : AbstractValidator<G>, new()
     {
-        private readonly IMapper _mapper;
-        private readonly ICacheService _cache;
-        private readonly IRepository<T> _repo;
-        private readonly AbstractValidator<G> _validator;
-        private readonly int _cacheMins = 20;
+        protected readonly IMapper _mapper;
+        protected readonly ICacheService _cache;
+        protected readonly IRepository<T> _repo;
+        protected readonly AbstractValidator<G> _validator;
+        protected readonly int _cacheMins = 20;
 
         protected string _cacheKey;
         protected Expression<Func<T, string>> _orderExpression;
 
-        public BaseCRUDController(IRepository<T> repo, IMapper mapper, ICacheService cache)
+        public BaseCRUDController(
+        IRepository<T> repo,
+        IMapper mapper,
+        ICacheService cache,
+        string cacheKey,
+        Expression<Func<T, string>> orderExpression)
         {
             _mapper = mapper;
             _repo = repo;
             _cache = cache;
             _validator = new V();
+            _cacheKey = cacheKey ?? throw new ArgumentNullException(nameof(cacheKey));
+            _orderExpression = orderExpression ?? throw new ArgumentNullException(nameof(orderExpression));
         }
 
         [HttpGet]
-        public async Task<List<G>> Get(CancellationToken cancellationToken)
+        public virtual async Task<List<G>> Get(CancellationToken cancellationToken)
         {
             var results = await _cache.Get<List<G>>(_cacheKey);
             if (results == null)
@@ -39,13 +46,13 @@ namespace FP.Api.Controllers
                     query = query.OrderBy(_orderExpression);
                 }
                 results = await _mapper.ProjectTo<G>(query).ToListAsync(cancellationToken);
+                await _cache.Set(_cacheKey, results, _cacheMins);
             }
-            await _cache.Set(_cacheKey, results, _cacheMins);
             return results;
         }
 
         [HttpPost]
-        public async Task Post(G entity)
+        public virtual async Task Post(G entity)
         {
             await _validator.ValidateAndThrowAsync(entity);
             await _repo.AddAsync(_mapper.Map<T>(entity));
@@ -54,7 +61,7 @@ namespace FP.Api.Controllers
         }
 
         [HttpPut]
-        public async Task Put(G entity)
+        public virtual async Task Put(G entity)
         {
             await _validator.ValidateAndThrowAsync(entity);
             _repo.Update(_mapper.Map<T>(entity));
@@ -63,7 +70,7 @@ namespace FP.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(Guid id)
+        public virtual async Task Delete(Guid id)
         {
             _repo.Remove(new T { Id = id });
             await _repo.SaveChangesAsync();

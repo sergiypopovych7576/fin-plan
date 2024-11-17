@@ -1,4 +1,5 @@
-﻿using FP.Domain;
+﻿using FluentValidation;
+using FP.Domain;
 using FP.Domain.Enums;
 
 namespace FP.Application.DTOs
@@ -9,7 +10,7 @@ namespace FP.Application.DTOs
         public decimal Amount { get; set; }
         public DateOnly Date { get; set; }
         public OperationType Type { get; set; }
-		public CategoryDto? Category { get; set; }
+        public CategoryDto? Category { get; set; }
         public Guid CategoryId { get; set; }
         public bool Applied { get; set; }
         public DateOnly? StartDate { get; set; }
@@ -18,5 +19,30 @@ namespace FP.Application.DTOs
         public int? Interval { get; set; }
         public Guid? ScheduledOperationId { get; set; }
         public ScheduledOperation? ScheduledOperation { get; set; }
+    }
+
+    public class OperationValidator : AbstractValidator<OperationDto>
+    {
+        public OperationValidator()
+        {
+            RuleFor(c => c.Name).NotEmpty();
+            RuleFor(c => c.Amount).GreaterThan(0);
+            RuleFor(c => c.CategoryId).NotEmpty();
+            RuleFor(c => c.StartDate)
+             .Null()
+             .When(c => !c.Frequency.HasValue);
+            RuleFor(c => c.EndDate)
+               .Null()
+               .When(c => !c.Frequency.HasValue);
+            RuleFor(c => c.Interval)
+             .Null()
+             .When(c => !c.Frequency.HasValue);
+            RuleFor(c => c.Interval)
+              .GreaterThan(0)
+              .When(c => c.Frequency.HasValue);
+            RuleFor(c => c.StartDate)
+             .NotEmpty()
+             .When(c => c.Frequency.HasValue);
+        }
     }
 }

@@ -1,18 +1,22 @@
-﻿using FP.Application.DTOs;
+﻿using AutoMapper;
+using FP.Application.DTOs;
+using FP.Application.Interfaces;
 using FP.Application.Services;
+using FP.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FP.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountsController : ControllerBase
+    public class AccountsController : BaseCRUDController<Account, AccountDto, AccountValidator>
     {
         private readonly IAccountService _service;
 
-        public AccountsController(IAccountService service)
+        public AccountsController(IAccountService accountsService,
+            IRepository<Account> repository, IMapper mapper, ICacheService cache) : base(repository, mapper, cache, "Accounts", c => c.Name)
         {
-            _service = service;
+            _service = accountsService;
         }
 
         [HttpGet]
@@ -20,30 +24,6 @@ namespace FP.Api.Controllers
         public Task<AccountMonthBalanceSummaryDto> Get([FromQuery] DateOnly targetDate)
         {
             return _service.GetBalanceSummary(targetDate);
-        }
-
-        [HttpGet]
-        public Task<List<AccountDto>> Get()
-        {
-            return _service.Get();
-        }
-
-        [HttpPost]
-        public Task Post(AccountDto account)
-        {
-            return _service.Create(account);
-        }
-
-        [HttpPut]
-        public Task Put(AccountDto account)
-        {
-            return _service.Update(account);
-        }
-
-        [HttpDelete("{id}")]
-        public Task Delete(Guid id)
-        {
-            return _service.Delete(id);
         }
     }
 }

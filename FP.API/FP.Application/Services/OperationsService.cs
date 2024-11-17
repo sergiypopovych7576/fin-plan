@@ -41,9 +41,7 @@ namespace FP.Application.Services
                 await _repo.SaveChangesAsync();
                 return;
             }
-            var defaultAccount = await _accService.GetDefault();
-            defaultAccount.Balance = OperationCalcService.RemoveOperation(defaultAccount.Balance, operation);
-            await _accService.Update(defaultAccount);
+            await _accService.RemoveOperation(operation);
         }
 
         public async Task Create(OperationDto operation)
@@ -53,7 +51,6 @@ namespace FP.Application.Services
                 await _scheduledOperationsService.Create(_mapper.Map<ScheduledOperation>(operation));
                 return;
             }
-            var defaultAccount = await _accService.GetDefault();
             var mappedOp = _mapper.Map<Operation>(operation);
             if (operation.Date > DateOnly.FromDateTime(DateTime.UtcNow))
             {
@@ -61,31 +58,26 @@ namespace FP.Application.Services
                 await _repo.SaveChangesAsync();
                 return;
             }
-            defaultAccount.Balance = OperationCalcService.ApplyOperation(defaultAccount.Balance, operation);
             mappedOp.Applied = true;
             await _repo.AddAsync(mappedOp);
-            await _accService.Update(defaultAccount);
+            await _accService.ApplyOperation(mappedOp);
         }
 
         public async Task Sync()
         {
             var now = DateOnly.FromDateTime(DateTime.UtcNow);
-            var defaultAccount = await _accService.GetDefault();
 
-            // Fetch non-applied operations that are due
             var notAppliedOperations = await _repo.GetAll()
                 .Where(o => !o.Applied && o.Date <= now)
                 .ToListAsync();
 
             var firstNotAppliedDate = notAppliedOperations.OrderBy(c => c.Date).FirstOrDefault();
             var appliedScheduleOperations = _repo.GetAll().Where(c => c.Date <= now
-                && c.Applied && c.ScheduledOperationId != null); 
-            if(firstNotAppliedDate != null)
+                && c.Applied && c.ScheduledOperationId != null);
+            if (firstNotAppliedDate != null)
             {
                 appliedScheduleOperations = appliedScheduleOperations.Where(c => c.Date >= firstNotAppliedDate.Date);
             }
-
-            // Fetch all active scheduled operations
             var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(now);
 
             var filteredScheduledOperations = scheduledOperations
@@ -94,21 +86,13 @@ namespace FP.Application.Services
                         && operation.Amount == scheduled.Amount))
                 .ToList();
 
-            // Apply non-applied operations
-            foreach (var operation in notAppliedOperations.Concat(filteredScheduledOperations))
-            {
-                defaultAccount.Balance = OperationCalcService.ApplyOperation(defaultAccount.Balance, operation);
-                operation.Applied = true;
-            }
-
-            // Save generated operations
+            var operationsToApply = notAppliedOperations.Concat(filteredScheduledOperations)
+                .ToList();
+            operationsToApply.ForEach(c => c.Applied = true);
             await _repo.AddRangeAsync(filteredScheduledOperations);
-
-            // Update the repository and account
             _repo.Update(notAppliedOperations);
-            await _accService.Update(defaultAccount);
+            await _accService.ApplyOperations(operationsToApply);
         }
-
 
         public async Task<List<OperationDto>> GetMonthlyOperations(DateOnly date, CancellationToken cancellationToken)
         {
