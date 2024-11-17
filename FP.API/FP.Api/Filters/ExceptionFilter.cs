@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 
 namespace FP.Api.Filters
 {
@@ -7,13 +8,27 @@ namespace FP.Api.Filters
     {
         public async Task OnExceptionAsync(ExceptionContext context)
         {
-            var errorResponse = new
+            object errorResponse = null;
+            var statusCode = 500;
+            if (context.Exception is ValidationException)
             {
-                Message = "An unexpected error occurred. Please try again later.",
-            };
+                var exception = (ValidationException)context.Exception;
+                errorResponse = new
+                {
+                    Errors = exception.Errors.Select(c => c.ErrorMessage),
+                };
+                statusCode = 400;
+            }
+            if (errorResponse == null)
+            {
+                errorResponse = new
+                {
+                    Message = "An unexpected error occurred. Please try again later.",
+                };
+            }
             context.Result = new JsonResult(errorResponse)
             {
-                StatusCode = 500
+                StatusCode = statusCode
             };
             context.ExceptionHandled = true;
             await Task.CompletedTask;

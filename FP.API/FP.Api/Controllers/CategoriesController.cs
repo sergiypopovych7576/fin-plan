@@ -8,11 +8,12 @@ namespace FP.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : BaseCRUDController<Category, CategoryDto>
+    public class CategoriesController : BaseCRUDController<Category, CategoryDto, CategoryValidator>
     {
         public CategoriesController(IRepository<Category> repository, IMapper mapper, ICacheService cache) : base(repository, mapper, cache)
         {
             _cacheKey = "Categoires";
+            _orderExpression = c => c.Name;
         }
     }
 }
