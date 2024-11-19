@@ -1,13 +1,13 @@
-<div class="d-flex f-column h-100 p-2 pt-4 border bg-color-white">
-	<div class="logo color-primary">
-		<h2 class="text-center">FP</h2>
+<div class="d-flex f-column h-100 pt-2 pb-2 border bg-color-white">
+	<div class="logo pl-2 color-primary">
+		<h2 class="text-left">FinPlan</h2>
 	</div>
-	<hr class="mt-4">
-	<div class="d-flex f-column h-100 justify-center mt-2">
+	<hr class="mt-2 ml-2 mr-2">
+	<div class="pl-2 d-flex f-column h-100 justify-center mt-2">
 		<div class="d-flex mb-2 justify-left select-none" *ngFor="let item of menuItems"
 			[class.color-primary]="matchesRoute(item.path)">
 			<mat-icon [fontIcon]="item.icon"></mat-icon>
-			<span class="link pointer mb-auto mt-auto ml-1" [class.underline]="matchesRoute(item.path)" [routerLink]="item.path">
+			<span class="link pointer mb-auto mt-auto ml-2" [routerLink]="item.path">
 				{{ item.label }}
 			</span>
 		</div>

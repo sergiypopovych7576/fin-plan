@@ -55,9 +55,9 @@ export class OperationModalDialogComponent implements OnInit {
 		const isScheduled = this.operationForm.value.isScheduled;
 		let operation = {
 			...this.operationForm.value,
-			date: this.operationForm.value.date?.toISOString(true).split('T')[0],
-			startDate: this.operationForm.value.startDate?.toISOString(true).split('T')[0],
-			endDate: this.operationForm.value.endDate?.toISOString(true).split('T')[0]
+			date: this.operationForm.value.date?.toISOString(true)?.split('T')[0],
+			startDate: this.operationForm.value.startDate?.toISOString(true)?.split('T')[0],
+			endDate: this.operationForm.value.endDate?.toISOString(true)?.split('T')[0]
 		}
 		if(isScheduled) {
 			operation.date = undefined;

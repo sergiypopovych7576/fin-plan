@@ -1,16 +1,14 @@
-<div class="d-flex p-2 border bg-color-white">
-	<button mat-icon-button (click)="onPreviousMonth()" class="mr-3">
-		<mat-icon>arrow_back</mat-icon>
-	</button>
-	<div class="d-flex date" [class.color-primary]="monthIsCurrent()">
-		<p class="m-auto">
-			{{ selectedDateTitle() }}
-		</p>
-	</div>
+<div class="d-flex pt-2 pb-2 pl-4 pr-4 border bg-color-white">
 	<button mat-icon-button (click)="onCurrentMonth()">
 		<mat-icon [class.color-primary]="monthIsCurrent()">today</mat-icon>
 	</button>
-	<button mat-icon-button (click)="onNextMonth()" class="ml-3">
-		<mat-icon>arrow_forward</mat-icon>
+	<button class="m-auto ml-1" mat-icon-button (click)="onPreviousMonth()">
+		<mat-icon>chevron_left</mat-icon>
 	</button>
+	<button class="m-auto ml-1" mat-icon-button (click)="onNextMonth()">
+		<mat-icon>chevron_right</mat-icon>
+	</button>
+	<p class="date m-auto ml-2">
+		{{ selectedDateTitle() }}
+	</p>
 </div>

@@ -17,9 +17,6 @@ export class ChartComponent implements AfterViewInit {
     public chart!: Chart;
 
     @Input()
-    public title = '';
-
-    @Input()
     public set config(config: any) {
         this._config = config;
         this._rendered = false;

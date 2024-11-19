@@ -14,7 +14,7 @@ namespace FP.Api.Controllers
         private readonly IAccountService _service;
 
         public AccountsController(IAccountService accountsService,
-            IRepository<Account> repository, IMapper mapper, ICacheService cache) : base(repository, mapper, cache, "Accounts", c => c.Name)
+            IRepository<Account> repository, IMapper mapper, ICacheService cache) : base(repository, mapper, cache, "Accounts", c => !c.IsDefault, c => c.Name)
         {
             _service = accountsService;
         }

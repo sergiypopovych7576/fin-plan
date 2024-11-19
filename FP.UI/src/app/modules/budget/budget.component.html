@@ -1,21 +1,66 @@
 <div class="d-flex w-100 h-100">
-	<div class="w-60">
+	<div class="w-60 ">
 		<div class="d-flex justify-between" style="height: 10%;">
-			<fp-month-selector class="mt-auto mb-auto" (dateChanged)="onDateChange($event)"></fp-month-selector>
-			<button class="text-center mt-auto mb-auto" mat-flat-button (click)="onAddOperation()">
-				<mat-icon class="m-0">add</mat-icon>
-			</button>
-			<button class="text-center mt-auto mb-auto" mat-flat-button (click)="onSync()">
-				<mat-icon class="m-0">sync</mat-icon>
-			</button>
+			<fp-month-selector class="mb-auto" (dateChanged)="onDateChange($event)"></fp-month-selector>
+			<div class="d-flex">
+				<button class="text-center mb-auto" mat-flat-button (click)="onSync()">
+					<mat-icon class="m-0">sync</mat-icon>
+				</button>
+				<button class="ml-2 text-center mb-auto" mat-flat-button (click)="onAddOperation()">
+					<mat-icon class="m-0">add</mat-icon>
+				</button>
+			</div>
 		</div>
-		<div class="p-2 border bg-color-white" style="height: 90%;">
-			<fp-operations-table [operations]="operations()" [currency]="defaultAccCurrency()" (onDelete)="onOperationDelete($event)"
+		<fp-metric style="height: 90%;">
+			<div header class="pl-1">
+				<p>Transactions</p>
+			</div>
+			<div class="h-100 pt-2 pb-2" content>
+				<fp-operations-table [operations]="operations()" [currency]="defaultAccCurrency()" (onDelete)="onOperationDelete($event)"
 				[loading]="operationsLoading()"></fp-operations-table>
-		</div>
+			</div>
+		</fp-metric>
 	</div>
-	<div class="w-40 pl-5 d-flex f-column justify-between">
-		<div class="w-100 border bg-color-white" style="max-height: 80%;">
+	<div class="w-40 pl-3 d-flex f-column">
+		<div class="d-flex justify-between" style="gap:4%">
+			<div class="" style="width: 48%;">
+				<fp-metric>
+					<div class="pb-2 pl-2 pr-2" content>
+						<fp-operations-widget [operations]="incomeOperations">
+						</fp-operations-widget>
+					</div>
+					<div class="pl-1 mt-auto" footer>
+						<p class="color-secondary">Incomes</p>
+						<h5 class="mt-1 color-green">+ {{1827 | currency:'EUR'}}</h5>
+					</div>
+				</fp-metric>
+			</div>
+			<div class="" style="width: 48%;">
+				<fp-metric>
+					<div class="pb-2 pl-2 pr-2" content>
+						<fp-operations-widget [operations]="expenseOperations">
+						</fp-operations-widget>
+					</div>
+					<div class="pl-1 mt-auto" footer>
+						<p class="color-secondary">Expenses</p>
+						<h5 class="mt-1 color-red">- {{3650 | currency:'EUR'}}</h5>
+					</div>
+				</fp-metric>
+			</div>
+		</div>
+		
+		<div class="mt-3">
+			<fp-metric>
+				<div class="pl-1" header>
+					<p>Expenses by categories</p>
+				</div>
+				<div class="pl-1 pt-1 pb-1" content>
+					<fp-categories-progress-list [categories]="categoreis()">
+					</fp-categories-progress-list>
+				</div>
+			</fp-metric>
+		</div>
+		<!-- <div class="w-100 border bg-color-white" style="max-height: 90%;">
 			<mat-tab-group animationDuration="0ms">
 				<mat-tab label="Expenses">
 					<fp-operations-widget [operations]="expenseOperations">
@@ -25,10 +70,32 @@
 					<fp-operations-widget [operations]="incomeOperations">
 					</fp-operations-widget>
 				</mat-tab>
+				<mat-tab label="Accounts">
+					<div class="p-5">
+						<div *ngFor="let acc of accounts()">
+							<div class="d-flex mb-1">
+								<div>{{acc.name}}:</div>
+								<div class="ml-auto">
+									{{ !acc.isDefault ? (acc.balance | currency:acc.currency): balance()?.endMonthBalance | currency:acc.currency }}
+								</div>
+							</div>
+						</div>
+						<hr>
+						<p class="mt-2 mb-2">Total:</p>
+						<div class="text-right" *ngFor="let res of accountsResuls()">
+								{{res.totalBalance | currency: res.currency}}
+						</div>
+					</div>
+				</mat-tab>
 			</mat-tab-group>
-		</div>
-		<div class="w-100 p-2 border bg-color-white" style="max-height: 20%;">
-			<fp-month-summary [selectedToday]="selectedToday()" [balance]="balance()"></fp-month-summary>
-		</div>
+		</div> -->
+		<fp-metric class="mt-auto">
+			<div class="pl-1" header>
+				<p>Summary</p>
+			</div>
+			<div class="pl-1 pt-2 pb-1" content>
+				<fp-month-summary [selectedToday]="selectedToday()" [balance]="balance()"></fp-month-summary>
+			</div>
+		</fp-metric>
 	</div>
 </div>

@@ -7,6 +7,7 @@ import { AccountModalDialogComponent, ConfirmationModalDialogComponent } from '@
 @Component({
 	selector: 'fp-account-list',
 	templateUrl: './account-list.component.html',
+	styleUrls: ['./account-list.component.scss']
 })
 export class AccountListComponent {
 	private readonly _dialog = inject(MatDialog);

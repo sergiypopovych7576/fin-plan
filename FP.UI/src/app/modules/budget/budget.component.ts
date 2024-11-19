@@ -16,6 +16,17 @@ export class BudgetComponent implements OnInit {
 	private readonly _dialog = inject(MatDialog);
 	private readonly _operationsService = inject(OperationsService);
 	private readonly _accountsService = inject(AccountsService);
+	public accounts = this._accountsService.accounts;
+	public accountsResuls : Signal<{currency: string, totalBalance: number}[]> = computed(() => {
+		const balanceByCurrencyArray = Object.entries(
+			this.accounts().reduce((acc: any, account) => {
+				var balance = account.isDefault ? this.balance()?.endMonthBalance :account.balance;
+				acc[account.currency] = (acc[account.currency] || 0) + balance;
+				return acc;
+			}, {})
+		).map(([currency, totalBalance]) => ({ currency, totalBalance: totalBalance as number }));
+		return balanceByCurrencyArray;
+	})
 	public operations!: WritableSignal<IOperation[]>;
 	public operationsLoading = signal(false);
 	public incomeOperations = computed(() => this.operations().filter(c => c.type === OperationType.Incomes) || []);
@@ -25,6 +36,40 @@ export class BudgetComponent implements OnInit {
 	public selectedYear = signal(this.today.year());
 	public selectedMonthNumber = signal(this.today.month());
 	public defaultAccCurrency = computed(() => this._accountsService.accounts().find(c => c.isDefault)?.currency);
+
+	public categoreis = computed(() => {
+		// Filter operations based on the specified type
+		const filteredOperations = this.expenseOperations();
+
+		// Calculate the total amount for the filtered operations
+		const totalAmount = filteredOperations.reduce((sum, op) => sum + op.amount, 0);
+
+		// Array to hold category data for easy access
+		const arr = [] as any[];
+
+		// Group operations by category, sum amounts, and calculate percentage
+		const categoryData = filteredOperations.reduce((acc, op) => {
+			const categoryName = op.category.name;
+
+			if (!acc[categoryName]) {
+				acc[categoryName] = { name: categoryName, amount: 0, color: op.category.color, percentage: 0 };
+			}
+
+			acc[categoryName].amount += op.amount;
+			acc[categoryName].percentage = (acc[categoryName].amount / totalAmount) * 100;
+
+			// Push only unique categories to `arr`
+			if (!arr.includes(acc[categoryName])) {
+				arr.push(acc[categoryName]);
+			}
+
+			return acc;
+		}, {} as Record<string, { name: string, amount: number; color: string; percentage: number }>);
+
+		// Sort by percentage in descending order
+		arr.sort((a, b) => b.percentage - a.percentage);
+		return arr;
+	})
 
 	public selectedToday = computed(() => this.today.year() === this.selectedYear() && this.today.month() === this.selectedMonthNumber());
 	public balance: WritableSignal<IAccountBalance | undefined> = signal(undefined);

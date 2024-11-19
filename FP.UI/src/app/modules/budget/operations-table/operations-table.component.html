@@ -5,47 +5,47 @@
 	<p class="m-auto">No operations were found</p>
 </div>
 <ng-template #grid>
-	<div class="table-container d-flex f-column h-100 w-100">
-		<div class="d-flex justify-around">
-			<div *ngFor="let col of displayedColumns" [style.width.%]="col.width">
-				{{col.title}}
+	<div class="d-flex pl-2 pr-2 pb-2 mb-1 mt-2 justify-around">
+		<div *ngFor="let col of displayedColumns" [style.width.%]="col.width">
+			{{col.title}}
+		</div>
+	</div>
+	<div class="item mb-2" *ngFor="let element of operations; let i = index;">
+		<div class="bg-color-bg border pt-2 pb-2 pl-2 pr-2 d-flex justify-around" >
+			<div class="col d-flex justify-left" [style.width.%]="displayedColumns[0].width">
+				<fp-indicator [color]="element.category.color">
+				</fp-indicator>
+			</div>
+			<div class="col" [style.width.%]="displayedColumns[1].width">
+				{{ element.name }}
+			</div>
+			<div class="col" [style.width.%]="displayedColumns[2].width">
+				<div class="d-flex align-center">
+					<mat-icon class="mr-1" [style.color]="element.category.color">{{ element.category.iconName }}</mat-icon>
+					{{ element.category.name }}
+				</div>
+			</div>
+			<div [style.width.%]="displayedColumns[3].width" [class.color-red]="element.type === 1" [class.color-green]="element.type === 0" class="col">
+				{{ element | toOpCurrency:currency }}
+			</div>
+			<div class="col" [style.width.%]="displayedColumns[4].width">
+				{{ element.date | date: 'dd/MM/yyyy'}}
+			</div>
+			<div class="col" [style.width.%]="displayedColumns[5].width">
+				<button class="action-button" mat-icon-button [matMenuTriggerFor]="actionsMenu">
+					<mat-icon>more_vert</mat-icon>
+				</button>
+				<mat-menu #actionsMenu="matMenu" class="actions-menu">
+					<button mat-button (click)="onDeleteClick(element)"><mat-icon>delete</mat-icon>Delete</button>
+				</mat-menu>
 			</div>
 		</div>
-		<hr class="mt-2 mb-2">
-		<div *ngFor="let element of operations; let i = index;">
-			<div class="item d-flex mb-1 justify-around" >
-				<div class="col d-flex justify-left" [style.width.%]="displayedColumns[0].width">
-					<fp-indicator [color]="element.category.color">
-					</fp-indicator>
-				</div>
-				<div class="col" [style.width.%]="displayedColumns[1].width">
-					{{ element.name }}
-				</div>
-				<div class="col" [style.width.%]="displayedColumns[2].width">
-					<div class="d-flex align-center">
-						<mat-icon class="mr-1" [style.color]="element.category.color">{{ element.category.iconName }}</mat-icon>
-						{{ element.category.name }}
-					</div>
-				</div>
-				<div [style.width.%]="displayedColumns[3].width" [class.color-red]="element.type === 1" [class.color-green]="element.type === 0" class="col">
-					{{ element | toOpCurrency:currency }}
-				</div>
-				<div class="col" [style.width.%]="displayedColumns[4].width">
-					{{ element.date | date: 'dd/MM/yyyy'}}
-				</div>
-				<div class="col" [style.width.%]="displayedColumns[5].width">
-					<button class="action-button" mat-icon-button [matMenuTriggerFor]="actionsMenu">
-						<mat-icon>more_vert</mat-icon>
-					</button>
-					<mat-menu #actionsMenu="matMenu" class="actions-menu">
-						<button mat-button (click)="onDeleteClick(element)"><mat-icon>delete</mat-icon>Delete</button>
-					</mat-menu>
-				</div>
-			</div>
-			<div class="mt-1 mb-1" *ngIf="i === operationSplitIndex - 1">
-				<hr>
-			</div>
+		<div class="mt-1 mb-1" *ngIf="i === operationSplitIndex - 1">
+			<!-- <hr> -->
 		</div>
+	</div>
+	<div class="table-container">
+		
 	</div>
 	<!-- <div class="table-container d-flex h-100">
 		<table *ngIf="operations" mat-table [dataSource]="operations">

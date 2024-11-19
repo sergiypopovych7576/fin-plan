@@ -17,14 +17,16 @@ namespace FP.Api.Controllers
         protected readonly int _cacheMins = 20;
 
         protected string _cacheKey;
-        protected Expression<Func<T, string>> _orderExpression;
+        protected Expression<Func<T, object>> _orderExpression;
+        protected Expression<Func<T, object>> _thenOrderExpression;
 
         public BaseCRUDController(
         IRepository<T> repo,
         IMapper mapper,
         ICacheService cache,
         string cacheKey,
-        Expression<Func<T, string>> orderExpression)
+        Expression<Func<T, object>> orderExpression,
+        Expression<Func<T, object>> thenOrderExpression = null)
         {
             _mapper = mapper;
             _repo = repo;
@@ -32,6 +34,7 @@ namespace FP.Api.Controllers
             _validator = new V();
             _cacheKey = cacheKey ?? throw new ArgumentNullException(nameof(cacheKey));
             _orderExpression = orderExpression ?? throw new ArgumentNullException(nameof(orderExpression));
+            _thenOrderExpression = thenOrderExpression;
         }
 
         [HttpGet]
@@ -43,7 +46,13 @@ namespace FP.Api.Controllers
                 var query = _repo.GetAll();
                 if(_orderExpression != null)
                 {
-                    query = query.OrderBy(_orderExpression);
+                    if(_thenOrderExpression == null)
+                    {
+                        query = query.OrderBy(_orderExpression);
+                    } else
+                    {
+                        query = query.OrderBy(_orderExpression).ThenBy(_thenOrderExpression);
+                    }
                 }
                 results = await _mapper.ProjectTo<G>(query).ToListAsync(cancellationToken);
                 await _cache.Set(_cacheKey, results, _cacheMins);

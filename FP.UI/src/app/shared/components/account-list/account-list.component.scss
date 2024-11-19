@@ -1,0 +1,13 @@
+:host {
+    display: block;
+    height: 100%;
+    overflow-y: auto;
+
+    .list {
+        gap: 2%;
+
+        .account {
+            width: 23.5%;
+        }
+    }
+}

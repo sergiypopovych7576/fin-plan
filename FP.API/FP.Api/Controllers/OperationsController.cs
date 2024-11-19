@@ -22,9 +22,11 @@ namespace FP.Api.Controllers
 
         [HttpPost]
         [Route("sync")]
-        public Task Sync()
-        {
-            return _service.Sync();
+        public async Task Sync()
+        { 
+            await _service.Sync();
+            await _cache.Reset(_cacheKey);
+            await _cache.Reset("Accounts");
         }
 
         [HttpGet]

@@ -16,10 +16,10 @@ export class DashboardComponent implements OnInit {
 		labels: [],
 		datasets: [
 			{
-				label: 'Expenses by month',
+				label: 'Spent',
 				data: [],
 				borderColor: 'red',
-				backgroundColor: 'rgba(255, 0, 0, 0.5)', // Semi-transparent red
+				backgroundColor: 'rgba(255, 0, 0, 1)', // Semi-transparent red
 				pointStyle: 'circle',
 				pointRadius: 5,
 				pointHoverRadius: 8,
@@ -32,10 +32,10 @@ export class DashboardComponent implements OnInit {
 		labels: [],
 		datasets: [
 			{
-				label: 'Incomes by month',
+				label: 'Recieved',
 				data: [],
-				borderColor: 'green',
-				backgroundColor: 'rgba(0, 255, 0, 0.5)', // Semi-transparent green
+				borderColor: '#2475FE',
+				backgroundColor: '#2475FE', // Semi-transparent green
 				pointStyle: 'circle',
 				pointRadius: 5,
 				pointHoverRadius: 8,
@@ -49,20 +49,12 @@ export class DashboardComponent implements OnInit {
 		data: this.expensesData,
 		options: {
 			responsive: true,
-			scales: {
-				x: {
-					title: {
-						display: true,
-						text: 'Months',
-					},
-				},
-				y: {
-					title: {
-						display: true,
-						text: 'Amount (€)',
-					},
-				},
-			},
+			plugins: {
+				legend: {
+					display: false,
+					position: 'right'
+				}
+			}
 		},
 	});
 
@@ -72,20 +64,12 @@ export class DashboardComponent implements OnInit {
 		data: this.incomesData,
 		options: {
 			responsive: true,
-			scales: {
-				x: {
-					title: {
-						display: true,
-						text: 'Months',
-					},
-				},
-				y: {
-					title: {
-						display: true,
-						text: 'Amount (€)',
-					},
-				},
-			},
+			plugins: {
+				legend: {
+					display: false,
+					position: 'right'
+				}
+			}
 		},
 	});
 
