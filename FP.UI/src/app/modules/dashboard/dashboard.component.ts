@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { IMonthSummary } from '@fp-core/models';
+import { IMonthSummary, OperationType } from '@fp-core/models';
 import { OperationsService } from '@fp-core/services';
 import moment from 'moment';
 
@@ -11,15 +11,14 @@ import moment from 'moment';
 export class DashboardComponent implements OnInit {
 	private readonly _operationsService = inject(OperationsService);
 
-	// Default chart data for expenses
 	expensesData = {
 		labels: [],
 		datasets: [
 			{
 				label: 'Spent',
 				data: [],
-				borderColor: 'red',
-				backgroundColor: 'rgba(255, 0, 0, 1)', // Semi-transparent red
+				borderColor: 'rgb(230, 0, 0)',
+				backgroundColor: 'rgb(230, 0, 0)',
 				pointStyle: 'circle',
 				pointRadius: 5,
 				pointHoverRadius: 8,
@@ -27,23 +26,6 @@ export class DashboardComponent implements OnInit {
 		],
 	} as any;
 
-	// Default chart data for incomes
-	incomesData = {
-		labels: [],
-		datasets: [
-			{
-				label: 'Recieved',
-				data: [],
-				borderColor: '#2475FE',
-				backgroundColor: '#2475FE', // Semi-transparent green
-				pointStyle: 'circle',
-				pointRadius: 5,
-				pointHoverRadius: 8,
-			},
-		],
-	} as any;
-
-	// Chart configuration for expenses
 	public expensesConfig = signal({
 		type: 'line',
 		data: this.expensesData,
@@ -58,48 +40,91 @@ export class DashboardComponent implements OnInit {
 		},
 	});
 
-	// Chart configuration for incomes
-	public incomesConfig = signal({
+	public categoriesConfig = signal({
 		type: 'line',
-		data: this.incomesData,
+		data: {
+			labels: [],
+			datasets: []
+		},
 		options: {
 			responsive: true,
 			plugins: {
 				legend: {
 					display: false,
-					position: 'right'
+					position: 'top'
+				}
+			},
+			scales: {
+				x: {
+					title: {
+						display: true,
+						text: 'Month'
+					}
+				},
+				y: {
+					title: {
+						display: true,
+						text: 'Expenses'
+					}
 				}
 			}
-		},
+		}
 	});
-
+	
 	public ngOnInit(): void {
 		this.updateChartData();
 	}
-
-	// Fetch and update chart data for the last 6 months
+	
 	private updateChartData(): void {
-		const endDate = moment().add(3, 'months').endOf('month').toISOString().split('T')[0]; // End of the current month
-		const startDate = moment().subtract(3, 'months').startOf('month').toISOString().split('T')[0]; // Start of 6 months ago
-
+		const endDate = moment().add(3, 'months').endOf('month').toISOString().split('T')[0];
+		const startDate = moment().subtract(3, 'months').startOf('month').toISOString().split('T')[0];
+	
 		this._operationsService.getSummaryByRange(startDate, endDate).subscribe((summaries: IMonthSummary[]) => {
-			// Update labels with the months
-			const labels = summaries.map(s => `${s.month}/${s.year}`);
+			const labels = summaries.map(s => `${s.month}/${s.year}`) as any;
 			this.expensesData.labels = labels;
-			this.incomesData.labels = labels;
-
-			// Update dataset with total expenses and incomes for each month
+	
 			this.expensesData.datasets[0].data = summaries.map(s => s.totalExpenses);
-			this.incomesData.datasets[0].data = summaries.map(s => s.totalIncomes);
-
-			// Refresh chart configurations
+	
 			this.expensesConfig.set({
 				...this.expensesConfig(),
 				data: this.expensesData,
 			});
-			this.incomesConfig.set({
-				...this.incomesConfig(),
-				data: this.incomesData,
+	
+			const categoryDataMap: { [key: string]: { data: number[], color: string } } = {};
+	
+			summaries.forEach(summary => {
+				summary.categories.forEach(category => {
+					if (category.type === OperationType.Expenses) {
+						if (!categoryDataMap[category.name]) {
+							categoryDataMap[category.name] = {
+								data: Array(labels.length).fill(0),
+								color: category.color 
+							};
+						}
+						const monthIndex = summaries.findIndex(
+							s => s.month === summary.month && s.year === summary.year
+						);
+						categoryDataMap[category.name].data[monthIndex] = category.amount;
+					}
+				});
+			});
+	
+
+			const datasets = Object.keys(categoryDataMap).map(categoryName => ({
+				label: categoryName,
+				data: categoryDataMap[categoryName].data,
+				borderColor: categoryDataMap[categoryName].color,
+				backgroundColor: categoryDataMap[categoryName].color,
+				pointRadius: 5,
+				pointHoverRadius: 8,
+			})) as any;
+	
+			this.categoriesConfig.set({
+				...this.categoriesConfig(),
+				data: {
+					labels,
+					datasets
+				}
 			});
 		});
 	}

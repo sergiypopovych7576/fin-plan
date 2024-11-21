@@ -1,7 +1,7 @@
-<div class="h-100 d-flex f-column">
-    <div class="w-100 d-flex" style="height: 50%;">
-        <div class="w-50">
-            <fp-metric>
+<div class="h-100 d-flex f-column" style="gap:8%">
+    <div class="w-100 d-flex" style="height: 46%; gap:4%">
+        <div style="width:48%">
+            <fp-card>
                 <div header class="pl-1">
                     <p>Expenses by month</p>
                 </div>
@@ -9,20 +9,20 @@
                     <fp-chart [config]="expensesConfig()">
                     </fp-chart>
                 </div>
-            </fp-metric>
+            </fp-card>
         </div>
-        <div class="w-50 ml-5">
-            <fp-metric>
+        <div style="width: 48%;">
+            <fp-card>
                 <div header class="pl-1">
-                    <p>Incomes by month</p>
+                    <p>Expenses by categories</p>
                 </div>
                 <div class="pl-2 mt-2" content>
-                    <fp-chart [config]="incomesConfig()">
+                    <fp-chart [config]="categoriesConfig()">
                     </fp-chart>
                 </div>
-            </fp-metric>
+            </fp-card>
         </div>
     </div>
-    <fp-account-list style="height:50%">
+    <fp-account-list style="height:46%">
     </fp-account-list>
 </div>

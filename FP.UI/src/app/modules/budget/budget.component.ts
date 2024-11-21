@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationModalDialogComponent } from './operation-modal';
-import { IAccountBalance, IOperation, OperationType } from '@fp-core/models';
+import { IAccountBalance, ICategory, IOperation, OperationType } from '@fp-core/models';
 import { AccountsService, OperationsService } from '@fp-core/services';
 import { IDateChange } from './month-selector/date-change.model';
 import { timer } from 'rxjs';
@@ -10,93 +10,106 @@ import moment from 'moment';
 @Component({
 	selector: 'fp-budget',
 	templateUrl: './budget.component.html',
-	styleUrl: './budget.component.scss',
+	styleUrls: ['./budget.component.scss'],
 })
 export class BudgetComponent implements OnInit {
+	// Dependencies
 	private readonly _dialog = inject(MatDialog);
 	private readonly _operationsService = inject(OperationsService);
 	private readonly _accountsService = inject(AccountsService);
+
+	// Signals
 	public accounts = this._accountsService.accounts;
-	public accountsResuls : Signal<{currency: string, totalBalance: number}[]> = computed(() => {
-		const balanceByCurrencyArray = Object.entries(
+	public operations!: WritableSignal<IOperation[]>;
+	public operationsLoading = signal(false);
+	public balance: WritableSignal<IAccountBalance | undefined> = signal(undefined);
+
+	// Computed properties
+	public accountsResults = computed(() => this.calculateAccountBalances());
+	public incomeOperations!: Signal<IOperation[]>;
+	public expenseOperations!: Signal<IOperation[]>;
+	public incomeTotal!: Signal<number>;
+	public expenseTotal!: Signal<number>;
+	public categories!: Signal<any>;
+	public defaultAccCurrency = computed(() => this.getDefaultCurrency());
+	public selectedToday = computed(() => this.isTodaySelected());
+
+	// Date-related signals
+	public today = moment();
+	public selectedYear = signal(this.today.year());
+	public selectedMonthNumber = signal(this.today.month());
+
+	// Lifecycle hooks
+	public ngOnInit(): void {
+		this.loadOperations();
+	}
+
+	// Methods
+	private calculateAccountBalances() {
+		return Object.entries(
 			this.accounts().reduce((acc: any, account) => {
-				var balance = account.isDefault ? this.balance()?.endMonthBalance :account.balance;
+				const balance = account.isDefault ? this.balance()?.endMonthBalance : account.balance;
 				acc[account.currency] = (acc[account.currency] || 0) + balance;
 				return acc;
 			}, {})
 		).map(([currency, totalBalance]) => ({ currency, totalBalance: totalBalance as number }));
-		return balanceByCurrencyArray;
-	})
-	public operations!: WritableSignal<IOperation[]>;
-	public operationsLoading = signal(false);
-	public incomeOperations = computed(() => this.operations().filter(c => c.type === OperationType.Incomes) || []);
-	public expenseOperations = computed(() => this.operations().filter(c => c.type === OperationType.Expenses) || []);
+	}
 
-	public today = moment();
-	public selectedYear = signal(this.today.year());
-	public selectedMonthNumber = signal(this.today.month());
-	public defaultAccCurrency = computed(() => this._accountsService.accounts().find(c => c.isDefault)?.currency);
+	private filterOperationsByType(type: OperationType): IOperation[] {
+		return this.operations()?.filter(op => op.type === type) || [];
+	}
 
-	public categoreis = computed(() => {
-		// Filter operations based on the specified type
+	private calculateTotal(operations: IOperation[]): number {
+		return operations.reduce((sum, op) => sum + op.amount, 0);
+	}
+
+	private calculateCategories() {
 		const filteredOperations = this.expenseOperations();
-
-		// Calculate the total amount for the filtered operations
-		const totalAmount = filteredOperations.reduce((sum, op) => sum + op.amount, 0);
-
-		// Array to hold category data for easy access
-		const arr = [] as any[];
-
-		// Group operations by category, sum amounts, and calculate percentage
+		const totalAmount = this.calculateTotal(filteredOperations);
 		const categoryData = filteredOperations.reduce((acc, op) => {
 			const categoryName = op.category.name;
-
 			if (!acc[categoryName]) {
 				acc[categoryName] = { name: categoryName, amount: 0, color: op.category.color, percentage: 0 };
 			}
-
 			acc[categoryName].amount += op.amount;
 			acc[categoryName].percentage = (acc[categoryName].amount / totalAmount) * 100;
-
-			// Push only unique categories to `arr`
-			if (!arr.includes(acc[categoryName])) {
-				arr.push(acc[categoryName]);
-			}
-
 			return acc;
-		}, {} as Record<string, { name: string, amount: number; color: string; percentage: number }>);
+		}, {} as Record<string, { name: string; amount: number; color: string; percentage: number }>);
+		return Object.values(categoryData).sort((a, b) => b.percentage - a.percentage);
+	}
 
-		// Sort by percentage in descending order
-		arr.sort((a, b) => b.percentage - a.percentage);
-		return arr;
-	})
+	private getDefaultCurrency(): string | undefined {
+		return this.accounts().find(account => account.isDefault)?.currency;
+	}
 
-	public selectedToday = computed(() => this.today.year() === this.selectedYear() && this.today.month() === this.selectedMonthNumber());
-	public balance: WritableSignal<IAccountBalance | undefined> = signal(undefined);
+	private isTodaySelected(): boolean {
+		return this.today.year() === this.selectedYear() && this.today.month() === this.selectedMonthNumber();
+	}
 
-	public ngOnInit(): void {
-		this.loadOperations();
-
+	private getSelectedDate(): string {
+		return moment({ year: this.selectedYear(), month: this.selectedMonthNumber() }).endOf('month').toISOString().split('T')[0];
 	}
 
 	public loadOperations(): void {
-		const date = moment({ year: this.selectedYear(), month: this.selectedMonthNumber() }).endOf('month').toISOString().split('T')[0];
+		const date = this.getSelectedDate();
 		this.operations = this._operationsService.getOperationSignal(date);
-		this.incomeOperations = computed(() => this.operations().filter(c => c.type === OperationType.Incomes) || []);
-		this.expenseOperations = computed(() => this.operations().filter(c => c.type === OperationType.Expenses) || []);
-		this._accountsService.getBalance(date).subscribe(c => this.balance.set(c));
+		this.incomeOperations = computed(() => this.filterOperationsByType(OperationType.Incomes));
+		this.expenseOperations = computed(() => this.filterOperationsByType(OperationType.Expenses));
+		this.incomeTotal = computed(() => this.calculateTotal(this.incomeOperations()));
+		this.expenseTotal = computed(() => this.calculateTotal(this.expenseOperations()));
+		this.categories = computed(() => this.calculateCategories());
+		this._accountsService.getBalance(date).subscribe(balance => this.balance.set(balance));
 	}
 
 	public refreshOperations(all = false): void {
-		const date = moment({ year: this.selectedYear(), month: this.selectedMonthNumber() }).endOf('month').toISOString().split('T')[0];
-		if(all) {
+		const date = this.getSelectedDate();
+		if (all) {
 			this._operationsService.refreshAllOperations();
 			this.loadOperations();
-		}else {
+		} else {
 			this._operationsService.refreshOperations(date);
 		}
-	
-		this._accountsService.getBalance(date).subscribe(c => this.balance.set(c));
+		this._accountsService.getBalance(date).subscribe(balance => this.balance.set(balance));
 		timer(500).subscribe(() => this.operationsLoading.set(false));
 	}
 
@@ -106,26 +119,25 @@ export class BudgetComponent implements OnInit {
 		this.loadOperations();
 	}
 
-	public onSync() : void {
-		this._operationsService.sync().subscribe(() => {
-			this.refreshOperations();
-		})
+	public onSync(): void {
+		this._operationsService.sync().subscribe(() => this.refreshOperations());
 	}
 
 	public onAddOperation(): void {
-		const dialogRef = this._dialog.open(OperationModalDialogComponent, { data: { month: this.selectedMonthNumber, year: this.selectedYear } });
-		dialogRef.afterClosed().subscribe((result) => {
+		const dialogRef = this._dialog.open(OperationModalDialogComponent, {
+			data: { month: this.selectedMonthNumber, year: this.selectedYear }
+		});
+		dialogRef.afterClosed().subscribe(result => {
 			if (result) {
-				const isCreatedScheduled = !!result.interval;
 				this._operationsService.create(result).subscribe(() => {
-					this.refreshOperations(isCreatedScheduled);
-				})
+					this.refreshOperations(!!result.interval);
+				});
 			}
 		});
 	}
 
 	public onOperationDelete(operation: IOperation): void {
-		if(!operation.scheduledOperationId) {
+		if (!operation.scheduledOperationId) {
 			this._operationsService.delete(operation.id).subscribe(() => this.refreshOperations());
 		}
 	}

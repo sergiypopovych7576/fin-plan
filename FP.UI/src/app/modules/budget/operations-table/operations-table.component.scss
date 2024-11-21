@@ -5,9 +5,11 @@ fp-operations-table {
     scrollbar-gutter: stable;
     padding-left: 1rem;
     padding-right: 1rem;
+    overflow-x: hidden;
 
     .item {
         height: 4rem;
+        
         .col {
             display: flex;
             margin: auto;
@@ -37,7 +39,7 @@ fp-operations-table {
     overflow-y: auto;
 
     .item {
-        height: 4rem;
+
         .col {
             display: flex;
             margin: auto;

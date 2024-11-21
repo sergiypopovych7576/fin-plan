@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { ProgressBar } from "./progress-bar";
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ChartComponent } from "./chart";
-import { MetricComponent } from "./metric";
+import { CardComponent } from "./card";
 import { IndicatorComponent } from "./indicator";
 
 const MATERIAL_MODULES = [
@@ -11,7 +11,7 @@ const MATERIAL_MODULES = [
 const COMPONENTS = [
     ProgressBar,
     ChartComponent, 
-    MetricComponent, 
+    CardComponent, 
     IndicatorComponent
 ];
 
