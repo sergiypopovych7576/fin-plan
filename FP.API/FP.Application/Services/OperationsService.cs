@@ -120,43 +120,42 @@ namespace FP.Application.Services
 
         public async Task<List<MonthSummaryDto>> GetSummaryByDateRange(DateOnly startDate, DateOnly endDate, CancellationToken cancellationToken)
         {
-            // Ensure startDate is earlier than endDate
             if (startDate > endDate)
             {
                 throw new ArgumentException("startDate must be earlier than or equal to endDate.");
             }
 
-            // Fetch all operations within the date range
+            // Fetch operations from the repository
             var operations = await _repo.GetAll()
                 .AsNoTracking()
                 .Include(o => o.Category)
                 .Where(o => o.Date >= startDate && o.Date <= endDate)
                 .ToListAsync(cancellationToken);
 
-            // Fetch all scheduled operations within the date range
+            // Fetch scheduled operations
             var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsByDateRange(startDate, endDate);
 
-            // Filter out scheduled operations already applied as normal operations
+            // Filter out scheduled operations that are already applied
             var filteredScheduledOperations = scheduledOperations
                 .Where(scheduled => !operations.Any(operation =>
                     operation.ScheduledOperationId == scheduled.ScheduledOperationId && operation.Applied && operation.Date == scheduled.Date
                         && operation.Amount == scheduled.Amount))
                 .ToList();
 
-            // Combine operations and scheduled operations
+            // Combine operations and filtered scheduled operations
             var allOperations = operations.Concat(filteredScheduledOperations);
 
-            // Group operations by year and month
+            // Group operations by year, month, and category
             var groupedOperations = allOperations
                 .GroupBy(op => new { op.Date.Year, op.Date.Month })
                 .OrderBy(g => g.Key.Year)
                 .ThenBy(g => g.Key.Month);
 
-            // Create a summary for each group
+            // Create month summaries
             var summaries = groupedOperations.Select(group =>
             {
-                var month = group.Key.Month;
                 var year = group.Key.Year;
+                var month = group.Key.Month;
 
                 var totalIncomes = group
                     .Where(op => op.Type == OperationType.Income)
@@ -166,13 +165,26 @@ namespace FP.Application.Services
                     .Where(op => op.Type == OperationType.Expense)
                     .Sum(op => op.Amount);
 
+                // Group by category within this month
+                var categorySummaries = group
+                    .GroupBy(op => op.Category.Name)
+                    .Select(categoryGroup => new CategorySummaryDto
+                    {
+                        Name = categoryGroup.Key,
+                        Amount = categoryGroup.Sum(op => op.Amount),
+                        Type = categoryGroup.First().Type,
+                        Color = categoryGroup.First().Category.Color
+                    })
+                    .ToList();
+
                 return new MonthSummaryDto
                 {
                     Year = year,
                     Month = month,
                     TotalIncomes = totalIncomes,
                     TotalExpenses = totalExpenses,
-                    MonthBalance = totalIncomes - totalExpenses
+                    MonthBalance = totalIncomes - totalExpenses,
+                    Categories = categorySummaries
                 };
             }).ToList();
 

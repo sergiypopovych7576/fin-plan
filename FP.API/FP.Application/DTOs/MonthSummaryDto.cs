@@ -7,5 +7,6 @@
         public decimal TotalIncomes { get; set; }
         public decimal TotalExpenses { get; set; }
         public decimal MonthBalance { get; set; }
+        public List<CategorySummaryDto> Categories { get; set; }
     }
 }
