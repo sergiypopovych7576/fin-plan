@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit, signal, WritableSignal } from '@an
 import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ICategory, IOperation, OperationType } from '@fp-core/models';
-import { CategoriesService } from '@fp-core/services';
+import { AccountsService, CategoriesService } from '@fp-core/services';
 import moment from 'moment';
 
 @Component({
@@ -11,12 +11,17 @@ import moment from 'moment';
 })
 export class OperationModalDialogComponent implements OnInit {
 	private readonly _categoriesService = inject(CategoriesService);
+	private readonly _accountsService = inject(AccountsService);
 	public readonly dialogRef = inject(MatDialogRef<OperationModalDialogComponent>);
 	public readonly data = inject< { month: number, year: number}>(MAT_DIALOG_DATA);
 	public operation = this.data;
+	public accounts = this._accountsService.accounts;
 	public categories: WritableSignal<ICategory[]> = this._categoriesService.categories;
 	public selectedOperationType = signal(OperationType.Expenses);
 	public filteredCategories = computed(() => {
+		if(this.selectedOperationType() === OperationType.Transfer) {
+			return this.categories();
+		}
 		return this.categories().filter(c => c.type === this.selectedOperationType())
 	});
 
@@ -30,7 +35,9 @@ export class OperationModalDialogComponent implements OnInit {
 		startDate: new FormControl(moment()),
 		endDate: new FormControl(),
 		frequency: new FormControl(2),
-		interval: new FormControl(1)
+		interval: new FormControl(1),
+		sourceAccountId: new FormControl(),
+		targetAccountId: new FormControl(),
 	});
 
 	public ngOnInit(): void {
@@ -45,15 +52,17 @@ export class OperationModalDialogComponent implements OnInit {
 			date = today;
 		}
 		this.operationForm.controls.date.setValue(date);
+		const defaultAcc = this.accounts().find(a => a.isDefault);
+		this.operationForm.controls.sourceAccountId.setValue(defaultAcc?.id);
 	}
 
 	trackByCategory(index: number, category: any): number {
-		return category.id;
+		return category?.id;
 	}
 
 	public onYesClick(): void {
 		const isScheduled = this.operationForm.value.isScheduled;
-		let operation = {
+		const operation = {
 			...this.operationForm.value,
 			date: this.operationForm.value.date?.toISOString(true)?.split('T')[0],
 			startDate: this.operationForm.value.startDate?.toISOString(true)?.split('T')[0],
@@ -68,7 +77,14 @@ export class OperationModalDialogComponent implements OnInit {
 			operation.frequency = undefined;
 			operation.isScheduled = undefined;
 		}
-
+		if(operation.type === OperationType.Incomes) {
+			operation.targetAccountId = this.operationForm.value.sourceAccountId;
+			operation.sourceAccountId = undefined; 
+		}
+		if(operation.type === OperationType.Expenses) {
+			operation.sourceAccountId = this.operationForm.value.sourceAccountId;
+			operation.targetAccountId = undefined; 
+		}
 		this.dialogRef.close(operation);
 	}
 

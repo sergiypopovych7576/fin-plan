@@ -37,22 +37,26 @@ namespace FP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("month/summary")]
+        [Route("summary")]
         public Task<List<MonthSummaryDto>> GetSummaryByDateRange([FromQuery] DateOnly startDate, [FromQuery] DateOnly endDate, CancellationToken cancellationToken)
         {
             return _service.GetSummaryByDateRange(startDate, endDate, cancellationToken);
         }
 
         [HttpPost]
-        public override Task Post(OperationDto operation)
+        public override async Task Post(OperationDto operation)
         {
-            return _service.Create(operation);
+			await _cache.Reset(_cacheKey);
+			await _cache.Reset("Accounts");
+			await _service.Create(operation);
         }
 
         [HttpDelete("{id}")]
-        public override Task Delete(Guid id)
+        public override async Task Delete(Guid id)
         {
-            return _service.Delete(id);
+			await _cache.Reset(_cacheKey);
+			await _cache.Reset("Accounts");
+			await _service.Delete(id);
         }
     }
 }

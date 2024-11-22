@@ -1,7 +1,12 @@
+@if(!categories.length) {
+<div class="text-center p-1">
+    <p>No data</p>
+</div>
+}
+
 <div style="overflow: auto; max-height: 12rem;">
     <div *ngFor="let cat of categories" class="mt-2">
         <span>{{cat.percentage | number:'1.0-0'}}% - {{cat.name}}</span>
-        <fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage"
-            [color]="cat.color"></fp-progress-bar>
+        <fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage" [color]="cat.color"></fp-progress-bar>
     </div>
 </div>

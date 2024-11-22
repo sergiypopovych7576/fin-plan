@@ -19,12 +19,17 @@ namespace FP.Application.DTOs
         public int? Interval { get; set; }
         public Guid? ScheduledOperationId { get; set; }
         public ScheduledOperation? ScheduledOperation { get; set; }
-    }
+		public Account? SourceAccount { get; set; }
+		public Guid? SourceAccountId { get; set; }
+		public Account? TargetAccount { get; set; }
+		public Guid? TargetAccountId { get; set; }
+	}
 
     public class OperationValidator : AbstractValidator<OperationDto>
     {
         public OperationValidator()
         {
+            // TODO Check for types + account currency
             RuleFor(c => c.Name).NotEmpty();
             RuleFor(c => c.Amount).GreaterThan(0);
             RuleFor(c => c.CategoryId).NotEmpty();

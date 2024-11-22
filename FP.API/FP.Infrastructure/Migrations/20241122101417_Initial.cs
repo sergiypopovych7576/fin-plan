@@ -55,11 +55,23 @@ namespace FP.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SourceAccountId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TargetAccountId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ScheduledOperations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ScheduledOperations_Accounts_SourceAccountId",
+                        column: x => x.SourceAccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ScheduledOperations_Accounts_TargetAccountId",
+                        column: x => x.TargetAccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ScheduledOperations_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -79,11 +91,25 @@ namespace FP.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Amount = table.Column<decimal>(type: "numeric", nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SourceAccountId = table.Column<Guid>(type: "uuid", nullable: true),
+                    TargetAccountId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Operations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Operations_Accounts_SourceAccountId",
+                        column: x => x.SourceAccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Operations_Accounts_TargetAccountId",
+                        column: x => x.TargetAccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Operations_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -142,22 +168,42 @@ namespace FP.Infrastructure.Migrations
                 column: "ScheduledOperationId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Operations_SourceAccountId",
+                table: "Operations",
+                column: "SourceAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Operations_TargetAccountId",
+                table: "Operations",
+                column: "TargetAccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ScheduledOperations_CategoryId",
                 table: "ScheduledOperations",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledOperations_SourceAccountId",
+                table: "ScheduledOperations",
+                column: "SourceAccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScheduledOperations_TargetAccountId",
+                table: "ScheduledOperations",
+                column: "TargetAccountId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Accounts");
-
-            migrationBuilder.DropTable(
                 name: "Operations");
 
             migrationBuilder.DropTable(
                 name: "ScheduledOperations");
+
+            migrationBuilder.DropTable(
+                name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "Categories");

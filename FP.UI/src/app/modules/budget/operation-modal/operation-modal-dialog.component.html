@@ -17,6 +17,17 @@
 						<mat-option [value]="1">
 							Expenses
 						</mat-option>
+						<mat-option [value]="2">
+							Transfer
+						</mat-option>
+					</mat-select>
+				</mat-form-field>
+				<mat-form-field class="w-100">
+					<mat-label>{{ operationForm.controls.type.value === 2 ? 'Source Account': 'Account' }}</mat-label>
+					<mat-select formControlName="sourceAccountId">
+						<mat-option *ngFor="let account of accounts()" [value]="account.id">
+							{{ account.name }}
+						</mat-option>
 					</mat-select>
 				</mat-form-field>
 				<br>
@@ -37,6 +48,17 @@
 						</mat-option>
 					</mat-select>
 				</mat-form-field>
+				@if (operationForm.controls.type.value === 2) {
+					<mat-form-field class="w-100">
+						<mat-label>Target Account</mat-label>
+						<mat-select formControlName="targetAccountId">
+							<mat-option *ngFor="let account of accounts()" [value]="account.id">
+								{{ account.name }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+				}
+				
 			</div>
 		</div>
 		<div *ngIf="!operationForm.controls.isScheduled.value; else schedule">

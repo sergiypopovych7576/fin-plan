@@ -1,19 +1,49 @@
-<ng-container *ngIf="balance">
+<!-- <div *ngFor="let acc of accounts(); let i = index;">
+	{{acc.name}}
+	@if (accountsResults()[i]) {
+		<div class="d-flex">
+			<div>{{ selectedToday() ? 'Current balance' : 'Start month balance'}}:</div>
+			<div class="ml-auto">{{ accountsResults()[i].startMonthBalance | currency:'EUR' }}</div>
+		</div>
+		<div class="d-flex mt-1">
+			<div>Difference:</div>
+			<div class="ml-auto" [class.color-green]="accountsResults()[i].endMonthBalance - accountsResults()[i].startMonthBalance  > 0" [class.color-red]="accountsResults()[i].endMonthBalance - accountsResults()[i].startMonthBalance < 0">{{accountsResults()[i].endMonthBalance - accountsResults()[i].startMonthBalance | currency:'EUR'}}</div>
+		</div>
+		<div class="d-flex mt-1">
+			<div>
+				End month balance:
+			</div>
+			<div class="ml-auto" [class.color-green]="accountsResults()[i].endMonthBalance > 0" [class.color-red]="accountsResults()[i].endMonthBalance < 0">
+				{{ accountsResults()[i].endMonthBalance | currency:'EUR' }}
+			</div>
+		</div>
+	}
+	<hr class="mt-1">
+</div> -->
+
+<div class="d-flex justify-between">
+	<div [style.width.%]="25">Name</div>
+	<div [style.width.%]="25">{{ selectedToday() ? 'Current balance' : 'Start balance'}}</div>
+	<div [style.width.%]="25">Difference</div>
+	<div [style.width.%]="25">End balance</div>
+</div>
+<div class="mt-2 d-flex justify-between" *ngFor="let acc of accounts(); let i = index;">
+	<div [style.width.%]="25">{{ acc.name }}</div>
+	<div [style.width.%]="25">{{ accountsResults()[i].startMonthBalance | currency:acc.currency }}</div>
+	<div [style.width.%]="25">{{accountsResults()[i].difference | currency:acc.currency}}</div>
+	<div [style.width.%]="25" [class.color-green]="accountsResults()[i].endMonthBalance > 0" [class.color-red]="accountsResults()[i].endMonthBalance < 0">
+		{{ accountsResults()[i].endMonthBalance | currency:acc.currency }}
+	</div>
+</div>
+
+<!-- <ng-container *ngIf="balance">
 	<div class="d-flex">
 		<div>{{ selectedToday ? 'Current balance' : 'Start month balance'}}:</div>
-		<div class="ml-auto">{{ balance.balance | currency:'EUR' }}</div>
-	</div>
-	<div class="d-flex mt-1" style="color: green">
-		<div>Incomes:</div>
-		<div class="ml-auto">{{balance.incomes | currency:'EUR'}}</div>
-	</div>
-	<div class="d-flex mt-1" style="color: red">
-		<div>Expenses:</div>
-		<div class="ml-auto">{{balance.expenses | currency:'EUR'}}</div>
+		<div class="ml-auto">{{ balance.startMonthBalance | currency:'EUR' }}</div>
 	</div>
 	<div class="d-flex mt-1">
-		<div>Month balance:</div>
-		<div class="ml-auto" [class.color-green]="balance.monthBalance > 0" [class.color-red]="balance.monthBalance < 0">{{balance.monthBalance | currency:'EUR'}}</div>
+		<div>Difference:</div>
+		<div class="ml-auto" [class.color-green]="balance.endMonthBalance - balance.startMonthBalance  > 0" [class.color-red]="balance.endMonthBalance - balance.startMonthBalance < 0">{{balance.endMonthBalance - balance.startMonthBalance | currency:'EUR'}}</div>
 	</div>
 	<hr class="mt-1">
 	<div class="d-flex mt-1">
@@ -24,4 +54,4 @@
 			{{balance.endMonthBalance | currency:'EUR'}}
 		</div>
 	</div>
-</ng-container>
+</ng-container> -->

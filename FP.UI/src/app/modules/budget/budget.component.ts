@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationModalDialogComponent } from './operation-modal';
-import { IAccountBalance, ICategory, IOperation, OperationType } from '@fp-core/models';
+import { IAccount, IAccountBalance, ICategory, IOperation, OperationType } from '@fp-core/models';
 import { AccountsService, OperationsService } from '@fp-core/services';
 import { IDateChange } from './month-selector/date-change.model';
 import { timer } from 'rxjs';
@@ -33,11 +33,13 @@ export class BudgetComponent implements OnInit {
 	public categories!: Signal<any>;
 	public defaultAccCurrency = computed(() => this.getDefaultCurrency());
 	public selectedToday = computed(() => this.isTodaySelected());
+	public defaultAcc = computed(() => this.accounts().find(account => account.isDefault) as IAccount);
 
 	// Date-related signals
 	public today = moment();
 	public selectedYear = signal(this.today.year());
 	public selectedMonthNumber = signal(this.today.month());
+	public selectedDate = computed(() => this.getSelectedDate());
 
 	// Lifecycle hooks
 	public ngOnInit(): void {
@@ -86,30 +88,34 @@ export class BudgetComponent implements OnInit {
 		return this.today.year() === this.selectedYear() && this.today.month() === this.selectedMonthNumber();
 	}
 
-	private getSelectedDate(): string {
+	private getSelectedDate(): moment.Moment {
+		return moment({ year: this.selectedYear(), month: this.selectedMonthNumber() });
+	}
+
+	private getSelectedDateString(): string {
 		return moment({ year: this.selectedYear(), month: this.selectedMonthNumber() }).endOf('month').toISOString().split('T')[0];
 	}
 
 	public loadOperations(): void {
-		const date = this.getSelectedDate();
+		const date = this.getSelectedDateString();
 		this.operations = this._operationsService.getOperationSignal(date);
 		this.incomeOperations = computed(() => this.filterOperationsByType(OperationType.Incomes));
 		this.expenseOperations = computed(() => this.filterOperationsByType(OperationType.Expenses));
 		this.incomeTotal = computed(() => this.calculateTotal(this.incomeOperations()));
 		this.expenseTotal = computed(() => this.calculateTotal(this.expenseOperations()));
 		this.categories = computed(() => this.calculateCategories());
-		this._accountsService.getBalance(date).subscribe(balance => this.balance.set(balance));
+		this._accountsService.getBalance(this.defaultAcc()?.id, date).subscribe(balance => this.balance.set(balance));
 	}
 
 	public refreshOperations(all = false): void {
-		const date = this.getSelectedDate();
+		const date = this.getSelectedDateString();
 		if (all) {
 			this._operationsService.refreshAllOperations();
 			this.loadOperations();
 		} else {
 			this._operationsService.refreshOperations(date);
 		}
-		this._accountsService.getBalance(date).subscribe(balance => this.balance.set(balance));
+		this._accountsService.getBalance(this.defaultAcc()?.id, date).subscribe(balance => this.balance.set(balance));
 		timer(500).subscribe(() => this.operationsLoading.set(false));
 	}
 
@@ -125,7 +131,7 @@ export class BudgetComponent implements OnInit {
 
 	public onAddOperation(): void {
 		const dialogRef = this._dialog.open(OperationModalDialogComponent, {
-			data: { month: this.selectedMonthNumber, year: this.selectedYear }
+			data: { month: this.selectedMonthNumber(), year: this.selectedYear() }
 		});
 		dialogRef.afterClosed().subscribe(result => {
 			if (result) {

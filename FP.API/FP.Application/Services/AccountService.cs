@@ -9,8 +9,9 @@ namespace FP.Application.Services
 {
     public interface IAccountService : IBaseService
     {
-        Task<AccountMonthBalanceSummaryDto> GetBalanceSummary(DateOnly targetDate);
-        Task ApplyOperation(Operation operation);
+        Task<AccountMonthBalanceSummaryDto> GetBalance(Guid accountId, DateOnly targetDate);
+		Task<List<Account>> GetAccounts();
+		Task ApplyOperation(Operation operation);
         Task RemoveOperation(Operation operation);
         Task ApplyOperations(List<Operation> operations);
         Task RemoveOperations(List<Operation> operations);
@@ -35,16 +36,20 @@ namespace FP.Application.Services
             _mapper = mapper;
         }
 
-        public async Task<AccountMonthBalanceSummaryDto> GetBalanceSummary(DateOnly targetDate)
+        public Task<List<Account>> GetAccounts() {
+			return _accRepo.GetAll().AsNoTracking().ToListAsync();
+		}
+
+
+		public async Task<AccountMonthBalanceSummaryDto> GetBalance(Guid accountId, DateOnly targetDate)
         {
             var today = DateOnly.FromDateTime(_dateService.GetUtcDate());
-            var defaultAccount = await GetDefault();
+            var account = await _accRepo.GetByIdAsync(accountId);
 
-            var currentMonthOperations = _opRepo.GetAll().AsNoTracking().Where(c => c.Date.Year == targetDate.Year && c.Date.Month == targetDate.Month).ToList();
-            var monthExpenseOperations = currentMonthOperations.Where(c => c.Type == OperationType.Expense);
-            var monthIncomeOperations = currentMonthOperations.Where(c => c.Type == OperationType.Income);
+			var currentMonthOperations = _opRepo.GetAll().AsNoTracking()
+                .Where(c => c.Type != OperationType.Transfer && (c.SourceAccountId == accountId || c.TargetAccountId == accountId) && c.Date.Year == targetDate.Year && c.Date.Month == targetDate.Month).ToList();
 
-            var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(targetDate);
+			var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(accountId, targetDate);
             var currentMonthScheduledOperations = scheduledOperations.Where(c => c.Date.Year == targetDate.Year && c.Date.Month == targetDate.Month);
             var currentMonthNotAppliedScheduledOperations = currentMonthScheduledOperations.Where(c => !currentMonthOperations.Any(f => c.ScheduledOperationId == f.ScheduledOperationId && c.Date == f.Date));
 
@@ -52,29 +57,28 @@ namespace FP.Application.Services
             var previousAppliedScheduledOperations = _opRepo.GetAll().AsNoTracking().Where(c => c.Date < targetDate && c.ScheduledOperationId != null && c.Applied).ToList();
             var previouslyNotAppliedScheduledOperations = previousScheduledOperations.Where(c => !previousAppliedScheduledOperations.Any(f => c.ScheduledOperationId == f.ScheduledOperationId && c.Date == f.Date));
 
-            var monthExpenseSum = monthExpenseOperations.Sum(c => c.Amount) + currentMonthNotAppliedScheduledOperations.Where(c => c.Type == OperationType.Expense).Sum(c => c.Amount);
-            var monthIncomeSum = monthIncomeOperations.Sum(c => c.Amount) + currentMonthNotAppliedScheduledOperations.Where(c => c.Type == OperationType.Income).Sum(c => c.Amount); ;
-
             var currentMonthOperationIds = currentMonthOperations.Select(v => v.Id);
-            var previousNotAppliedOperations = _opRepo.GetAll().AsNoTracking().Where(c => c.Date < targetDate && !c.Applied && !currentMonthOperationIds.Contains(c.Id)).ToList();
-            var startingBalance = defaultAccount.Balance;
+            var previousNotAppliedOperations = _opRepo.GetAll().AsNoTracking().Where(c => c.Date < targetDate && !c.Applied && !currentMonthOperationIds.Contains(c.Id) && (c.SourceAccountId == accountId || c.TargetAccountId == accountId)).ToList();
+            var startingBalance = account.Balance;
             foreach (var previousNotAppliedOperation in previousNotAppliedOperations.Concat(previouslyNotAppliedScheduledOperations))
             {
                 startingBalance = OperationCalcService.ApplyOperation(startingBalance, previousNotAppliedOperation);
             }
             var endMonthBalance = startingBalance;
-            foreach (var operation in currentMonthOperations.Where(c => !c.Applied).Concat(currentMonthNotAppliedScheduledOperations))
+            var currentMonthNotAppliedOperations = currentMonthOperations.Where(c => !c.Applied);
+			foreach (var operation in currentMonthNotAppliedOperations.Concat(currentMonthNotAppliedScheduledOperations))
             {
                 endMonthBalance = OperationCalcService.ApplyOperation(endMonthBalance, operation);
             }
 
-            return new AccountMonthBalanceSummaryDto
+            var currentMonthExpenses = currentMonthOperations.Where(c => c.Type == OperationType.Expense).Concat(currentMonthNotAppliedScheduledOperations.Where(s => s.Type == OperationType.Expense)).Sum(c => c.Amount);
+			var currentMonthIncomes = currentMonthOperations.Where(c => c.Type == OperationType.Income).Concat(currentMonthNotAppliedScheduledOperations.Where(s => s.Type == OperationType.Income)).Sum(c => c.Amount);
+
+			return new AccountMonthBalanceSummaryDto
             {
-                Balance = startingBalance,
-                Expenses = monthExpenseSum,
-                Incomes = monthIncomeSum,
-                MonthBalance = monthIncomeSum - monthExpenseSum,
-                EndMonthBalance = endMonthBalance,
+                StartMonthBalance = startingBalance,
+                Difference = currentMonthIncomes - currentMonthExpenses,
+				EndMonthBalance = endMonthBalance,
             };
         }
 
@@ -85,23 +89,56 @@ namespace FP.Application.Services
 
         public async Task ApplyOperations(List<Operation> operations)
         {
-            var defaultAccount = await GetDefault();
+            var accounts = await _accRepo.GetAll().ToListAsync();
             foreach (var operation in operations)
             {
-                defaultAccount.Balance = OperationCalcService.ApplyOperation(defaultAccount.Balance, operation);
-            }
-            _accRepo.Update(defaultAccount);
+                if(operation.Type == OperationType.Income)
+				{
+					var targetAccount = accounts.First(c => c.Id == operation.TargetAccountId);
+					targetAccount.Balance = OperationCalcService.ApplyOperation(targetAccount.Balance, operation);
+				}
+				if (operation.Type == OperationType.Expense) {
+					var sourceAccount = accounts.First(c => c.Id == operation.SourceAccountId);
+					sourceAccount.Balance = OperationCalcService.ApplyOperation(sourceAccount.Balance, operation);
+				}
+				if (operation.Type == OperationType.Transfer) {
+                    var sourceAccount = accounts.First(c => c.Id == operation.SourceAccountId);
+					var targetAccount = accounts.First(c => c.Id == operation.TargetAccountId);
+					operation.Type = OperationType.Expense;
+					sourceAccount.Balance = OperationCalcService.ApplyOperation(sourceAccount.Balance, operation);
+					operation.Type = OperationType.Income;
+					targetAccount.Balance = OperationCalcService.ApplyOperation(targetAccount.Balance, operation);
+					operation.Type = OperationType.Transfer;
+				}
+			}
+            _accRepo.Update(accounts);
             await _accRepo.SaveChangesAsync();
         }
 
         public async Task RemoveOperations(List<Operation> operations)
         {
-            var defaultAccount = await GetDefault();
-            foreach (var operation in operations)
+			var accounts = await _accRepo.GetAll().ToListAsync();
+			foreach (var operation in operations)
             {
-                defaultAccount.Balance = OperationCalcService.RemoveOperation(defaultAccount.Balance, operation);
+				if (operation.Type == OperationType.Income) {
+					var targetAccount = accounts.First(c => c.Id == operation.TargetAccountId);
+					targetAccount.Balance = OperationCalcService.RemoveOperation(targetAccount.Balance, operation);
+				}
+				if (operation.Type == OperationType.Expense) {
+					var sourceAccount = accounts.First(c => c.Id == operation.SourceAccountId);
+					sourceAccount.Balance = OperationCalcService.RemoveOperation(sourceAccount.Balance, operation);
+				}
+				if (operation.Type == OperationType.Transfer) {
+					var sourceAccount = accounts.First(c => c.Id == operation.SourceAccountId);
+					var targetAccount = accounts.First(c => c.Id == operation.TargetAccountId);
+					operation.Type = OperationType.Income;
+					sourceAccount.Balance = OperationCalcService.RemoveOperation(sourceAccount.Balance, operation);
+					operation.Type = OperationType.Expense;
+					targetAccount.Balance = OperationCalcService.RemoveOperation(targetAccount.Balance, operation);
+					operation.Type = OperationType.Transfer;
+				}
             }
-            _accRepo.Update(defaultAccount);
+            _accRepo.Update(accounts);
             await _accRepo.SaveChangesAsync();
         }
 

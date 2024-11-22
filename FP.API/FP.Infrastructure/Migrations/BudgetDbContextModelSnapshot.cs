@@ -286,6 +286,12 @@ namespace FP.Infrastructure.Migrations
                     b.Property<Guid?>("ScheduledOperationId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("SourceAccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TargetAccountId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -294,6 +300,10 @@ namespace FP.Infrastructure.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("ScheduledOperationId");
+
+                    b.HasIndex("SourceAccountId");
+
+                    b.HasIndex("TargetAccountId");
 
                     b.ToTable("Operations");
                 });
@@ -323,8 +333,14 @@ namespace FP.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("SourceAccountId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("DATE");
+
+                    b.Property<Guid?>("TargetAccountId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -332,6 +348,10 @@ namespace FP.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("SourceAccountId");
+
+                    b.HasIndex("TargetAccountId");
 
                     b.ToTable("ScheduledOperations");
                 });
@@ -348,9 +368,23 @@ namespace FP.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ScheduledOperationId");
 
+                    b.HasOne("FP.Domain.Account", "SourceAccount")
+                        .WithMany()
+                        .HasForeignKey("SourceAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("FP.Domain.Account", "TargetAccount")
+                        .WithMany()
+                        .HasForeignKey("TargetAccountId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Category");
 
                     b.Navigation("ScheduledOperation");
+
+                    b.Navigation("SourceAccount");
+
+                    b.Navigation("TargetAccount");
                 });
 
             modelBuilder.Entity("FP.Domain.ScheduledOperation", b =>
@@ -361,7 +395,19 @@ namespace FP.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FP.Domain.Account", "SourceAccount")
+                        .WithMany()
+                        .HasForeignKey("SourceAccountId");
+
+                    b.HasOne("FP.Domain.Account", "TargetAccount")
+                        .WithMany()
+                        .HasForeignKey("TargetAccountId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("SourceAccount");
+
+                    b.Navigation("TargetAccount");
                 });
 #pragma warning restore 612, 618
         }

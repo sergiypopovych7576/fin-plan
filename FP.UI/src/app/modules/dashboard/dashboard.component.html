@@ -1,28 +1,30 @@
-<div class="h-100 d-flex f-column" style="gap:8%">
-    <div class="w-100 d-flex" style="height: 46%; gap:4%">
-        <div style="width:48%">
+<div class="h-100 d-flex flex-wrap" style="gap:5%">
+        <div class="item">
             <fp-card>
-                <div header class="pl-1">
-                    <p>Expenses by month</p>
-                </div>
-                <div class="pl-2 mt-2" content>
-                    <fp-chart [config]="expensesConfig()">
-                    </fp-chart>
-                </div>
+                <p header>Expenses by month</p>
+                <fp-chart class="pt-3 pb-3" content [config]="expensesConfig()">
+                </fp-chart>
             </fp-card>
         </div>
-        <div style="width: 48%;">
+        <div class="item">
             <fp-card>
-                <div header class="pl-1">
-                    <p>Expenses by categories</p>
-                </div>
-                <div class="pl-2 mt-2" content>
-                    <fp-chart [config]="categoriesConfig()">
-                    </fp-chart>
-                </div>
+                <p header>Expenses by categories</p>
+                <fp-chart class="pt-3 pb-3" content [config]="expenseCategoriesConfig()">
+                </fp-chart>
             </fp-card>
         </div>
-    </div>
-    <fp-account-list style="height:46%">
-    </fp-account-list>
+        <div class="item">
+            <fp-card>
+                <p header>Incomes by month</p>
+                <fp-chart class="pt-3 pb-3" content [config]="incomesConfig()">
+                </fp-chart>
+            </fp-card>
+        </div>
+        <div class="item">
+            <fp-card>
+                <p header>Incomes by categories</p>
+                <fp-chart class="pt-3 pb-3" content [config]="incomesCategoriesConfig()">
+                </fp-chart>
+            </fp-card>
+        </div>
 </div>

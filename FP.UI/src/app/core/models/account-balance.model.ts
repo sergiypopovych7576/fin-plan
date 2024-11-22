@@ -1,7 +1,5 @@
 export interface IAccountBalance {
-    balance: number,
-    incomes: number,
-    expenses: number,
-    monthBalance: number,
+    startMonthBalance: number,
+    difference: number,
     endMonthBalance: number,
 }

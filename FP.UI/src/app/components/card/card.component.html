@@ -1,8 +1,5 @@
-<div class="item w-100 h-100 p-2 border bg-color-white">
+<div class="d-flex f-column justify-between w-100 h-100 p-2 border bg-color-white">
     <ng-content select="[header]"></ng-content>
-    <div class="content h-100">
-        <ng-content select="[content]"></ng-content>
-    </div>
-    <div class="shape"></div>
+    <ng-content select="[content]"></ng-content>
     <ng-content select="[footer]"></ng-content>
 </div>

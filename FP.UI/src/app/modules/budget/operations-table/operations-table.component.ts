@@ -13,10 +13,11 @@ export class OperationsTableComponent {
 
 	public displayedColumns: any[] = [
 		{ width: 5, title: '' }, 
-		{ width: 27, title: 'Name' }, 
-		{ width: 27, title: 'Category' }, 
-		{ width: 20, title: 'Amount' },
-		{ width: 15, title: 'Date' }, 
+		{ width: 20, title: 'Name' },
+		{ width: 20, title: 'Account' }, 
+		{ width: 19, title: 'Category' }, 
+		{ width: 18, title: 'Amount' },
+		{ width: 13, title: 'Date' }, 
 		{ width: 5, title: '' }
 	];
 	public total = 0;

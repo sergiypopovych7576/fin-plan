@@ -17,8 +17,8 @@ export class AccountsService extends BaseService {
 		this._httpClient.get<IAccount[]>(this._url).subscribe(c => this.accounts.set(c));
 	}
 
-	public getBalance(date: unknown): Observable<IAccountBalance> {
-		return this._httpClient.get<IAccountBalance>(`${this._url}/balance?targetDate=${date}`);
+	public getBalance(accountId: string, date: unknown): Observable<IAccountBalance> {
+		return this._httpClient.get<IAccountBalance>(`${this._url}/${accountId}/balance?targetDate=${date}`);
 	}
 
 	public update(account: IAccount): Observable<void> {

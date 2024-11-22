@@ -1,5 +1,5 @@
 <div class="list d-flex flex-wrap w-100" style="gap: 2.66%">
-    <div class="account mt-3" style="width: 23%;" *ngFor="let account of accounts()">
+    <div class="account mb-3" style="width: 23%;" *ngFor="let account of accounts()">
         <fp-account-widget [account]="account" (onEdit)="onEditAccount(account)" (onDelete)="onDeleteAccount(account)">
         </fp-account-widget>
     </div>

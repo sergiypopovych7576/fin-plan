@@ -4,6 +4,7 @@ using FP.Application.Interfaces;
 using FP.Domain;
 using FP.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FP.Application.Services
 {
@@ -79,7 +80,12 @@ namespace FP.Application.Services
             {
                 appliedScheduleOperations = appliedScheduleOperations.Where(c => c.Date >= firstNotAppliedDate.Date);
             }
-            var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(now);
+
+			var accounts = await _accService.GetAccounts();
+			var scheduledOperations = new List<Operation>();
+			foreach (var account in accounts) {
+				scheduledOperations.AddRange(await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(account.Id, now));
+			}
 
             var filteredScheduledOperations = scheduledOperations
                 .Where(scheduled => !appliedScheduleOperations.Any(operation =>
@@ -105,7 +111,12 @@ namespace FP.Application.Services
                     .OrderBy(c => c.Date))
                 .ToListAsync(cancellationToken);
 
-            var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsForMonth(date);
+            var accounts = await _accService.GetAccounts();
+            var scheduledOperations = new List<Operation>();
+
+			foreach(var account in accounts) {
+				scheduledOperations.AddRange(await _scheduledOperationsService.GetPlannedScheduledOperationsForMonth(account.Id, date));
+			}
 
             var filteredScheduledOperations = scheduledOperations
                 .Where(scheduled => !operations.Any(operation =>
@@ -129,7 +140,7 @@ namespace FP.Application.Services
             var operations = await _repo.GetAll()
                 .AsNoTracking()
                 .Include(o => o.Category)
-                .Where(o => o.Date >= startDate && o.Date <= endDate)
+                .Where(o => o.Date >= startDate && o.Date <= endDate && o.Type != OperationType.Transfer)
                 .ToListAsync(cancellationToken);
 
             // Fetch scheduled operations

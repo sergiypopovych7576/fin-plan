@@ -1,11 +1,2 @@
-<div class="p-5 text-center" *ngIf="!operations().length; else chart">
-    No Data
-</div>
-<ng-template #chart>
-    <div>
-        <fp-chart class="w-100 m-auto" [config]="chartData()">
-        </fp-chart>
-        <!-- <fp-categories-progress-list [categories]="categoreis()">
-        </fp-categories-progress-list> -->
-    </div>
-</ng-template>
+<fp-chart [config]="chartData()">
+</fp-chart>

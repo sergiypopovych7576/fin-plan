@@ -20,6 +20,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 			hidden: true,
 		},
 		{
+			icon: 'credit_card',
+			path: '/accounts',
+			label: 'Accounts',
+		},
+		{
 			icon: 'request_quote',
 			path: '/budget',
 			label: 'Budget',

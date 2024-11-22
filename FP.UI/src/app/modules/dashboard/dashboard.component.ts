@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { IMonthSummary, OperationType } from '@fp-core/models';
 import { OperationsService } from '@fp-core/services';
 import moment from 'moment';
@@ -11,65 +11,10 @@ import moment from 'moment';
 export class DashboardComponent implements OnInit {
 	private readonly _operationsService = inject(OperationsService);
 
-	expensesData = {
-		labels: [],
-		datasets: [
-			{
-				label: 'Spent',
-				data: [],
-				borderColor: 'rgb(230, 0, 0)',
-				backgroundColor: 'rgb(230, 0, 0)',
-				pointStyle: 'circle',
-				pointRadius: 5,
-				pointHoverRadius: 8,
-			},
-		],
-	} as any;
-
-	public expensesConfig = signal({
-		type: 'line',
-		data: this.expensesData,
-		options: {
-			responsive: true,
-			plugins: {
-				legend: {
-					display: false,
-					position: 'right'
-				}
-			}
-		},
-	});
-
-	public categoriesConfig = signal({
-		type: 'line',
-		data: {
-			labels: [],
-			datasets: []
-		},
-		options: {
-			responsive: true,
-			plugins: {
-				legend: {
-					display: false,
-					position: 'top'
-				}
-			},
-			scales: {
-				x: {
-					title: {
-						display: true,
-						text: 'Month'
-					}
-				},
-				y: {
-					title: {
-						display: true,
-						text: 'Expenses'
-					}
-				}
-			}
-		}
-	});
+	public expensesConfig: WritableSignal<any> = signal(null);
+	public expenseCategoriesConfig: WritableSignal<any> = signal(null);
+	public incomesConfig: WritableSignal<any> = signal(null);
+	public incomesCategoriesConfig: WritableSignal<any> = signal(null);
 	
 	public ngOnInit(): void {
 		this.updateChartData();
@@ -81,22 +26,75 @@ export class DashboardComponent implements OnInit {
 	
 		this._operationsService.getSummaryByRange(startDate, endDate).subscribe((summaries: IMonthSummary[]) => {
 			const labels = summaries.map(s => `${s.month}/${s.year}`) as any;
-			this.expensesData.labels = labels;
-	
-			this.expensesData.datasets[0].data = summaries.map(s => s.totalExpenses);
-	
+			const expenseTemplate = {
+				...{
+					labels: [],
+					datasets: [
+						{
+							label: 'Expenses',
+							data: [],
+							borderColor: 'rgb(230, 0, 0)',
+							backgroundColor: 'rgb(230, 0, 0)',
+							pointStyle: 'circle',
+							pointRadius: 5,
+							pointHoverRadius: 8,
+						},
+					],
+				}
+			} as any;
+			expenseTemplate.labels = labels;
+			expenseTemplate.datasets[0].data = summaries.map(s => s.totalExpenses);
+
+			const base = {
+				type: 'line',
+				options: {
+					responsive: true,
+					plugins: {
+						legend: {
+							display: false,
+							position: 'right'
+						}
+					}
+				},
+			};
 			this.expensesConfig.set({
-				...this.expensesConfig(),
-				data: this.expensesData,
+				...base,
+				data: expenseTemplate,
 			});
+
+			const incomeTemplate = {
+				...{
+					labels: [],
+					datasets: [
+						{
+							label: 'Incomes',
+							data: [],
+							borderColor: 'rgb(0, 169, 0)',
+							backgroundColor: 'rgb(0, 169, 0)',
+							pointStyle: 'circle',
+							pointRadius: 5,
+							pointHoverRadius: 8,
+						},
+					],
+				}
+			} as any;
+			incomeTemplate.labels = labels;
+			incomeTemplate.datasets[0].data = summaries.map(s => s.totalIncomes);
+
+			this.incomesConfig.set({
+				...base,
+				data: incomeTemplate,
+			});
+
 	
-			const categoryDataMap: { [key: string]: { data: number[], color: string } } = {};
-	
+			const expenseCategoryDataMap: { [key: string]: { data: number[], color: string } } = {};
+			const incomeCategoryDataMap: { [key: string]: { data: number[], color: string } } = {};
+			
 			summaries.forEach(summary => {
 				summary.categories.forEach(category => {
 					if (category.type === OperationType.Expenses) {
-						if (!categoryDataMap[category.name]) {
-							categoryDataMap[category.name] = {
+						if (!expenseCategoryDataMap[category.name]) {
+							expenseCategoryDataMap[category.name] = {
 								data: Array(labels.length).fill(0),
 								color: category.color 
 							};
@@ -104,26 +102,84 @@ export class DashboardComponent implements OnInit {
 						const monthIndex = summaries.findIndex(
 							s => s.month === summary.month && s.year === summary.year
 						);
-						categoryDataMap[category.name].data[monthIndex] = category.amount;
+						expenseCategoryDataMap[category.name].data[monthIndex] = category.amount;
+					}
+				});
+				summary.categories.forEach(category => {
+					if (category.type === OperationType.Incomes) {
+						if (!incomeCategoryDataMap[category.name]) {
+							incomeCategoryDataMap[category.name] = {
+								data: Array(labels.length).fill(0),
+								color: category.color 
+							};
+						}
+						const monthIndex = summaries.findIndex(
+							s => s.month === summary.month && s.year === summary.year
+						);
+						incomeCategoryDataMap[category.name].data[monthIndex] = category.amount;
 					}
 				});
 			});
 	
 
-			const datasets = Object.keys(categoryDataMap).map(categoryName => ({
+			const expensesDatasets = Object.keys(expenseCategoryDataMap).map(categoryName => ({
 				label: categoryName,
-				data: categoryDataMap[categoryName].data,
-				borderColor: categoryDataMap[categoryName].color,
-				backgroundColor: categoryDataMap[categoryName].color,
+				data: expenseCategoryDataMap[categoryName].data,
+				borderColor: expenseCategoryDataMap[categoryName].color,
+				backgroundColor: expenseCategoryDataMap[categoryName].color,
 				pointRadius: 5,
 				pointHoverRadius: 8,
 			})) as any;
-	
-			this.categoriesConfig.set({
-				...this.categoriesConfig(),
+			const incomesDatasets = Object.keys(incomeCategoryDataMap).map(categoryName => ({
+				label: categoryName,
+				data: incomeCategoryDataMap[categoryName].data,
+				borderColor: incomeCategoryDataMap[categoryName].color,
+				backgroundColor: incomeCategoryDataMap[categoryName].color,
+				pointRadius: 5,
+				pointHoverRadius: 8,
+			})) as any;
+			const baseCat = {
+				type: 'line',
+				data: {
+					labels: [],
+					datasets: []
+				},
+				options: {
+					responsive: true,
+					plugins: {
+						legend: {
+							display: false,
+							position: 'right'
+						}
+					},
+					scales: {
+						x: {
+							title: {
+								display: false,
+								text: 'Month'
+							}
+						},
+						y: {
+							title: {
+								display: false,
+								text: 'Expenses'
+							}
+						}
+					}
+				}
+			};
+			this.expenseCategoriesConfig.set({
+				...baseCat,
 				data: {
 					labels,
-					datasets
+					datasets: expensesDatasets
+				}
+			});
+			this.incomesCategoriesConfig.set({
+				...baseCat,
+				data: {
+					labels,
+					datasets: incomesDatasets
 				}
 			});
 		});

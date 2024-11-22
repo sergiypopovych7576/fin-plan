@@ -20,10 +20,10 @@ namespace FP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("balance")]
-        public Task<AccountMonthBalanceSummaryDto> Get([FromQuery] DateOnly targetDate)
+        [Route("{accountId}/balance")]
+        public Task<AccountMonthBalanceSummaryDto> Get(Guid accountId, [FromQuery] DateOnly targetDate)
         {
-            return _service.GetBalanceSummary(targetDate);
+            return _service.GetBalance(accountId, targetDate);
         }
     }
 }

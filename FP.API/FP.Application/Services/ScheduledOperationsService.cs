@@ -1,16 +1,15 @@
-﻿using FP.Application.DTOs;
-using FP.Application.Interfaces;
+﻿using FP.Application.Interfaces;
 using FP.Domain;
 using FP.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace FP.Application.Services
 {
-    public interface IScheduledOperationsService : IBaseService
+	public interface IScheduledOperationsService : IBaseService
     {
         Task Create(ScheduledOperation operation);
-        Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(DateOnly targeDate);
-        Task<List<Operation>> GetPlannedScheduledOperationsForMonth(DateOnly targeDate);
+        Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targeDate);
+        Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targeDate);
         Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly targeDate);
     }
 
@@ -29,9 +28,9 @@ namespace FP.Application.Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task<List<Operation>> GetPlannedScheduledOperationsForMonth(DateOnly targeDate)
+        public async Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targeDate)
         {
-            var allOperations = await GetPlannedScheduledOperationsUpToMonth(targeDate);
+            var allOperations = await GetPlannedScheduledOperationsUpToMonth(accountId, targeDate);
             var monthOperations = allOperations.Where(c => c.Date.Month == targeDate.Month && c.Date.Year == targeDate.Year)
                 .ToList();
             //monthOperations.ForEach(c =>  c.Date = new DateOnly(targeDate.Year, targeDate.Month, schedule.StartDate.Day));
@@ -39,12 +38,14 @@ namespace FP.Application.Services
             return monthOperations;
         }
 
-        public async Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(DateOnly targeDate)
+        public async Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targeDate)
         {
             var scheduledOperations = await _repository.GetAll()
                 .Where(s => s.StartDate <= targeDate
                     && (s.EndDate == null || s.EndDate >= targeDate)
-                    && s.Interval != 0)
+                    && s.Interval != 0
+                    && (s.SourceAccountId == accountId
+                    || s.TargetAccountId == accountId))
                 .Include(s => s.Category)
                 .ToListAsync();
 
@@ -67,6 +68,8 @@ namespace FP.Application.Services
                         Category = schedule.Category,
                         CategoryId = schedule.CategoryId,
                         ScheduledOperationId = schedule.Id,
+                        SourceAccountId = schedule.SourceAccountId,
+                        TargetAccountId = schedule.TargetAccountId,
                         Applied = false
                     });
 

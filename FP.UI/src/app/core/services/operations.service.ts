@@ -40,7 +40,7 @@ export class OperationsService extends BaseService {
 
 	public getSummaryByRange(startDate: string, endDate: string): Observable<IMonthSummary[]> {
 		return this._httpClient.get<IMonthSummary[]>(
-			`operations/month/summary?startDate=${startDate}&endDate=${endDate}`,
+			`operations/summary?startDate=${startDate}&endDate=${endDate}`,
 		);
 	}
 

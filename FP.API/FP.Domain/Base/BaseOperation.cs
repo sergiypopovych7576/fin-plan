@@ -9,5 +9,18 @@ namespace FP.Domain.Base
         public OperationType Type { get; set; }
         public Category Category { get; set; }
         public Guid CategoryId { get; set; }
-    }
+        public Account? SourceAccount { get; set; }
+        public Guid? SourceAccountId { get; set; }
+		public Account? TargetAccount { get; set; }
+		public Guid? TargetAccountId { get; set; }
+	}
 }
+// Income
+// To TargetAccount
+
+// Transfer
+// From SourceAccount
+// To TargetAccount
+
+// Expense
+// From SourceAccount
