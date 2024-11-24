@@ -47,11 +47,8 @@ export class OperationModalDialogComponent implements OnInit {
 			}
 		});
 		let date = moment().year(this.data.year).month(this.data.month).startOf('month');
-		const today = moment();
-		if(date < today) {
-			date = today;
-		}
 		this.operationForm.controls.date.setValue(date);
+		this.operationForm.controls.startDate.setValue(date);
 		const defaultAcc = this.accounts().find(a => a.isDefault);
 		this.operationForm.controls.sourceAccountId.setValue(defaultAcc?.id);
 	}

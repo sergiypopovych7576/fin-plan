@@ -32,7 +32,7 @@ const COMPONENTS = [
 	CategoriesProgressListComponent,
 	OperationsWidgetComponent,
 	ConfirmationModalDialogComponent,
-	ToOpCurrencyPipe
+	ToOpCurrencyPipe,
 ];
 
 @NgModule({

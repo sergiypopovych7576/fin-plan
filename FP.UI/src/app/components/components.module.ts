@@ -5,6 +5,8 @@ import { ChartComponent } from "./chart";
 import { CardComponent } from "./card";
 import { IndicatorComponent } from "./indicator";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { GridColumnTemplateDirective, GridComponent } from "./grid";
+import { CommonModule } from "@angular/common";
 
 const MATERIAL_MODULES = [
     MatProgressBarModule,
@@ -14,14 +16,20 @@ const COMPONENTS = [
     ProgressBar,
     ChartComponent,
     CardComponent,
-    IndicatorComponent
+    IndicatorComponent,
+    GridComponent
 ];
 
+const DIRECTIVES = [
+    GridColumnTemplateDirective
+]
+
 @NgModule({
-    declarations: COMPONENTS,
+    declarations: [COMPONENTS, DIRECTIVES],
     imports: [
-        MATERIAL_MODULES
+        MATERIAL_MODULES,
+        CommonModule,
     ],
-    exports: COMPONENTS,
+    exports: [COMPONENTS, DIRECTIVES],
 })
 export class ComponentsModule { }

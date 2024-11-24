@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FP.Application.Services
 {
-	public interface IScheduledOperationsService : IBaseService
+    public interface IScheduledOperationsService : IBaseService
     {
         Task Create(ScheduledOperation operation);
-        Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targeDate);
-        Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targeDate);
-        Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly targeDate);
+        Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targetDate);
+        Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targetDate);
+        Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly endDate);
     }
 
     public class ScheduledOperationsService : IScheduledOperationsService
@@ -28,80 +28,57 @@ namespace FP.Application.Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targeDate)
+        public async Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targetDate)
         {
-            var allOperations = await GetPlannedScheduledOperationsUpToMonth(accountId, targeDate);
-            var monthOperations = allOperations.Where(c => c.Date.Month == targeDate.Month && c.Date.Year == targeDate.Year)
-                .ToList();
-            //monthOperations.ForEach(c =>  c.Date = new DateOnly(targeDate.Year, targeDate.Month, schedule.StartDate.Day));
-            // TODO Match with schedule
-            return monthOperations;
+            var startOfMonth = new DateOnly(targetDate.Year, targetDate.Month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+            return await GetPlannedScheduledOperationsByDateRangeAndAccount(accountId, startOfMonth, endOfMonth);
         }
 
-        public async Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targeDate)
+        public async Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targetDate)
         {
-            var scheduledOperations = await _repository.GetAll()
-                .Where(s => s.StartDate <= targeDate
-                    && (s.EndDate == null || s.EndDate >= targeDate)
-                    && s.Interval != 0
-                    && (s.SourceAccountId == accountId
-                    || s.TargetAccountId == accountId))
-                .Include(s => s.Category)
-                .ToListAsync();
+            var startOfYear = new DateOnly(targetDate.Year, 1, 1);
+            return await GetPlannedScheduledOperationsByDateRangeAndAccount(accountId, startOfYear, targetDate);
+        }
 
-            var result = new List<Operation>();
-            foreach (var schedule in scheduledOperations)
+        private IQueryable<ScheduledOperation> GetQuery(DateOnly startDate, DateOnly endDate, Guid? accountId = null)
+        {
+            var query = _repository.GetAll()
+                .Where(s => s.StartDate <= endDate
+                    && (s.EndDate == null || s.EndDate >= startDate)
+                    && s.Interval > 0);
+            if (accountId.HasValue)
             {
-                var current = schedule.StartDate > targeDate
-                    ? schedule.StartDate
-                    : schedule.StartDate;
-
-                while (current <= targeDate && (schedule.EndDate == null || current <= schedule.EndDate))
-                {
-                    result.Add(new Operation
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = schedule.Name,
-                        Amount = schedule.Amount,
-                        Date = current,
-                        Type = schedule.Type,
-                        Category = schedule.Category,
-                        CategoryId = schedule.CategoryId,
-                        ScheduledOperationId = schedule.Id,
-                        SourceAccountId = schedule.SourceAccountId,
-                        TargetAccountId = schedule.TargetAccountId,
-                        Applied = false
-                    });
-
-                    current = schedule.Frequency switch
-                    {
-                        Frequency.Daily => current.AddDays(schedule.Interval),
-                        Frequency.Weekly => current.AddDays(7 * schedule.Interval),
-                        Frequency.Monthly => current.AddMonths(schedule.Interval),
-                        Frequency.Yearly => current.AddYears(schedule.Interval),
-                    };
-                }
+                query = query.Where(s => s.SourceAccountId == accountId || s.TargetAccountId == accountId);
             }
-
-            return result;
+            return query.Include(s => s.Category)
+                .Include(s => s.SourceAccount)
+                .Include(s => s.TargetAccount);
         }
 
         public async Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly endDate)
         {
-            // Fetch scheduled operations that overlap with the date range
-            var scheduledOperations = await _repository.GetAll()
-                .Where(s => s.StartDate <= endDate && (s.EndDate == null || s.EndDate >= startDate) && s.Interval > 0)
-                .Include(s => s.Category)
+            var scheduledOperations = await GetQuery(startDate, endDate)
+                .ToListAsync();
+            return GenerateOperationsWithinRange(scheduledOperations, startDate, endDate);
+        }
+
+        private async Task<List<Operation>> GetPlannedScheduledOperationsByDateRangeAndAccount(Guid accountId, DateOnly startDate, DateOnly endDate)
+        {
+            var scheduledOperations = await GetQuery(startDate, endDate, accountId)
                 .ToListAsync();
 
+            return GenerateOperationsWithinRange(scheduledOperations, startDate, endDate);
+        }
+
+        private List<Operation> GenerateOperationsWithinRange(List<ScheduledOperation> scheduledOperations, DateOnly startDate, DateOnly endDate)
+        {
             var result = new List<Operation>();
 
             foreach (var schedule in scheduledOperations)
             {
-                // Determine the first applicable date within the range
-                var current = schedule.StartDate > startDate ? schedule.StartDate : startDate;
+                var current = GetNextOccurrence(schedule.StartDate, startDate, schedule.Frequency, schedule.Interval);
 
-                // Generate operations within the range
                 while (current <= endDate && (schedule.EndDate == null || current <= schedule.EndDate))
                 {
                     result.Add(new Operation
@@ -114,10 +91,13 @@ namespace FP.Application.Services
                         Category = schedule.Category,
                         CategoryId = schedule.CategoryId,
                         ScheduledOperationId = schedule.Id,
+                        TargetAccount = schedule.TargetAccount,
+                        SourceAccount = schedule.SourceAccount,
+                        SourceAccountId = schedule.SourceAccountId,
+                        TargetAccountId = schedule.TargetAccountId,
                         Applied = false
                     });
 
-                    // Increment the current date based on the schedule frequency and interval
                     current = schedule.Frequency switch
                     {
                         Frequency.Daily => current.AddDays(schedule.Interval),
@@ -132,5 +112,23 @@ namespace FP.Application.Services
             return result;
         }
 
+        private DateOnly GetNextOccurrence(DateOnly startDate, DateOnly fromDate, Frequency frequency, int interval)
+        {
+            var current = startDate;
+
+            while (current < fromDate)
+            {
+                current = frequency switch
+                {
+                    Frequency.Daily => current.AddDays(interval),
+                    Frequency.Weekly => current.AddDays(7 * interval),
+                    Frequency.Monthly => current.AddMonths(interval),
+                    Frequency.Yearly => current.AddYears(interval),
+                    _ => throw new InvalidOperationException("Invalid frequency")
+                };
+            }
+
+            return current;
+        }
     }
 }

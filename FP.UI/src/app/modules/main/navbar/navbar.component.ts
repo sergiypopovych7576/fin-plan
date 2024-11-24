@@ -25,6 +25,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 			label: 'Accounts',
 		},
 		{
+			icon: 'category',
+			path: '/categories',
+			label: 'Categories',
+		},
+		{
 			icon: 'request_quote',
 			path: '/budget',
 			label: 'Budget',

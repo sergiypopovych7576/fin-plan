@@ -44,12 +44,13 @@ namespace FP.Api.Controllers
             if (results == null)
             {
                 var query = _repo.GetAll();
-                if(_orderExpression != null)
+                if (_orderExpression != null)
                 {
-                    if(_thenOrderExpression == null)
+                    if (_thenOrderExpression == null)
                     {
                         query = query.OrderBy(_orderExpression);
-                    } else
+                    }
+                    else
                     {
                         query = query.OrderBy(_orderExpression).ThenBy(_thenOrderExpression);
                     }

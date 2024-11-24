@@ -23,7 +23,7 @@ namespace FP.Api.Controllers
         [HttpPost]
         [Route("sync")]
         public async Task Sync()
-        { 
+        {
             await _service.Sync();
             await _cache.Reset(_cacheKey);
             await _cache.Reset("Accounts");
@@ -46,17 +46,17 @@ namespace FP.Api.Controllers
         [HttpPost]
         public override async Task Post(OperationDto operation)
         {
-			await _cache.Reset(_cacheKey);
-			await _cache.Reset("Accounts");
-			await _service.Create(operation);
+            await _cache.Reset(_cacheKey);
+            await _cache.Reset("Accounts");
+            await _service.Create(operation);
         }
 
         [HttpDelete("{id}")]
         public override async Task Delete(Guid id)
         {
-			await _cache.Reset(_cacheKey);
-			await _cache.Reset("Accounts");
-			await _service.Delete(id);
+            await _cache.Reset(_cacheKey);
+            await _cache.Reset("Accounts");
+            await _service.Delete(id);
         }
     }
 }

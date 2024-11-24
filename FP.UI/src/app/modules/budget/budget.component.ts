@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationModalDialogComponent } from './operation-modal';
 import { IAccount, IAccountBalance, ICategory, IOperation, OperationType } from '@fp-core/models';
@@ -13,6 +13,7 @@ import moment from 'moment';
 	styleUrls: ['./budget.component.scss'],
 })
 export class BudgetComponent implements OnInit {
+	private readonly _cdkRef = inject(ChangeDetectorRef);
 	// Dependencies
 	private readonly _dialog = inject(MatDialog);
 	private readonly _operationsService = inject(OperationsService);
@@ -104,7 +105,7 @@ export class BudgetComponent implements OnInit {
 		this.incomeTotal = computed(() => this.calculateTotal(this.incomeOperations()));
 		this.expenseTotal = computed(() => this.calculateTotal(this.expenseOperations()));
 		this.categories = computed(() => this.calculateCategories());
-		this._accountsService.getBalance(this.defaultAcc()?.id, date).subscribe(balance => this.balance.set(balance));
+		this._cdkRef.detectChanges();
 	}
 
 	public refreshOperations(all = false): void {
@@ -115,7 +116,6 @@ export class BudgetComponent implements OnInit {
 		} else {
 			this._operationsService.refreshOperations(date);
 		}
-		this._accountsService.getBalance(this.defaultAcc()?.id, date).subscribe(balance => this.balance.set(balance));
 		timer(500).subscribe(() => this.operationsLoading.set(false));
 	}
 

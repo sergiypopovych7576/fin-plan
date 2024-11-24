@@ -11,7 +11,7 @@ namespace FP.Api.Controllers
     public class CategoriesController : BaseCRUDController<Category, CategoryDto, CategoryValidator>
     {
         public CategoriesController(IRepository<Category> repository, IMapper mapper, ICacheService cache
-           ) : base(repository, mapper, cache, "Categories", c => c.Name)
+           ) : base(repository, mapper, cache, "Categories", c => c.Type, c => c.Name)
         {
         }
     }

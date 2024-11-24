@@ -59,10 +59,10 @@ namespace FP.Application.Tests
                 Balance = 900,
                 IsDefault = true
             };
-			_accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
+            _accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
 
-			// Mock operations
-			var operations = new List<Operation>
+            // Mock operations
+            var operations = new List<Operation>
             {
                 new Operation
                 {
@@ -81,8 +81,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 1, 17),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = false
+                    TargetAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -91,8 +91,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 1, 2),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true
+                    SourceAccountId = defaultAccountId,
+                    Applied = true
                 },
                 new Operation
                 {
@@ -101,8 +101,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 1, 17),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false
+                    SourceAccountId = defaultAccountId,
+                    Applied = false
                 },
             };
             _operationRepoMock.Setup(r => r.GetAll()).Returns(operations.AsQueryable().BuildMock());
@@ -144,11 +144,9 @@ namespace FP.Application.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(900, result.StartMonthBalance); // Starting balance
-            //Assert.AreEqual(2500, result.Incomes); // Monthly incomes
-            //Assert.AreEqual(400, result.Expenses); // Monthly expenses (Groceries + Rent)
-            Assert.AreEqual(2100, result.Difference); // Month balance (Incomes - Expenses)
-            Assert.AreEqual(2100, result.EndMonthBalance); // End month balance
+            Assert.AreEqual(900, result.StartMonthBalance);
+            Assert.AreEqual(2100, result.Difference);
+            Assert.AreEqual(2100, result.EndMonthBalance);
         }
 
         [TestMethod]
@@ -158,10 +156,10 @@ namespace FP.Application.Tests
             _dateServiceMock.Setup(c => c.GetUtcDate()).Returns(new DateTime(date, TimeOnly.MinValue));
             // Arrange
             var targetDate = new DateOnly(2020, 2, 29);
-			var defaultAccountId = Guid.NewGuid();
+            var defaultAccountId = Guid.NewGuid();
 
-			// Mock default account
-			var defaultAccount = new Account
+            // Mock default account
+            var defaultAccount = new Account
             {
                 Id = defaultAccountId,
                 Balance = 900,
@@ -179,8 +177,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 1, 1),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = true
+                    TargetAccountId = defaultAccountId,
+                    Applied = true
                 },
                 new Operation
                 {
@@ -189,8 +187,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 1, 17),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = false
+                    TargetAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -199,8 +197,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 2, 17),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = false
+                    TargetAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -209,8 +207,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 1, 2),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true
+                    SourceAccountId = defaultAccountId,
+                    Applied = true
                 },
                 new Operation
                 {
@@ -219,8 +217,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 1, 17),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false
+                    SourceAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -229,8 +227,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 2, 17),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false
+                    SourceAccountId = defaultAccountId,
+                    Applied = false
                 },
             };
             _operationRepoMock.Setup(r => r.GetAll()).Returns(operations.AsQueryable().BuildMock());
@@ -240,8 +238,8 @@ namespace FP.Application.Tests
                     Amount = 500,
                     Name = "Investment",
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Interval = 1,
+                    TargetAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2020, 1, 17)
                 },
@@ -249,8 +247,8 @@ namespace FP.Application.Tests
                     Amount = 200,
                     Name = "Rent",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2020, 1, 18)
                 }
@@ -271,11 +269,9 @@ namespace FP.Application.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(2100, result.StartMonthBalance); // Starting balance
-            //Assert.AreEqual(1500, result.Incomes); // Monthly incomes
-            //Assert.AreEqual(300, result.Expenses); // Monthly expenses (Groceries + Rent)
-            Assert.AreEqual(1200, result.Difference); // Month balance (Incomes - Expenses)
-            Assert.AreEqual(3300, result.EndMonthBalance); // End month balance
+            Assert.AreEqual(2100, result.StartMonthBalance);
+            Assert.AreEqual(1200, result.Difference);
+            Assert.AreEqual(3300, result.EndMonthBalance);
         }
 
         [TestMethod]
@@ -285,18 +281,18 @@ namespace FP.Application.Tests
             _dateServiceMock.Setup(c => c.GetUtcDate()).Returns(new DateTime(date, TimeOnly.MinValue));
             // Arrange
             var targetDate = new DateOnly(2020, 3, 29);
-			var defaultAccountId = Guid.NewGuid();
-			// Mock default account
-			var defaultAccount = new Account
+            var defaultAccountId = Guid.NewGuid();
+            // Mock default account
+            var defaultAccount = new Account
             {
                 Id = defaultAccountId,
                 Balance = 900,
                 IsDefault = true
             };
-			_accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
+            _accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
 
-			// Mock operations
-			var operations = new List<Operation>
+            // Mock operations
+            var operations = new List<Operation>
             {
                 new Operation
                 {
@@ -305,8 +301,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 1, 1),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = true
+                    TargetAccountId = defaultAccountId,
+                    Applied = true
                 },
                 new Operation
                 {
@@ -315,8 +311,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 1, 17),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = false
+                    TargetAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -325,8 +321,8 @@ namespace FP.Application.Tests
                     Amount = 1000,
                     Date = new DateOnly(2020, 2, 17),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = false
+                    TargetAccountId = defaultAccountId,
+                    Applied = false
                 },
                   new Operation
                 {
@@ -335,8 +331,8 @@ namespace FP.Application.Tests
                     Amount = 2000,
                     Date = new DateOnly(2020, 3, 17),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = false
+                    TargetAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -345,8 +341,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 1, 2),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true
+                    SourceAccountId = defaultAccountId,
+                    Applied = true
                 },
                 new Operation
                 {
@@ -355,8 +351,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 1, 17),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false
+                    SourceAccountId = defaultAccountId,
+                    Applied = false
                 },
                 new Operation
                 {
@@ -365,8 +361,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 2, 17),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false
+                    SourceAccountId = defaultAccountId,
+                    Applied = false
                 },
                  new Operation
                 {
@@ -375,8 +371,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2020, 3, 17),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false
+                    SourceAccountId = defaultAccountId,
+                    Applied = false
                 },
             };
             _operationRepoMock.Setup(r => r.GetAll()).Returns(operations.AsQueryable().BuildMock());
@@ -386,8 +382,8 @@ namespace FP.Application.Tests
                     Amount = 500,
                     Name = "Investment",
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Interval = 1,
+                    TargetAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2020, 1, 17)
                 },
@@ -395,8 +391,8 @@ namespace FP.Application.Tests
                     Amount = 200,
                     Name = "Rent",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2020, 1, 18)
                 }
@@ -417,11 +413,9 @@ namespace FP.Application.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(3300, result.StartMonthBalance); // Starting balance
-            //Assert.AreEqual(2500, result.Incomes); // Monthly incomes
-            //Assert.AreEqual(300, result.Expenses); // Monthly expenses (Groceries + Rent)
-            Assert.AreEqual(2200, result.Difference); // Month balance (Incomes - Expenses)
-            Assert.AreEqual(5500, result.EndMonthBalance); // End month balance
+            Assert.AreEqual(3300, result.StartMonthBalance);
+            Assert.AreEqual(2200, result.Difference);
+            Assert.AreEqual(5500, result.EndMonthBalance);
         }
 
         [TestMethod]
@@ -431,18 +425,18 @@ namespace FP.Application.Tests
             _dateServiceMock.Setup(c => c.GetUtcDate()).Returns(new DateTime(date, TimeOnly.MinValue));
             // Arrange
             var targetDate = new DateOnly(2024, 11, 30);
-			var defaultAccountId = Guid.NewGuid();
+            var defaultAccountId = Guid.NewGuid();
 
-			// Mock default account
-			var defaultAccount = new Account
+            // Mock default account
+            var defaultAccount = new Account
             {
                 Id = defaultAccountId,
                 Balance = 7646,
                 IsDefault = true
             };
-			_accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
+            _accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
 
-			var salarySchedId = Guid.NewGuid();
+            var salarySchedId = Guid.NewGuid();
             var miscSchedId = Guid.NewGuid();
             var rentSchedId = Guid.NewGuid();
             // Mock operations
@@ -455,8 +449,8 @@ namespace FP.Application.Tests
                     Amount = 3650,
                     Date = new DateOnly(2024, 11, 1),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = true,
+                    TargetAccountId = defaultAccountId,
+                    Applied = true,
                     ScheduledOperationId = salarySchedId
                 },
                 new Operation
@@ -466,8 +460,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2024, 11, 1),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true,
+                    SourceAccountId = defaultAccountId,
+                    Applied = true,
                     ScheduledOperationId = miscSchedId
                 },
                  new Operation
@@ -477,8 +471,8 @@ namespace FP.Application.Tests
                     Amount = 200,
                     Date = new DateOnly(2024, 11, 1),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true,
+                    SourceAccountId = defaultAccountId,
+                    Applied = true,
                     ScheduledOperationId = rentSchedId
                 },
                  new Operation
@@ -488,8 +482,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2024, 11, 5),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true,
+                    SourceAccountId = defaultAccountId,
+                    Applied = true,
                 },
                    new Operation
                 {
@@ -498,8 +492,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2024, 11, 26),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false,
+                    SourceAccountId = defaultAccountId,
+                    Applied = false,
                 },
             };
             _operationRepoMock.Setup(r => r.GetAll()).Returns(operations.AsQueryable().BuildMock());
@@ -512,8 +506,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 1)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 1)
                 },
                  new ScheduledOperation   {
                      Id = miscSchedId,
@@ -522,16 +516,16 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 1)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 1)
                 },
                   new ScheduledOperation   {
                       Id = salarySchedId,
                     Amount = 3650,
                     Name = "Salary",
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Interval = 1,
+                    TargetAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
 
                     StartDate = new DateOnly(2024, 11, 1)
@@ -542,8 +536,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 18)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 18)
                 },
                     new ScheduledOperation   {
                     Amount = 12,
@@ -551,8 +545,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 18)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 18)
                 },
                       new ScheduledOperation   {
                     Amount = 350,
@@ -560,8 +554,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 18)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 18)
                 },
                       new ScheduledOperation   {
                     Amount = 120,
@@ -569,8 +563,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 18)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 18)
                 },
                 new ScheduledOperation   {
                     Amount = 38,
@@ -578,8 +572,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 20)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 20)
                 },
                          new ScheduledOperation   {
                     Amount = 440,
@@ -587,8 +581,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 1,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 11, 20)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 11, 20)
                 },
                          new ScheduledOperation   {
                     Amount = 80,
@@ -596,8 +590,8 @@ namespace FP.Application.Tests
                     Type = OperationType.Expense,
                     Interval = 2,
                     Frequency = Frequency.Monthly,
-					SourceAccountId = defaultAccountId,
-					StartDate = new DateOnly(2024, 12, 20)
+                    SourceAccountId = defaultAccountId,
+                    StartDate = new DateOnly(2024, 12, 20)
                 },
             };
             _scheduledOperationRepoMock.Setup(r => r.GetAll()).Returns(scheduledOperations.AsQueryable().BuildMock());
@@ -616,11 +610,9 @@ namespace FP.Application.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(7646, result.StartMonthBalance); // Starting balance
-            //Assert.AreEqual(3650, result.Incomes); // Monthly incomes
-            //Assert.AreEqual(1660, result.Expenses); // Monthly expenses (Groceries + Rent)
-            Assert.AreEqual(1990, result.Difference); // Month balance (Incomes - Expenses)
-            Assert.AreEqual(6386, result.EndMonthBalance); // End month balance
+            Assert.AreEqual(7646, result.StartMonthBalance);
+            Assert.AreEqual(1990, result.Difference);
+            Assert.AreEqual(6386, result.EndMonthBalance);
         }
 
         [TestMethod]
@@ -638,9 +630,9 @@ namespace FP.Application.Tests
                 Balance = 7646,
                 IsDefault = true
             };
-			_accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
+            _accountRepoMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(defaultAccount));
 
-			var salarySchedId = Guid.NewGuid();
+            var salarySchedId = Guid.NewGuid();
             var miscSchedId = Guid.NewGuid();
             var rentSchedId = Guid.NewGuid();
             // Mock operations
@@ -653,8 +645,8 @@ namespace FP.Application.Tests
                     Amount = 3650,
                     Date = new DateOnly(2024, 11, 1),
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Applied = true,
+                    TargetAccountId = defaultAccountId,
+                    Applied = true,
                     ScheduledOperationId = salarySchedId
                 },
                 new Operation
@@ -664,8 +656,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2024, 11, 1),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true,
+                    SourceAccountId = defaultAccountId,
+                    Applied = true,
                     ScheduledOperationId = miscSchedId
                 },
                  new Operation
@@ -675,8 +667,8 @@ namespace FP.Application.Tests
                     Amount = 200,
                     Date = new DateOnly(2024, 11, 1),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true,
+                    SourceAccountId = defaultAccountId,
+                    Applied = true,
                     ScheduledOperationId = rentSchedId
                 },
                 new Operation
@@ -686,8 +678,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2024, 11, 5),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = true,
+                    SourceAccountId = defaultAccountId,
+                    Applied = true,
                 },
                 new Operation
                 {
@@ -696,8 +688,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Date = new DateOnly(2024, 11, 26),
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Applied = false,
+                    SourceAccountId = defaultAccountId,
+                    Applied = false,
                 },
             };
             _operationRepoMock.Setup(r => r.GetAll()).Returns(operations.AsQueryable().BuildMock());
@@ -708,8 +700,8 @@ namespace FP.Application.Tests
                     Amount = 200,
                     Name = "Rent",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 1)
                 },
@@ -718,8 +710,8 @@ namespace FP.Application.Tests
                     Amount = 100,
                     Name = "Misc",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 1)
                 },
@@ -728,8 +720,8 @@ namespace FP.Application.Tests
                     Amount = 3650,
                     Name = "Salary",
                     Type = OperationType.Income,
-					TargetAccountId = defaultAccountId,
-					Interval = 1,
+                    TargetAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 1)
                 },
@@ -737,8 +729,8 @@ namespace FP.Application.Tests
                     Amount = 200,
                     Name = "Language",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 18)
                 },
@@ -746,8 +738,8 @@ namespace FP.Application.Tests
                     Amount = 12,
                     Name = "Youtube",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 18)
                 },
@@ -755,8 +747,8 @@ namespace FP.Application.Tests
                     Amount = 350,
                     Name = "Food",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 18)
                 },
@@ -764,8 +756,8 @@ namespace FP.Application.Tests
                     Amount = 120,
                     Name = "Bills",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 18)
                 },
@@ -773,8 +765,8 @@ namespace FP.Application.Tests
                     Amount = 38,
                     Name = "Internet",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 20)
                 },
@@ -782,8 +774,8 @@ namespace FP.Application.Tests
                     Amount = 440,
                     Name = "Rent",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 1,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 1,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 11, 20)
                 },
@@ -791,8 +783,8 @@ namespace FP.Application.Tests
                     Amount = 80,
                     Name = "Administration",
                     Type = OperationType.Expense,
-					SourceAccountId = defaultAccountId,
-					Interval = 2,
+                    SourceAccountId = defaultAccountId,
+                    Interval = 2,
                     Frequency = Frequency.Monthly,
                     StartDate = new DateOnly(2024, 12, 20)
                 },
@@ -813,11 +805,92 @@ namespace FP.Application.Tests
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(6386, result.StartMonthBalance); // Starting balance
-            //Assert.AreEqual(3650, result.Incomes); // Monthly incomes
-            //Assert.AreEqual(1540, result.Expenses); // Monthly expenses (Groceries + Rent)
-            Assert.AreEqual(2110, result.Difference); // Month balance (Incomes - Expenses)
-            Assert.AreEqual(8496, result.EndMonthBalance); // End month balance
+            Assert.AreEqual(6386, result.StartMonthBalance);
+            Assert.AreEqual(2110, result.Difference);
+            Assert.AreEqual(8496, result.EndMonthBalance);
+        }
+
+        [TestMethod]
+        public async Task GetBalance_Transfer_NormalOperation()
+        {
+            var date = new DateOnly(2024, 11, 17);
+            _dateServiceMock.Setup(c => c.GetUtcDate()).Returns(new DateTime(date, TimeOnly.MinValue));
+            // Arrange
+            var targetDate = new DateOnly(2024, 12, 31);
+            var scheduledTransferId = Guid.NewGuid();
+            var sourceAccountId = Guid.NewGuid();
+            var targetAccountId = Guid.NewGuid();
+            // Mock default account
+            var sourceAccount = new Account
+            {
+                Id = sourceAccountId,
+                Balance = 5000,
+                IsDefault = true
+            };
+            var targetAccount = new Account
+            {
+                Id = targetAccountId,
+                Balance = 0,
+
+            };
+            _accountRepoMock.Setup(r => r.GetByIdAsync(sourceAccountId)).Returns(ValueTask.FromResult(sourceAccount));
+            _accountRepoMock.Setup(r => r.GetByIdAsync(targetAccountId)).Returns(ValueTask.FromResult(targetAccount));
+
+            var miscSchedId = Guid.NewGuid();
+            // Mock operations
+            var operations = new List<Operation>
+            {
+                new Operation
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Transfer",
+                    Amount = 100,
+                    Date = new DateOnly(2024, 11, 26),
+                    Type = OperationType.Transfer,
+                    SourceAccountId = sourceAccountId,
+                    TargetAccountId = targetAccountId,
+                    Applied = false,
+                },
+            };
+            _operationRepoMock.Setup(r => r.GetAll()).Returns(operations.AsQueryable().BuildMock());
+
+            var scheduledOperations = new List<ScheduledOperation> {
+                    new ScheduledOperation   {
+                    Amount = 500,
+                    Name = "ATM Scheduled",
+                    Type = OperationType.Transfer,
+                    SourceAccountId = sourceAccountId,
+                    TargetAccountId = targetAccountId,
+                    Interval = 1,
+                    Frequency = Frequency.Monthly,
+                    StartDate = new DateOnly(2024, 11, 18)
+                },
+            };
+            _scheduledOperationRepoMock.Setup(r => r.GetAll()).Returns(scheduledOperations.AsQueryable().BuildMock());
+
+            var scheduledService = new ScheduledOperationsService(_scheduledOperationRepoMock.Object);
+            _accountService = new AccountService(
+                _accountRepoMock.Object,
+                _operationRepoMock.Object,
+                _dateServiceMock.Object,
+                 scheduledService,
+                _mapper
+            );
+
+            // Act
+            var resultSource = await _accountService.GetBalance(sourceAccountId, targetDate);
+            var resultTarget = await _accountService.GetBalance(targetAccountId, targetDate);
+
+            // Assert
+            Assert.IsNotNull(resultSource);
+            Assert.AreEqual(4400, resultSource.StartMonthBalance);
+            Assert.AreEqual(0, resultSource.Difference);
+            Assert.AreEqual(3900, resultSource.EndMonthBalance);
+
+            Assert.IsNotNull(resultTarget);
+            Assert.AreEqual(600, resultTarget.StartMonthBalance);
+            Assert.AreEqual(0, resultTarget.Difference);
+            Assert.AreEqual(1100, resultTarget.EndMonthBalance);
         }
     }
 }

@@ -1,0 +1,38 @@
+<div class="d-flex h-100">
+    <div class="w-100">
+        <fp-card class="h-100">
+            <p header>Categories</p>
+            <div class="pt-1 pb-3 h-100" content>
+                <fp-grid [columns]="columns" [data]="categories()">
+                    <ng-template g-col="indicator" let-category>
+                        <fp-indicator [color]="category.color">
+                        </fp-indicator>
+                    </ng-template>
+                    <ng-template g-col="icon" let-category>
+                        <mat-icon [style.color]="category.color">
+                            {{category.iconName}}
+                        </mat-icon>
+                    </ng-template>
+                    <ng-template g-col="name" let-category>
+                        {{ category.name }}
+                    </ng-template>
+                    <ng-template g-col="type" let-category>
+                        <div [ngSwitch]="category.type">
+                            <div *ngSwitchCase="0">Incomes</div>
+                            <div *ngSwitchCase="1">Expenses</div>
+                            <div *ngSwitchCase="2">Transfer</div>
+                        </div>
+                    </ng-template>
+                    <ng-template g-col="actions" let-category>
+                        <button class="action-button" mat-icon-button [matMenuTriggerFor]="actionsMenu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #actionsMenu="matMenu" class="actions-menu">
+                            <button mat-button><mat-icon>delete</mat-icon>Delete</button>
+                        </mat-menu>
+                    </ng-template>
+                </fp-grid>
+            </div>
+        </fp-card>
+    </div>
+</div>

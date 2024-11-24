@@ -19,6 +19,11 @@ export const routes: Routes = [
 			import('../modules/accounts/accounts.module').then((m) => m.AccountsModule),
 	},
 	{
+		path: 'categories',
+		loadChildren: () =>
+			import('../modules/categories/categories.module').then((m) => m.CategoriesModule),
+	},
+	{
 		path: 'demo',
 		loadChildren: () =>
 			import('../modules/demo/demo.module').then((m) => m.DemoModule),

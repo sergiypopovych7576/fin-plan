@@ -4,7 +4,6 @@ using FP.Application.Interfaces;
 using FP.Domain;
 using FP.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FP.Application.Services
 {
@@ -24,78 +23,74 @@ namespace FP.Application.Services
         private readonly IAccountService _accService;
         private readonly IMapper _mapper;
 
-        public OperationsService(IRepository<Operation> repo, IAccountService accService,
+        public OperationsService(
+            IRepository<Operation> repo,
+            IAccountService accService,
             IScheduledOperationsService scheduledOperationsService,
             IMapper mapper)
         {
             _repo = repo;
-            _mapper = mapper;
-            _scheduledOperationsService = scheduledOperationsService;
             _accService = accService;
+            _scheduledOperationsService = scheduledOperationsService;
+            _mapper = mapper;
         }
 
         public async Task Delete(Guid id)
         {
             var operation = await _repo.GetByIdAsync(id);
             _repo.Remove(operation);
+
             if (!operation.Applied)
             {
                 await _repo.SaveChangesAsync();
                 return;
             }
+
             await _accService.RemoveOperation(operation);
         }
 
-        public async Task Create(OperationDto operation)
+        public async Task Create(OperationDto operationDto)
         {
-            if (operation.Frequency != null)
+            if (operationDto.Frequency != null)
             {
-                await _scheduledOperationsService.Create(_mapper.Map<ScheduledOperation>(operation));
+                await _scheduledOperationsService.Create(_mapper.Map<ScheduledOperation>(operationDto));
                 return;
             }
-            var mappedOp = _mapper.Map<Operation>(operation);
+
+            var operation = _mapper.Map<Operation>(operationDto);
+
             if (operation.Date > DateOnly.FromDateTime(DateTime.UtcNow))
             {
-                await _repo.AddAsync(mappedOp);
+                await _repo.AddAsync(operation);
                 await _repo.SaveChangesAsync();
-                return;
             }
-            mappedOp.Applied = true;
-            await _repo.AddAsync(mappedOp);
-            await _accService.ApplyOperation(mappedOp);
+            else
+            {
+                operation.Applied = true;
+                await _repo.AddAsync(operation);
+                await _accService.ApplyOperation(operation);
+            }
         }
 
         public async Task Sync()
         {
             var now = DateOnly.FromDateTime(DateTime.UtcNow);
 
-            var notAppliedOperations = await _repo.GetAll()
-                .Where(o => !o.Applied && o.Date <= now)
-                .ToListAsync();
+            // Get not applied operations and first not applied date
+            var notAppliedOperations = await GetNotAppliedOperationsAsync(now);
+            var firstNotAppliedDate = notAppliedOperations.Min(o => o.Date);
 
-            var firstNotAppliedDate = notAppliedOperations.OrderBy(c => c.Date).FirstOrDefault();
-            var appliedScheduleOperations = _repo.GetAll().Where(c => c.Date <= now
-                && c.Applied && c.ScheduledOperationId != null);
-            if (firstNotAppliedDate != null)
-            {
-                appliedScheduleOperations = appliedScheduleOperations.Where(c => c.Date >= firstNotAppliedDate.Date);
-            }
+            // Get scheduled operations for all accounts
+            var scheduledOperations = await GetScheduledOperationsForAccountsUpTo(now, firstNotAppliedDate);
 
-			var accounts = await _accService.GetAccounts();
-			var scheduledOperations = new List<Operation>();
-			foreach (var account in accounts) {
-				scheduledOperations.AddRange(await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(account.Id, now));
-			}
+            // Filter out already applied scheduled operations
+            var appliedOperations = GetAppliedScheduledOperations(now, firstNotAppliedDate);
+            var filteredScheduledOperations = FilterOutAppliedScheduledOperations(scheduledOperations, appliedOperations);
 
-            var filteredScheduledOperations = scheduledOperations
-                .Where(scheduled => !appliedScheduleOperations.Any(operation =>
-                    operation.ScheduledOperationId == scheduled.ScheduledOperationId && operation.Date == scheduled.Date
-                        && operation.Amount == scheduled.Amount))
-                .ToList();
+            // Combine and apply operations
+            var operationsToApply = notAppliedOperations.Concat(filteredScheduledOperations).ToList();
+            operationsToApply.ForEach(o => o.Applied = true);
 
-            var operationsToApply = notAppliedOperations.Concat(filteredScheduledOperations)
-                .ToList();
-            operationsToApply.ForEach(c => c.Applied = true);
             await _repo.AddRangeAsync(filteredScheduledOperations);
             _repo.Update(notAppliedOperations);
             await _accService.ApplyOperations(operationsToApply);
@@ -103,31 +98,21 @@ namespace FP.Application.Services
 
         public async Task<List<OperationDto>> GetMonthlyOperations(DateOnly date, CancellationToken cancellationToken)
         {
-            var operations = await _mapper.ProjectTo<OperationDto>(
-                _repo.GetAll()
-                    .AsNoTracking()
-                    .Include(c => c.Category)
-                    .Where(o => o.Date.Year == date.Year && o.Date.Month == date.Month)
-                    .OrderBy(c => c.Date))
-                .ToListAsync(cancellationToken);
+            var operations = await GetOperationsForMonthAsync(date, cancellationToken);
 
-            var accounts = await _accService.GetAccounts();
-            var scheduledOperations = new List<Operation>();
+            // Get scheduled operations for all accounts
+            var scheduledOperations = await GetScheduledOperationsForAccountsByMonth(date);
 
-			foreach(var account in accounts) {
-				scheduledOperations.AddRange(await _scheduledOperationsService.GetPlannedScheduledOperationsForMonth(account.Id, date));
-			}
+            // Map `OperationDto` to `Operation` for filtering
+            var mappedOperations = _mapper.Map<List<Operation>>(operations);
 
-            var filteredScheduledOperations = scheduledOperations
-                .Where(scheduled => !operations.Any(operation =>
-                    operation.ScheduledOperationId == scheduled.ScheduledOperationId && operation.Applied && operation.Date == scheduled.Date
-                        && operation.Amount == scheduled.Amount))
-                .ToList();
+            // Filter out already applied scheduled operations
+            var filteredScheduledOperations = FilterOutAppliedScheduledOperations(scheduledOperations, mappedOperations);
 
             operations.AddRange(_mapper.Map<List<OperationDto>>(filteredScheduledOperations));
-
-            return operations.OrderBy(o => o.Date).ThenBy(c => c.Type).ToList();
+            return operations.OrderBy(o => o.Date).ThenBy(o => o.Type).ToList();
         }
+
 
         public async Task<List<MonthSummaryDto>> GetSummaryByDateRange(DateOnly startDate, DateOnly endDate, CancellationToken cancellationToken)
         {
@@ -136,71 +121,119 @@ namespace FP.Application.Services
                 throw new ArgumentException("startDate must be earlier than or equal to endDate.");
             }
 
-            // Fetch operations from the repository
-            var operations = await _repo.GetAll()
+            var operations = await GetOperationsByDateRangeAsync(startDate, endDate, cancellationToken);
+            var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsByDateRange(startDate, endDate);
+
+            var filteredScheduledOperations = FilterOutAppliedScheduledOperations(scheduledOperations, operations);
+            var allOperations = operations.Concat(filteredScheduledOperations);
+
+            return GenerateMonthlySummaries(allOperations);
+        }
+
+        // Helper Methods
+
+        private async Task<List<Operation>> GetNotAppliedOperationsAsync(DateOnly now)
+        {
+            return await _repo.GetAll()
+                .Where(o => !o.Applied && o.Date <= now)
+                .ToListAsync();
+        }
+
+        private IEnumerable<Operation> GetAppliedScheduledOperations(DateOnly now, DateOnly? firstNotAppliedDate)
+        {
+            var query = _repo.GetAll()
+                .Where(o => o.Applied && o.Date <= now && o.ScheduledOperationId != null);
+
+            if (firstNotAppliedDate.HasValue)
+            {
+                query = query.Where(o => o.Date >= firstNotAppliedDate.Value);
+            }
+
+            return query.ToList();
+        }
+
+        private async Task<List<Operation>> GetScheduledOperationsForAccountsUpTo(DateOnly now, DateOnly? firstNotAppliedDate)
+        {
+            var accounts = await _accService.GetAccounts();
+            var scheduledOperations = new List<Operation>();
+
+            foreach (var account in accounts)
+            {
+                scheduledOperations.AddRange(await _scheduledOperationsService.GetPlannedScheduledOperationsUpToMonth(account.Id, now));
+            }
+
+            return scheduledOperations;
+        }
+
+        private async Task<List<Operation>> GetScheduledOperationsForAccountsByMonth(DateOnly date)
+        {
+            var accounts = await _accService.GetAccounts();
+            var scheduledOperations = new List<Operation>();
+
+            foreach (var account in accounts)
+            {
+                scheduledOperations.AddRange(await _scheduledOperationsService.GetPlannedScheduledOperationsForMonth(account.Id, date));
+            }
+
+            return scheduledOperations;
+        }
+
+        private IEnumerable<Operation> FilterOutAppliedScheduledOperations(IEnumerable<Operation> scheduledOperations, IEnumerable<Operation> appliedOperations)
+        {
+            return scheduledOperations.Where(scheduled => !appliedOperations.Any(applied =>
+                applied.ScheduledOperationId == scheduled.ScheduledOperationId &&
+                applied.Date.Month == scheduled.Date.Month &&
+                applied.Date.Year == scheduled.Date.Year &&
+                applied.Amount == scheduled.Amount));
+        }
+
+
+        private async Task<List<OperationDto>> GetOperationsForMonthAsync(DateOnly date, CancellationToken cancellationToken)
+        {
+            return await _mapper.ProjectTo<OperationDto>(
+                _repo.GetAll()
+                    .AsNoTracking()
+                    .Include(o => o.Category)
+                    .Where(o => o.Date.Year == date.Year && o.Date.Month == date.Month)
+                    .OrderBy(o => o.Date))
+                .ToListAsync(cancellationToken);
+        }
+
+        private async Task<List<Operation>> GetOperationsByDateRangeAsync(DateOnly startDate, DateOnly endDate, CancellationToken cancellationToken)
+        {
+            return await _repo.GetAll()
                 .AsNoTracking()
                 .Include(o => o.Category)
                 .Where(o => o.Date >= startDate && o.Date <= endDate && o.Type != OperationType.Transfer)
                 .ToListAsync(cancellationToken);
-
-            // Fetch scheduled operations
-            var scheduledOperations = await _scheduledOperationsService.GetPlannedScheduledOperationsByDateRange(startDate, endDate);
-
-            // Filter out scheduled operations that are already applied
-            var filteredScheduledOperations = scheduledOperations
-                .Where(scheduled => !operations.Any(operation =>
-                    operation.ScheduledOperationId == scheduled.ScheduledOperationId && operation.Applied && operation.Date == scheduled.Date
-                        && operation.Amount == scheduled.Amount))
-                .ToList();
-
-            // Combine operations and filtered scheduled operations
-            var allOperations = operations.Concat(filteredScheduledOperations);
-
-            // Group operations by year, month, and category
-            var groupedOperations = allOperations
-                .GroupBy(op => new { op.Date.Year, op.Date.Month })
-                .OrderBy(g => g.Key.Year)
-                .ThenBy(g => g.Key.Month);
-
-            // Create month summaries
-            var summaries = groupedOperations.Select(group =>
-            {
-                var year = group.Key.Year;
-                var month = group.Key.Month;
-
-                var totalIncomes = group
-                    .Where(op => op.Type == OperationType.Income)
-                    .Sum(op => op.Amount);
-
-                var totalExpenses = group
-                    .Where(op => op.Type == OperationType.Expense)
-                    .Sum(op => op.Amount);
-
-                // Group by category within this month
-                var categorySummaries = group
-                    .GroupBy(op => op.Category.Name)
-                    .Select(categoryGroup => new CategorySummaryDto
-                    {
-                        Name = categoryGroup.Key,
-                        Amount = categoryGroup.Sum(op => op.Amount),
-                        Type = categoryGroup.First().Type,
-                        Color = categoryGroup.First().Category.Color
-                    })
-                    .ToList();
-
-                return new MonthSummaryDto
-                {
-                    Year = year,
-                    Month = month,
-                    TotalIncomes = totalIncomes,
-                    TotalExpenses = totalExpenses,
-                    MonthBalance = totalIncomes - totalExpenses,
-                    Categories = categorySummaries
-                };
-            }).ToList();
-
-            return summaries;
         }
 
+        private List<MonthSummaryDto> GenerateMonthlySummaries(IEnumerable<Operation> allOperations)
+        {
+            return allOperations
+                .GroupBy(op => new { op.Date.Year, op.Date.Month })
+                .OrderBy(g => g.Key.Year)
+                .ThenBy(g => g.Key.Month)
+                .Select(group => new MonthSummaryDto
+                {
+                    Year = group.Key.Year,
+                    Month = group.Key.Month,
+                    TotalIncomes = group.Where(op => op.Type == OperationType.Income).Sum(op => op.Amount),
+                    TotalExpenses = group.Where(op => op.Type == OperationType.Expense).Sum(op => op.Amount),
+                    MonthBalance = group.Where(op => op.Type == OperationType.Income).Sum(op => op.Amount) -
+                                   group.Where(op => op.Type == OperationType.Expense).Sum(op => op.Amount),
+                    Categories = group.GroupBy(op => op.Category.Name)
+                        .Select(categoryGroup => new CategorySummaryDto
+                        {
+                            Name = categoryGroup.Key,
+                            Amount = categoryGroup.Sum(op => op.Amount),
+                            Type = categoryGroup.First().Type,
+                            Color = categoryGroup.First().Category.Color
+                        })
+                        .ToList()
+                })
+                .ToList();
+        }
     }
+
 }

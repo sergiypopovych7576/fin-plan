@@ -22,9 +22,9 @@
 		</fp-card>
 	</div>
 	<div class="w-40 pl-3 d-flex f-column" style="width: 40%; gap:2%">
-		<div class="d-flex justify-between" style="gap:4%; height: 50%;">
+		<div class="d-flex justify-between" style="gap:4%; height: 45%;">
 			<div class="" style="width: 48%;">
-				<fp-card>
+				<fp-card class="h-100">
 					<div class="h-100" content>
 						<fp-operations-widget [operations]="incomeOperations">
 						</fp-operations-widget>
@@ -36,7 +36,7 @@
 				</fp-card>
 			</div>
 			<div style="width: 48%;">
-				<fp-card>
+				<fp-card class="h-100">
 					<div class="h-100" content>
 						<fp-operations-widget [operations]="expenseOperations">
 						</fp-operations-widget>
@@ -59,11 +59,11 @@
 				</div>
 			</fp-card>
 		</div>
-		<fp-card class="mt-auto" style="max-height: 16%;">
+		<fp-card class="mt-auto" style="max-height: 20%;">
 			<div class="pl-1" header>
 				<p>Summary</p>
 			</div>
-			<div class="pl-1 pt-2 pb-1" content>
+			<div class="pl-1 pt-2 pb-1" style="overflow-y: auto;overflow-x: hidden;" content>
 				<fp-month-summary [selectedDate]="selectedDate()"></fp-month-summary>
 			</div>
 		</fp-card>

@@ -1,4 +1,4 @@
-import { Component, computed, inject, Input, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, Input, Signal, signal, WritableSignal } from '@angular/core';
 import { IAccountBalance } from '@fp-core/models';
 import { AccountsService } from '@fp-core/services';
 import moment from 'moment';
@@ -31,6 +31,23 @@ export class MonthSummaryComponent {
 	});
 
 	public accountsResults: WritableSignal<IAccountBalance[]> = signal([]);
+	public currenciesResults: Signal<{ currency: string, amount: number }[]> = computed(() => {
+		const accounts = this.accounts();
+		const balances = this.accountsResults();
+	
+		const totalsByCurrency = accounts.reduce((totals, account, index) => {
+			const balance = balances[index]?.endMonthBalance ?? account.balance; // Fallback to account balance if endMonthBalance is missing
+			if (!totals[account.currency]) {
+				totals[account.currency] = 0;
+			}
+			totals[account.currency] += balance;
+	
+			return totals;
+		}, {} as Record<string, number>);
+	
+		return Object.entries(totalsByCurrency).map(([currency, amount]) => ({ currency, amount }));
+	});
+	
 
 	private formAccountBalances(): void {
 		const selectedDateString = this.selectedDate.endOf('month').toISOString().split('T')[0];

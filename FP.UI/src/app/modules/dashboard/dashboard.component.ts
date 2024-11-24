@@ -21,8 +21,8 @@ export class DashboardComponent implements OnInit {
 	}
 	
 	private updateChartData(): void {
-		const endDate = moment().add(3, 'months').endOf('month').toISOString().split('T')[0];
-		const startDate = moment().subtract(3, 'months').startOf('month').toISOString().split('T')[0];
+		const startDate = moment().subtract(3, 'months').startOf('month').format('YYYY-MM-DD');;
+		const endDate = moment().add(3, 'months').endOf('month').toISOString(false).split('T')[0];
 	
 		this._operationsService.getSummaryByRange(startDate, endDate).subscribe((summaries: IMonthSummary[]) => {
 			const labels = summaries.map(s => `${s.month}/${s.year}`) as any;

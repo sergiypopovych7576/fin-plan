@@ -85,6 +85,14 @@ namespace FP.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
+                            Id = new Guid("f1d4e014-a973-4a3e-a421-2b955e11d33f"),
+                            Color = "#8E44AD",
+                            IconName = "trending_flat",
+                            Name = "Transfer",
+                            Type = 2
+                        },
+                        new
+                        {
                             Id = new Guid("975dcdee-463e-45ab-a9c7-b61a5db39746"),
                             Color = "#3366FF",
                             IconName = "paid",
@@ -257,6 +265,22 @@ namespace FP.Infrastructure.Migrations
                             Color = "#F39C12",
                             IconName = "volunteer_activism",
                             Name = "Charity",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("6b5d325d-fd01-41cb-8cfb-6f8edec25867"),
+                            Color = "#ffd014",
+                            IconName = "shopping_cart",
+                            Name = "Purchases",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("b10d0f9b-45d5-4913-9406-ca4e314f67ff"),
+                            Color = "#0fa30f",
+                            IconName = "people",
+                            Name = "Family",
                             Type = 1
                         });
                 });

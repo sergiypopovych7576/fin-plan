@@ -1,38 +1,48 @@
-﻿using FP.Application.DTOs;
-using FP.Domain;
+﻿using FP.Domain;
 using FP.Domain.Enums;
 
 namespace FP.Application.Services
 {
     public static class OperationCalcService
     {
-        public static decimal ApplyOperation(decimal startAmount, Operation operation)
+        public static void ApplyOperation(Account account, Operation operation)
         {
-            if (operation.Type == OperationType.Expense)
-            {
-                return startAmount - operation.Amount;
-            }
-            else
-            {
-                return startAmount + operation.Amount;
-            }
+            AdjustBalance(account, operation, isApplying: true);
         }
 
-        public static decimal RemoveOperation(decimal startAmount, Operation operation)
+        public static void RemoveOperation(Account account, Operation operation)
         {
-            if (operation.Type == OperationType.Expense)
-            {
-                return startAmount + operation.Amount;
-            }
-            else
-            {
-                return startAmount - operation.Amount;
-            }
+            AdjustBalance(account, operation, isApplying: false);
         }
 
-        public static decimal ApplyOperation(decimal startAmount, OperationDto operation)
+        private static void AdjustBalance(Account account, Operation operation, bool isApplying)
         {
-            return ApplyOperation(startAmount, new Operation { Amount = operation.Amount, Type = operation.Type });
+            var adjustmentFactor = isApplying ? 1 : -1;
+
+            switch (operation.Type)
+            {
+                case OperationType.Expense:
+                    account.Balance -= adjustmentFactor * operation.Amount;
+                    break;
+
+                case OperationType.Income:
+                    account.Balance += adjustmentFactor * operation.Amount;
+                    break;
+
+                case OperationType.Transfer:
+                    if (operation.SourceAccountId == account.Id)
+                    {
+                        account.Balance -= adjustmentFactor * operation.Amount;
+                    }
+                    else
+                    {
+                        account.Balance += adjustmentFactor * operation.Amount;
+                    }
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported operation type: {operation.Type}");
+            }
         }
     }
 }
