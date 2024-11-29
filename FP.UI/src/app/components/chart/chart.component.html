@@ -1,9 +1,7 @@
-@if(!loaded()) {
-<mat-spinner class="m-auto"></mat-spinner>
-}
-@if(loaded() && !hasData()) {
-<p class="m-auto p-5">No data</p>
-}
-<canvas [style.display]="hasData() ? 'block': 'none'" #canvas>{{ chart }}</canvas>
-<ng-content>
-</ng-content>
+<div class="chart-container h-100 w-100 d-flex">
+    <mat-spinner *ngIf="!loaded()" class="m-auto"></mat-spinner>
+    <p *ngIf="loaded() && !hasData()" class="m-auto p-5">No data</p>
+    <canvas #canvas></canvas>
+    <ng-content></ng-content>
+  </div>
+  

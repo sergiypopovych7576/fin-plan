@@ -12,13 +12,13 @@ export class OperationsTableComponent {
 	private _operations!: IOperation[];
 
 	public displayedColumns: any[] = [
-		{ width: 5, title: '' }, 
-		{ width: 20, title: 'Name' },
-		{ width: 20, title: 'Account' }, 
-		{ width: 19, title: 'Category' }, 
-		{ width: 18, title: 'Amount' },
-		{ width: 13, title: 'Date' }, 
-		{ width: 5, title: '' }
+		{ width: 5, name: 'indicator', title: '' }, 
+		{ width: 20, name: 'name', title: 'Name' },
+		{ width: 20, name: 'account', title: 'Account' }, 
+		{ width: 19, name: 'category', title: 'Category' }, 
+		{ width: 18, name: 'amount', title: 'Amount' },
+		{ width: 13, name: 'date', title: 'Date' }, 
+		{ width: 5, name: 'actions', title: '' }
 	];
 	public total = 0;
 	@Input()

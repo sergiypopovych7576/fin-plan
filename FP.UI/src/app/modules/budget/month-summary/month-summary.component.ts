@@ -1,6 +1,7 @@
 import { Component, computed, inject, Input, Signal, signal, WritableSignal } from '@angular/core';
 import { IAccountBalance } from '@fp-core/models';
 import { AccountsService } from '@fp-core/services';
+import { StateService } from '@fp-core/services/state.service';
 import moment from 'moment';
 import { forkJoin } from 'rxjs';
 
@@ -10,9 +11,9 @@ import { forkJoin } from 'rxjs';
 	styleUrl: './month-summary.component.scss',
 })
 export class MonthSummaryComponent {
-	private readonly _accountsService = inject(AccountsService);
+	private readonly _accountsService: AccountsService = inject(StateService).getService(AccountsService);
 	private _selectedDate = moment();
-	public accounts = this._accountsService.accounts;
+	public accounts = this._accountsService.get();
 
 	@Input()
 	public set selectedDate(value: moment.Moment) {

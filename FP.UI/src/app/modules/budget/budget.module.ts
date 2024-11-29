@@ -41,7 +41,7 @@ const MATERIAL_MODULES = []
 		MonthSummaryComponent,
 		OperationModalDialogComponent,
 	],
-	providers: [OperationsService, CurrencyPipe],
+	providers: [CurrencyPipe],
 	imports: [
 		CommonModule,
 		RouterModule.forChild(routes),

@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MainComponent } from './main.component';
 import {MatSidenavModule} from '@angular/material/sidenav'
-import { AccountsService, CategoriesService } from '@fp-core/services';
 
 const COMPONENTS = [NavbarComponent, MainComponent];
 

@@ -1,13 +1,14 @@
-import { Component, computed, EventEmitter, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, OnInit, Output, signal } from '@angular/core';
 import { IDateChange } from './date-change.model';
 import moment from 'moment';
+import { debounceTime, Subject } from 'rxjs';
 
 @Component({
 	selector: 'fp-month-selector',
 	templateUrl: './month-selector.component.html',
 	styleUrls: ['./month-selector.component.scss'],
 })
-export class MonthSelectorComponent {
+export class MonthSelectorComponent implements OnInit {
 	public currentMonthNumber = moment().month();
 	public currentYear = moment().year();
 	public selectedDate = signal(moment());
@@ -21,9 +22,17 @@ export class MonthSelectorComponent {
 
 	@Output()
 	public dateChanged = new EventEmitter<IDateChange>();
+	
+	private _dateChangeSubject = new Subject<IDateChange>();
 
 	private _emitDateChange(): void {
-		this.dateChanged.emit({ year: this.selectedYear(), month: this.selectedMonthNumber() });
+		this._dateChangeSubject.next({ year: this.selectedYear(), month: this.selectedMonthNumber() });
+	}
+
+	public 	ngOnInit(): void {
+		this._dateChangeSubject
+		.pipe(debounceTime(300))
+		.subscribe((dateChange) => this.dateChanged.emit(dateChange));
 	}
 
 	public onNextMonth(): void {

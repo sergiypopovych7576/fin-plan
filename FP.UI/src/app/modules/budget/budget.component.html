@@ -31,7 +31,7 @@
 					</div>
 					<div class="mt-2 pl-1 pb-1" footer>
 						<p class="color-secondary">Incomes</p>
-						<h5 class="mt-1 color-green">+ {{incomeTotal() | currency: defaultAccCurrency()}}</h5>
+						<h5 class="mt-1 color-green">+ {{incomeTotal() || '' | currency: defaultAccCurrency()}}</h5>
 					</div>
 				</fp-card>
 			</div>
@@ -43,7 +43,7 @@
 					</div>
 					<div class="mt-2 pl-1 pb-1" footer>
 						<p class="color-secondary">Expenses</p>
-						<h5 class="mt-1 color-red">- {{expenseTotal() | currency: defaultAccCurrency()}}</h5>
+						<h5 class="mt-1 color-red">- {{expenseTotal() || '' | currency: defaultAccCurrency()}}</h5>
 					</div>
 				</fp-card>
 			</div>

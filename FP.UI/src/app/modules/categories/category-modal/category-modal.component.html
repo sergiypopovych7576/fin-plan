@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Category</h2>
+<mat-dialog-content>
+	<form [formGroup]="categoryForm">
+        <mat-form-field class="w-100">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="name">
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+                <mat-option [value]="0">
+                    Income
+                </mat-option>
+                <mat-option [value]="1">
+                    Expenses
+                </mat-option>
+                <mat-option [value]="2">
+                    Transfer
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>Color</mat-label>
+            <input matInput formControlName="color" type="color">
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+	<button mat-button mat-dialog-close (click)="onNoClick()">Cancel</button>
+	<button mat-button mat-dialog-close cdkFocusInitial (click)="onYesClick()">
+		Save
+	</button>
+</mat-dialog-actions>

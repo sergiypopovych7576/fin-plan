@@ -1,20 +1,21 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IMonthSummary, IOperation } from '../models';
 import { BaseService } from './base.service';
 
 @Injectable({ providedIn: 'root' })
-export class OperationsService extends BaseService {
+export class OperationsService extends BaseService<IOperation> {
+	protected override _url = 'operations';
 	public operationsDictionary = new Map<string, WritableSignal<IOperation[]>>();
 
 	public getOperationSignal(date: string): WritableSignal<IOperation[]> {
 		const key = date;
 		const exists = this.operationsDictionary.get(key);
-		if(exists) {
+		if (exists) {
 			return exists;
 		}
 		const keySignal = signal([]) as WritableSignal<IOperation[]>;
-		this.get(date).subscribe(c => keySignal.set(c));
+		this.getOperations(date).subscribe(c => keySignal.set(c));
 		this.operationsDictionary.set(key, keySignal);
 		return keySignal;
 	}
@@ -22,17 +23,21 @@ export class OperationsService extends BaseService {
 	public refreshOperations(date: string): void {
 		const key = `${date}`;
 		const signal = this.operationsDictionary.get(key);
-		if(!signal) {
+		if (!signal) {
 			return;
 		}
-		this.get(date).subscribe(c => signal.set(c));
+		this.getOperations(date).subscribe(c => signal.set(c));
 	}
 
 	public refreshAllOperations(): void {
 		this.operationsDictionary.clear();
 	}
 
-	public get(date: string): Observable<IOperation[]> {
+	public override get(date: string): Signal<IOperation[]> {
+		return this.getOperationSignal(date);
+	}
+
+	public getOperations(date: string): Observable<IOperation[]> {
 		return this._httpClient.get<IOperation[]>(
 			`operations/month/${date}`,
 		);
@@ -48,19 +53,6 @@ export class OperationsService extends BaseService {
 		return this._httpClient.post(
 			'operations/sync',
 			{}
-		);
-	}
-
-	public create(operation: IOperation): Observable<unknown> {
-		return this._httpClient.post(
-			'operations',
-			operation
-		);
-	}
-
-	public delete(operationId: string): Observable<unknown> {
-		return this._httpClient.delete(
-			`operations/${operationId}`,
 		);
 	}
 }

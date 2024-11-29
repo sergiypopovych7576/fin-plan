@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { IAccount } from '@fp-core/models';
 import { AccountsService } from '@fp-core/services';
+import { StateService } from '@fp-core/services/state.service';
 import { AccountModalDialogComponent, ConfirmationModalDialogComponent } from '@fp-shared/components';
 
 @Component({
@@ -11,16 +12,16 @@ import { AccountModalDialogComponent, ConfirmationModalDialogComponent } from '@
 })
 export class AccountListComponent {
 	private readonly _dialog = inject(MatDialog);
-	private readonly _accService = inject(AccountsService);
+	private readonly _accountsService = inject(StateService).getService(AccountsService);
 
-	public accounts = this._accService.accounts;
+	public accounts = this._accountsService.get();
 
 	public onAddAccount(): void {
 		const dialogRef = this._dialog.open(AccountModalDialogComponent, {});
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result) {
 				result.id = crypto.randomUUID();
-				this._accService.create(result).subscribe();
+				this._accountsService.create(result).subscribe();
 			}
 		});
 	}
@@ -31,7 +32,7 @@ export class AccountListComponent {
 		});
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result) {
-				this._accService.update(result).subscribe();
+				this._accountsService.update(result).subscribe();
 			}
 		});
 	}
@@ -40,7 +41,7 @@ export class AccountListComponent {
 		const dialogRef = this._dialog.open(ConfirmationModalDialogComponent, { data: 'Are you sure you want to delete this account?'});
 		dialogRef.afterClosed().subscribe((result) => {
 			if (result) {
-				this._accService.delete(account.id).subscribe();
+				this._accountsService.delete(account.id).subscribe();
 			}
 		});
 	}

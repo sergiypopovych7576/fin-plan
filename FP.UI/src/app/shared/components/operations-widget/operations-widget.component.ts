@@ -12,7 +12,11 @@ export class OperationsWidgetComponent {
     public set operations(operations: Signal<IOperation[]>) {
         this._operations = operations;
         this.chartData = computed(() => {
-            return this.generateChartData(this.operations());
+            const operations = this.operations();
+            if(operations?.length) {
+                return this.generateChartData(this.operations());
+            }
+           return null;
         })
     };
 

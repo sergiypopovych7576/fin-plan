@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { OperationModalDialogComponent } from './operation-modal';
-import { IAccount, IAccountBalance, ICategory, IOperation, OperationType } from '@fp-core/models';
+import { IAccount, IAccountBalance, IOperation, OperationType } from '@fp-core/models';
 import { AccountsService, OperationsService } from '@fp-core/services';
 import { IDateChange } from './month-selector/date-change.model';
 import { timer } from 'rxjs';
 import moment from 'moment';
+import { StateService } from '@fp-core/services/state.service';
 
 @Component({
 	selector: 'fp-budget',
@@ -13,15 +14,14 @@ import moment from 'moment';
 	styleUrls: ['./budget.component.scss'],
 })
 export class BudgetComponent implements OnInit {
-	private readonly _cdkRef = inject(ChangeDetectorRef);
 	// Dependencies
 	private readonly _dialog = inject(MatDialog);
-	private readonly _operationsService = inject(OperationsService);
-	private readonly _accountsService = inject(AccountsService);
+	private readonly _operationsService = inject(StateService).getService(OperationsService);
+	private readonly _accountsService = inject(StateService).getService(AccountsService);
 
 	// Signals
-	public accounts = this._accountsService.accounts;
-	public operations!: WritableSignal<IOperation[]>;
+	public accounts = this._accountsService.get();
+	public operations!: Signal<IOperation[]>;
 	public operationsLoading = signal(false);
 	public balance: WritableSignal<IAccountBalance | undefined> = signal(undefined);
 
@@ -98,14 +98,16 @@ export class BudgetComponent implements OnInit {
 	}
 
 	public loadOperations(): void {
+		this.operationsLoading.set(true);
 		const date = this.getSelectedDateString();
-		this.operations = this._operationsService.getOperationSignal(date);
+		this.operations = this._operationsService.get(date);
 		this.incomeOperations = computed(() => this.filterOperationsByType(OperationType.Incomes));
 		this.expenseOperations = computed(() => this.filterOperationsByType(OperationType.Expenses));
 		this.incomeTotal = computed(() => this.calculateTotal(this.incomeOperations()));
 		this.expenseTotal = computed(() => this.calculateTotal(this.expenseOperations()));
 		this.categories = computed(() => this.calculateCategories());
-		this._cdkRef.detectChanges();
+		timer(500).subscribe(() => this.operationsLoading.set(false));
+		// this._cdkRef.detectChanges();
 	}
 
 	public refreshOperations(all = false): void {
@@ -116,7 +118,6 @@ export class BudgetComponent implements OnInit {
 		} else {
 			this._operationsService.refreshOperations(date);
 		}
-		timer(500).subscribe(() => this.operationsLoading.set(false));
 	}
 
 	public onDateChange(event: IDateChange): void {

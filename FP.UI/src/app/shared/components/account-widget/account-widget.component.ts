@@ -10,6 +10,12 @@ export class AccountWidgetComponent {
     @Input()
     public account!: IAccount;
 
+    @Input()
+    public outline = false;
+
+    @Input()
+    public editable = true;
+
     @Output()
     public onEdit = new EventEmitter<void>();
 

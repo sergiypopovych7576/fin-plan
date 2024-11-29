@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { IAppConfiguration } from '../models';
-import { BaseService } from './base.service';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
-export class ConfigurationService extends BaseService {
+export class ConfigurationService {
+	protected readonly _httpClient = inject(HttpClient);
 	public config?: IAppConfiguration;
 
 	public loadConfig(): Promise<void> {

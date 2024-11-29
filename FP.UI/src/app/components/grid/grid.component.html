@@ -3,19 +3,17 @@
         <thead>
             <tr>
                 <th *ngFor="let column of columns" [style.width.%]="column.width">
-                    {{column.title}}
+                    {{ column.title }}
                 </th>
             </tr>
         </thead>
-       <tbody>
-        <tr class="bg-color-bg border" *ngFor="let item of data">
-            <td *ngFor="let column of columns">
-                <ng-container 
-                    *ngTemplateOutlet="getTemplateForColumn(column.name); context: { $implicit: item }">
-                </ng-container>
-            </td>
-        </tr>
-       </tbody>
-       
+        <tbody>
+            <tr class="bg-color-bg border" *ngFor="let item of data; trackBy: trackByFn">
+                <td *ngFor="let column of columns">
+                    <ng-container *ngTemplateOutlet="getTemplateForColumn(column.name); context: { $implicit: item }">
+                    </ng-container>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </div>

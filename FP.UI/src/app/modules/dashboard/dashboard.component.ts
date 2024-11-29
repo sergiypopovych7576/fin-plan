@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { IMonthSummary, OperationType } from '@fp-core/models';
 import { OperationsService } from '@fp-core/services';
+import { StateService } from '@fp-core/services/state.service';
 import moment from 'moment';
 
 @Component({
@@ -9,21 +10,21 @@ import moment from 'moment';
 	styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-	private readonly _operationsService = inject(OperationsService);
+	private readonly _operationsService = inject(StateService).getService(OperationsService);
 
 	public expensesConfig: WritableSignal<any> = signal(null);
 	public expenseCategoriesConfig: WritableSignal<any> = signal(null);
 	public incomesConfig: WritableSignal<any> = signal(null);
 	public incomesCategoriesConfig: WritableSignal<any> = signal(null);
-	
+
 	public ngOnInit(): void {
 		this.updateChartData();
 	}
-	
+
 	private updateChartData(): void {
 		const startDate = moment().subtract(3, 'months').startOf('month').format('YYYY-MM-DD');;
 		const endDate = moment().add(3, 'months').endOf('month').toISOString(false).split('T')[0];
-	
+
 		this._operationsService.getSummaryByRange(startDate, endDate).subscribe((summaries: IMonthSummary[]) => {
 			const labels = summaries.map(s => `${s.month}/${s.year}`) as any;
 			const expenseTemplate = {
@@ -86,17 +87,17 @@ export class DashboardComponent implements OnInit {
 				data: incomeTemplate,
 			});
 
-	
+
 			const expenseCategoryDataMap: { [key: string]: { data: number[], color: string } } = {};
 			const incomeCategoryDataMap: { [key: string]: { data: number[], color: string } } = {};
-			
+
 			summaries.forEach(summary => {
 				summary.categories.forEach(category => {
 					if (category.type === OperationType.Expenses) {
 						if (!expenseCategoryDataMap[category.name]) {
 							expenseCategoryDataMap[category.name] = {
 								data: Array(labels.length).fill(0),
-								color: category.color 
+								color: category.color
 							};
 						}
 						const monthIndex = summaries.findIndex(
@@ -110,7 +111,7 @@ export class DashboardComponent implements OnInit {
 						if (!incomeCategoryDataMap[category.name]) {
 							incomeCategoryDataMap[category.name] = {
 								data: Array(labels.length).fill(0),
-								color: category.color 
+								color: category.color
 							};
 						}
 						const monthIndex = summaries.findIndex(
@@ -120,7 +121,7 @@ export class DashboardComponent implements OnInit {
 					}
 				});
 			});
-	
+
 
 			const expensesDatasets = Object.keys(expenseCategoryDataMap).map(categoryName => ({
 				label: categoryName,

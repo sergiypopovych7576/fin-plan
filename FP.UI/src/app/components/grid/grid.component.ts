@@ -1,30 +1,32 @@
-import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChildren, HostBinding, Input, QueryList, TemplateRef, ViewChildren } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, inject, Input, QueryList, Signal, TemplateRef, ViewChild } from '@angular/core';
 import { GridColumnTemplateDirective } from './grid-column-template.directive';
 
 @Component({
     selector: 'fp-grid',
     templateUrl: './grid.component.html',
     styleUrls: ['./grid.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridComponent implements AfterContentInit {
-    @Input()
-    public columns :any[] = [];
-
-    @Input()
-    public data :any[] = [];
-
-    @ContentChildren(GridColumnTemplateDirective) 
-    public templates!: QueryList<GridColumnTemplateDirective>;
+    private readonly _cdk = inject(ChangeDetectorRef);
+    @Input() public columns: any[] = [];
+    @Input() public data: unknown[] = [];
+    @ContentChildren(GridColumnTemplateDirective) public templates!: QueryList<GridColumnTemplateDirective>;
 
     private templateMap: Map<string, TemplateRef<any>> = new Map();
 
-    ngAfterContentInit(): void {
+    public ngAfterContentInit(): void {
         this.templates.forEach((templateDirective) => {
             this.templateMap.set(templateDirective.columnKey, templateDirective.template);
-          });
+        });
+        this._cdk.detectChanges();
     }
 
-    getTemplateForColumn(name: string): TemplateRef<any> | null {
+    public getTemplateForColumn(name: string): TemplateRef<any> | null {
         return this.templateMap.get(name.toLowerCase()) || null;
+    }
+
+    public trackByFn(index: number, item: any): any {
+        return item.id;
     }
 }

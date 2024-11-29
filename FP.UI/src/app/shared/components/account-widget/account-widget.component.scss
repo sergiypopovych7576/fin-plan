@@ -8,7 +8,7 @@
 }
 
 :host:hover {
-    .content {
+    .content.editable {
         .buttons {
             visibility: visible;
         }

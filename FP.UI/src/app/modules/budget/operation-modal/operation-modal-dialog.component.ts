@@ -1,8 +1,9 @@
-import { Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ICategory, IOperation, OperationType } from '@fp-core/models';
+import { ICategory, OperationType } from '@fp-core/models';
 import { AccountsService, CategoriesService } from '@fp-core/services';
+import { StateService } from '@fp-core/services/state.service';
 import moment from 'moment';
 
 @Component({
@@ -10,13 +11,13 @@ import moment from 'moment';
 	templateUrl: 'operation-modal-dialog.component.html',
 })
 export class OperationModalDialogComponent implements OnInit {
-	private readonly _categoriesService = inject(CategoriesService);
-	private readonly _accountsService = inject(AccountsService);
+	private readonly _categoriesService = inject(StateService).getService(CategoriesService);
+	private readonly _accountsService = inject(StateService).getService(AccountsService);
 	public readonly dialogRef = inject(MatDialogRef<OperationModalDialogComponent>);
 	public readonly data = inject< { month: number, year: number}>(MAT_DIALOG_DATA);
 	public operation = this.data;
-	public accounts = this._accountsService.accounts;
-	public categories: WritableSignal<ICategory[]> = this._categoriesService.categories;
+	public accounts = this._accountsService.get();
+	public categories: Signal<ICategory[]> = this._categoriesService.get();
 	public selectedOperationType = signal(OperationType.Expenses);
 	public filteredCategories = computed(() => {
 		if(this.selectedOperationType() === OperationType.Transfer) {

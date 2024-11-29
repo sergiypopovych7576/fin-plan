@@ -1,4 +1,4 @@
-<fp-card *ngIf="account">
+<fp-card *ngIf="account" [outline]="outline">
     <div class="d-flex color-secondary text-subtitle" header>
         <h5 [class.color-primary]="account.isDefault">
             {{ account.name }}
@@ -6,7 +6,7 @@
         <mat-icon class="ml-auto">credit_card</mat-icon>
     </div>
     <div content>
-        <div class="content d-flex mt-4 justify-between">
+        <div class="content d-flex mt-4 justify-between" [class.editable]="editable">
             <div class="mt-auto mb-auto text-5" [class.color-red]="account.balance < 0">
                 <p class="color-secondary">Balance</p>
                 <h5 class="color-sub mt-1">{{ account.balance | currency: account.currency }}</h5>

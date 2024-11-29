@@ -10,7 +10,7 @@ import { CommonModule } from "@angular/common";
 
 const MATERIAL_MODULES = [
     MatProgressBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
 ];
 const COMPONENTS = [
     ProgressBar,
