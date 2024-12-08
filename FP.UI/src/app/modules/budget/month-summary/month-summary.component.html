@@ -1,62 +1,30 @@
-<!-- <div *ngFor="let acc of accounts(); let i = index;">
-	{{acc.name}}
-	@if (accountsResults()[i]) {
-		<div class="d-flex">
-			<div>{{ selectedToday() ? 'Current balance' : 'Start month balance'}}:</div>
-			<div class="ml-auto">{{ accountsResults()[i].startMonthBalance | currency:'EUR' }}</div>
-		</div>
-		<div class="d-flex mt-1">
-			<div>Difference:</div>
-			<div class="ml-auto" [class.color-green]="accountsResults()[i].endMonthBalance - accountsResults()[i].startMonthBalance  > 0" [class.color-red]="accountsResults()[i].endMonthBalance - accountsResults()[i].startMonthBalance < 0">{{accountsResults()[i].endMonthBalance - accountsResults()[i].startMonthBalance | currency:'EUR'}}</div>
-		</div>
-		<div class="d-flex mt-1">
-			<div>
-				End month balance:
+<fp-card class="w-100">
+	<div header>
+	</div>
+	<div class="h-100 d-flex f-column" content>
+		<fp-grid [columns]="displayedColumns" [data]="filterResults()"  style="max-height: 80%;" >
+			<ng-template g-col="name" let-element>
+				{{ element.name }}
+			</ng-template>
+			<ng-template g-col="current" let-element>
+				{{ accountBalances[element.ind]().startMonthBalance | currency: element.currency }}
+			</ng-template>
+			<ng-template g-col="difference" let-element>
+				<span [moneyColorType]="accountBalances[element.ind]().difference >= 0 ? 0 : 1">
+					{{ accountBalances[element.ind]().difference | currency: element.currency }}
+				</span>
+			</ng-template>
+			<ng-template g-col="end" let-element>
+				{{accountBalances[element.ind]().endMonthBalance | currency: element.currency }}
+			</ng-template>
+		</fp-grid>
+		<div class="mt-auto pb-1 pt-1">
+			<hr>
+			<div class="d-flex mt-1">
+				<div class="mr-2" *ngFor="let total of currenciesResults()">
+					{{total.currency}} - {{total.amount}}
+				</div>
 			</div>
-			<div class="ml-auto" [class.color-green]="accountsResults()[i].endMonthBalance > 0" [class.color-red]="accountsResults()[i].endMonthBalance < 0">
-				{{ accountsResults()[i].endMonthBalance | currency:'EUR' }}
-			</div>
-		</div>
-	}
-	<hr class="mt-1">
-</div> -->
-
-<div class="d-flex justify-between">
-	<div [style.width.%]="25">Name</div>
-	<div [style.width.%]="25">{{ selectedToday() ? 'Current balance' : 'Start balance'}}</div>
-	<div [style.width.%]="25">Month Difference</div>
-	<div [style.width.%]="25">End balance</div>
-</div>
-<div class="mt-2 d-flex justify-between" *ngFor="let acc of accounts(); let i = index;">
-	<div [style.width.%]="25">{{ acc.name }}</div>
-	@if(accountsResults().length - 1 >= i){
-		<div [style.width.%]="25">{{ accountsResults()[i].startMonthBalance | currency:acc.currency }}</div>
-		<div [style.width.%]="25">{{accountsResults()[i].difference | currency:acc.currency}}</div>
-		<div [style.width.%]="25" [class.color-green]="accountsResults()[i].endMonthBalance > 0" [class.color-red]="accountsResults()[i].endMonthBalance < 0">
-			{{ accountsResults()[i].endMonthBalance | currency:acc.currency }}
-		</div>
-	}
-</div>
-<div *ngFor="let total of currenciesResults()">
-	{{total.currency}} - {{total.amount}}
-</div>
-
-<!-- <ng-container *ngIf="balance">
-	<div class="d-flex">
-		<div>{{ selectedToday ? 'Current balance' : 'Start month balance'}}:</div>
-		<div class="ml-auto">{{ balance.startMonthBalance | currency:'EUR' }}</div>
-	</div>
-	<div class="d-flex mt-1">
-		<div>Difference:</div>
-		<div class="ml-auto" [class.color-green]="balance.endMonthBalance - balance.startMonthBalance  > 0" [class.color-red]="balance.endMonthBalance - balance.startMonthBalance < 0">{{balance.endMonthBalance - balance.startMonthBalance | currency:'EUR'}}</div>
-	</div>
-	<hr class="mt-1">
-	<div class="d-flex mt-1">
-		<div>
-			End month balance:
-		</div>
-		<div class="ml-auto" [class.color-green]="balance.endMonthBalance > 0" [class.color-red]="balance.endMonthBalance < 0">
-			{{balance.endMonthBalance | currency:'EUR'}}
 		</div>
 	</div>
-</ng-container> -->
+</fp-card>

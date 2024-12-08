@@ -15,6 +15,7 @@ namespace FP.Infrastructure.Services
 
         public async Task<T> Get<T>(string key)
         {
+            return default;
             var value = await _db.StringGetAsync(key);
             if (string.IsNullOrEmpty(value))
             {

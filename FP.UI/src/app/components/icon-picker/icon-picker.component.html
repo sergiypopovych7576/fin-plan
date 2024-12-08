@@ -1,0 +1,14 @@
+<div class="d-flex">
+    <div class="d-flex f-column">
+        <p>Styling:</p>
+        <mat-icon class="mt-1 ml-1" [style.color]="color">{{ selectedIcon }}</mat-icon>
+      </div>
+    <mat-form-field>
+      <mat-select [(value)]="selectedIcon" (selectionChange)="onChange($event)">
+        <mat-option *ngFor="let icon of icons" [value]="icon">
+          <mat-icon [style.color]="color">{{ icon }}</mat-icon> 
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  

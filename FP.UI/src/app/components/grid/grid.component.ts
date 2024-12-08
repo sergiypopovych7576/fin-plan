@@ -1,4 +1,4 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, inject, Input, QueryList, Signal, TemplateRef, ViewChild } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, inject, Input, QueryList, signal, Signal, TemplateRef, ViewChild } from '@angular/core';
 import { GridColumnTemplateDirective } from './grid-column-template.directive';
 
 @Component({

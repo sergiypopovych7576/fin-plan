@@ -3,7 +3,6 @@ import { IAccountBalance } from '@fp-core/models';
 import { AccountsService } from '@fp-core/services';
 import { StateService } from '@fp-core/services/state.service';
 import moment from 'moment';
-import { forkJoin } from 'rxjs';
 
 @Component({
 	selector: 'fp-month-summary',
@@ -25,40 +24,72 @@ export class MonthSummaryComponent {
 		return this._selectedDate;
 	}
 
+	public displayedColumns: any[] = [
+		{ width: 25, name: 'name', title: 'Name' },
+		{ width: 25, name: 'current', title: 'Current' }, 
+		{ width: 25, name: 'difference', title: 'Difference' }, 
+		{ width: 25, name: 'end', title: 'End balance' },
+	];
+
 	public today = moment();
 
 	public selectedToday = computed(() => {
 		return this.today.year() === this.selectedDate.year() && this.today.month() === this.selectedDate.month();
 	});
 
-	public accountsResults: WritableSignal<IAccountBalance[]> = signal([]);
-	public currenciesResults: Signal<{ currency: string, amount: number }[]> = computed(() => {
+	public accountsResults: WritableSignal<any[]> = signal([]);
+	public accountBalances: Signal<IAccountBalance>[] = [];
+	public currenciesResults: Signal<{ currency: string, amount: number }[]> = signal([]);
+	public filterResults = computed(() => {
 		const accounts = this.accounts();
-		const balances = this.accountsResults();
-	
-		const totalsByCurrency = accounts.reduce((totals, account, index) => {
-			const balance = balances[index]?.endMonthBalance ?? account.balance; // Fallback to account balance if endMonthBalance is missing
-			if (!totals[account.currency]) {
-				totals[account.currency] = 0;
-			}
-			totals[account.currency] += balance;
-	
-			return totals;
-		}, {} as Record<string, number>);
-	
-		return Object.entries(totalsByCurrency).map(([currency, amount]) => ({ currency, amount }));
+		return this.accounts().map((c: any, ind) => {
+			c.ind = ind;
+			return c;
+		})
+		// .filter((c: any, ind) => { 
+		// 	const exisitingBalance = this.accountBalances[ind];
+		// 	if(!exisitingBalance) {
+		// 		return false;
+		// 	}
+		// 	return exisitingBalance().difference > 0;
+		// });
 	});
 	
 
 	private formAccountBalances(): void {
 		const selectedDateString = this.selectedDate.endOf('month').toISOString().split('T')[0];
-
-		const balanceRequests = this.accounts().map((account) =>
-			this._accountsService.getBalance(account.id, selectedDateString)
+		this.accountBalances = this.accounts().map(c => 
+			this._accountsService.getBalance(c.id, selectedDateString)
 		);
 
-		forkJoin(balanceRequests).subscribe((balances) => {
-			this.accountsResults.set(balances);
+		const balances = this.accounts().map((account, ind) =>
+			({
+				name: account.name,
+				currency: account.currency,
+				ind
+			}));
+		this.accountsResults.set(balances);
+
+		this.currenciesResults = computed(() => {
+			const accounts = this.accounts();
+		
+			const totalsByCurrency = accounts.reduce((totals, account, index) => {
+				if (!totals[account.currency]) {
+					totals[account.currency] = 0;
+				}
+				if (!this.accountBalances[index]) {
+					return totals;
+				}
+				const balance = this.accountBalances[index]()?.endMonthBalance;
+				if (!balance) {
+					return totals;
+				}
+				totals[account.currency] += balance;
+		
+				return totals;
+			}, {} as Record<string, number>);
+		
+			return Object.entries(totalsByCurrency).map(([currency, amount]) => ({ currency, amount }));
 		});
 	}
 }

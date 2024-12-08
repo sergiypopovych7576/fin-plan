@@ -1,11 +1,9 @@
 fp-operations-table {
-    display: block;
-    max-height: 100%;
-    overflow-y: auto;
-    scrollbar-gutter: stable;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    overflow-x: hidden;
+    // display: block;
+    // max-height: 100%;
+    // overflow-y: auto;
+    // scrollbar-gutter: stable;
+    // overflow-x: hidden;
 
     .item {
         height: 4rem;
@@ -21,18 +19,6 @@ fp-operations-table {
     min-width: 8rem !important;
     min-height: 3rem;
     text-align: center;
-}
-
-.action-button {
-    height: 28px !important;
-    width: 28px !important;
-    padding: 2px !important;
-
-    mat-icon {
-        font-size: 20px !important;
-        height: 20px !important;
-        width: 20px !important; 
-    }
 }
 
 .table-container {

@@ -1,8 +1,10 @@
-<h3 mat-dialog-title>Please confirm</h3>
+<h2 mat-dialog-title>Please confirm</h2>
 <mat-dialog-content>
-    <div class="text-6 pt-4 pb-4 text-left">
-        {{title}}
-    </div>
+	<div class="pb-1">
+		<p>
+			{{title}}
+		</p>
+	</div>
 </mat-dialog-content>
 <mat-dialog-actions>
 	<button mat-button mat-dialog-close (click)="onDiscard()">Cancel</button>

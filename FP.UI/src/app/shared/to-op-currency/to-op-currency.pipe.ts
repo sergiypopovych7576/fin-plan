@@ -21,9 +21,6 @@ export class ToOpCurrencyPipe implements PipeTransform {
 			'symbol',
 			'1.2-2',
 		);
-		if (value.type === OperationType.Transfer) {
-			return res;
-		}
-		return `${value.type === OperationType.Incomes ? '+' : '-'} ${res}`;
+		return `${value.type === OperationType.Incomes ? '+' : '-'}${res}`;
 	}
 }

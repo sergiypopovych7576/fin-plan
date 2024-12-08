@@ -7,14 +7,6 @@
 			<mat-error>Name is not valid</mat-error>
 		}
 	</mat-form-field>
-	<br>
-	<mat-form-field class="w-100">
-		<mat-label>Balance</mat-label>
-		<input matInput type="number" min="0" formControlName="balance">
-		@if (accountForm.controls.balance.invalid) {
-			<mat-error>Balance is not valid</mat-error>
-		}
-	</mat-form-field>
 	<mat-form-field class="w-100">
 		<mat-label>Currency</mat-label>
 		<mat-select formControlName="currency">
@@ -24,6 +16,13 @@
 		</mat-select>
 		@if (accountForm.controls.currency.invalid) {
 			<mat-error>Currency is not valid</mat-error>
+		}
+	</mat-form-field>
+	<mat-form-field class="w-100">
+		<mat-label>Balance</mat-label>
+		<input matInput type="number" min="0" formControlName="balance">
+		@if (accountForm.controls.balance.invalid) {
+			<mat-error>Balance is not valid</mat-error>
 		}
 	</mat-form-field>
 </mat-dialog-content>

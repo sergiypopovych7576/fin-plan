@@ -1,5 +1,5 @@
 <div class="list d-flex flex-wrap w-100" style="gap: 2.66%">
-    <div class="account mb-3" style="width: 23%;" *ngFor="let account of accounts()">
+    <div class="account mb-3" *ngFor="let account of accounts()">
         <fp-account-widget [account]="account" (onEdit)="onEditAccount(account)" (onDelete)="onDeleteAccount(account)">
         </fp-account-widget>
     </div>
@@ -7,7 +7,7 @@
 <div class="d-flex mb-auto w-100 mt-3 justify-center">
     <div class="add-account pointer d-flex border bg-color-white h-100 mt-auto mb-auto p-2" (click)="onAddAccount()">
         <div class="m-auto text-center color-secondary">
-             <mat-icon class="ml-auto">add</mat-icon>   
+             <mat-icon class="ml-auto">add</mat-icon>
         </div>
     </div>
 </div>

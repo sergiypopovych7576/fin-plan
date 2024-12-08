@@ -7,7 +7,9 @@ namespace FP.Application.Services
 {
     public interface IScheduledOperationsService : IBaseService
     {
+        ValueTask<ScheduledOperation> GetById(Guid id);
         Task Create(ScheduledOperation operation);
+        Task Delete(ScheduledOperation operation);
         Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targetDate);
         Task<List<Operation>> GetPlannedScheduledOperationsForMonth(Guid accountId, DateOnly targetDate);
         Task<List<Operation>> GetPlannedScheduledOperationsByDateRange(DateOnly startDate, DateOnly endDate);
@@ -37,7 +39,7 @@ namespace FP.Application.Services
 
         public async Task<List<Operation>> GetPlannedScheduledOperationsUpToMonth(Guid accountId, DateOnly targetDate)
         {
-            var startOfYear = new DateOnly(targetDate.Year, 1, 1);
+            var startOfYear = new DateOnly(targetDate.Year - 1, 1, 1);
             return await GetPlannedScheduledOperationsByDateRangeAndAccount(accountId, startOfYear, targetDate);
         }
 
@@ -129,6 +131,17 @@ namespace FP.Application.Services
             }
 
             return current;
+        }
+
+        public ValueTask<ScheduledOperation> GetById(Guid id)
+        {
+            return _repository.GetByIdAsync(id);
+        }
+
+        public async Task Delete(ScheduledOperation operation)
+        {
+            _repository.Remove(operation);
+            await _repository.SaveChangesAsync();
         }
     }
 }

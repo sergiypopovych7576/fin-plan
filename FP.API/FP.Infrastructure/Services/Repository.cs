@@ -55,6 +55,11 @@ namespace FP.Infrastructure.Services
             _dbSet.Remove(entity);
         }
 
+        public void RemoveRange(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+        }
+
         public Task SaveChangesAsync()
         {
             return _context.SaveChangesAsync();

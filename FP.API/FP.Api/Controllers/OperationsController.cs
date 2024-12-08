@@ -43,6 +43,14 @@ namespace FP.Api.Controllers
             return _service.GetSummaryByDateRange(startDate, endDate, cancellationToken);
         }
 
+        [HttpPut]
+        public override async Task Put(OperationDto operation)
+        {
+            await _cache.Reset(_cacheKey);
+            await _cache.Reset("Accounts");
+            await _service.Update(operation);
+        }
+
         [HttpPost]
         public override async Task Post(OperationDto operation)
         {

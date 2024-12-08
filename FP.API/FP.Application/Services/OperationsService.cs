@@ -11,6 +11,7 @@ namespace FP.Application.Services
     {
         Task<List<OperationDto>> GetMonthlyOperations(DateOnly date, CancellationToken cancellationToken);
         Task<List<MonthSummaryDto>> GetSummaryByDateRange(DateOnly startDate, DateOnly endDate, CancellationToken cancellationToken);
+        Task Update(OperationDto operation);
         Task Create(OperationDto operation);
         Task Delete(Guid id);
         Task Sync();
@@ -37,15 +38,27 @@ namespace FP.Application.Services
 
         public async Task Delete(Guid id)
         {
-            var operation = await _repo.GetByIdAsync(id);
-            _repo.Remove(operation);
+            var operation = await _repo.GetAll().FirstOrDefaultAsync(c => c.Id == id);
+            if (operation == null || operation.ScheduledOperationId != null)
+            {
+                var schedOpId = operation?.ScheduledOperationId ?? id;
+                var scheduledOperation = await _scheduledOperationsService.GetById(id);
+                var associatedOperations = await _repo.GetAll().Where(c => c.ScheduledOperationId == id).ToListAsync();
 
+                await _accService.RemoveOperations(associatedOperations);
+
+                await _scheduledOperationsService.Delete(scheduledOperation);
+                _repo.RemoveRange(associatedOperations);
+                await _repo.SaveChangesAsync();
+
+                return;
+            }
+            _repo.Remove(operation);
             if (!operation.Applied)
             {
                 await _repo.SaveChangesAsync();
                 return;
             }
-
             await _accService.RemoveOperation(operation);
         }
 
@@ -54,22 +67,28 @@ namespace FP.Application.Services
             if (operationDto.Frequency != null)
             {
                 await _scheduledOperationsService.Create(_mapper.Map<ScheduledOperation>(operationDto));
+                await Sync();
                 return;
             }
 
             var operation = _mapper.Map<Operation>(operationDto);
+            await _repo.AddAsync(operation);
+            await _repo.SaveChangesAsync();
+            await Sync();
+        }
 
-            if (operation.Date > DateOnly.FromDateTime(DateTime.UtcNow))
+        public async Task Update(OperationDto operationDto)
+        {
+            var originalOperation = await _repo.GetAll().AsNoTracking().FirstOrDefaultAsync(c => c.Id == operationDto.Id);
+            if (originalOperation == null || originalOperation.ScheduledOperationId != null)
             {
-                await _repo.AddAsync(operation);
-                await _repo.SaveChangesAsync();
+                return;
             }
-            else
-            {
-                operation.Applied = true;
-                await _repo.AddAsync(operation);
-                await _accService.ApplyOperation(operation);
-            }
+            var newOperation = _mapper.Map<Operation>(operationDto);
+            _repo.Update(newOperation);
+            await _repo.SaveChangesAsync();
+            await _accService.RemoveOperation(originalOperation);
+            await _accService.ApplyOperation(newOperation);
         }
 
         public async Task Sync()
@@ -78,13 +97,12 @@ namespace FP.Application.Services
 
             // Get not applied operations and first not applied date
             var notAppliedOperations = await GetNotAppliedOperationsAsync(now);
-            var firstNotAppliedDate = notAppliedOperations.Min(o => o.Date);
 
             // Get scheduled operations for all accounts
-            var scheduledOperations = await GetScheduledOperationsForAccountsUpTo(now, firstNotAppliedDate);
+            var scheduledOperations = await GetScheduledOperationsForAccountsUpTo(now);
 
-            // Filter out already applied scheduled operations
-            var appliedOperations = GetAppliedScheduledOperations(now, firstNotAppliedDate);
+            // Filter out already applied scheduled 
+            var appliedOperations = GetAppliedScheduledOperations(now);
             var filteredScheduledOperations = FilterOutAppliedScheduledOperations(scheduledOperations, appliedOperations);
 
             // Combine and apply operations
@@ -139,20 +157,15 @@ namespace FP.Application.Services
                 .ToListAsync();
         }
 
-        private IEnumerable<Operation> GetAppliedScheduledOperations(DateOnly now, DateOnly? firstNotAppliedDate)
+        private IEnumerable<Operation> GetAppliedScheduledOperations(DateOnly now)
         {
             var query = _repo.GetAll()
                 .Where(o => o.Applied && o.Date <= now && o.ScheduledOperationId != null);
 
-            if (firstNotAppliedDate.HasValue)
-            {
-                query = query.Where(o => o.Date >= firstNotAppliedDate.Value);
-            }
-
             return query.ToList();
         }
 
-        private async Task<List<Operation>> GetScheduledOperationsForAccountsUpTo(DateOnly now, DateOnly? firstNotAppliedDate)
+        private async Task<List<Operation>> GetScheduledOperationsForAccountsUpTo(DateOnly now)
         {
             var accounts = await _accService.GetAccounts();
             var scheduledOperations = new List<Operation>();

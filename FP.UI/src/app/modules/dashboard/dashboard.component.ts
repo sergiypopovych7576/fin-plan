@@ -130,7 +130,11 @@ export class DashboardComponent implements OnInit {
 				backgroundColor: expenseCategoryDataMap[categoryName].color,
 				pointRadius: 5,
 				pointHoverRadius: 8,
-			})) as any;
+			})).sort((a, b) => {
+				const sumA = a.data.reduce((sum, value) => sum + value, 0);
+				const sumB = b.data.reduce((sum, value) => sum + value, 0);
+				return sumB - sumA;
+			}) as any;
 			const incomesDatasets = Object.keys(incomeCategoryDataMap).map(categoryName => ({
 				label: categoryName,
 				data: incomeCategoryDataMap[categoryName].data,
@@ -138,9 +142,13 @@ export class DashboardComponent implements OnInit {
 				backgroundColor: incomeCategoryDataMap[categoryName].color,
 				pointRadius: 5,
 				pointHoverRadius: 8,
-			})) as any;
+			})).sort((a, b) => {
+				const sumA = a.data.reduce((sum, value) => sum + value, 0);
+				const sumB = b.data.reduce((sum, value) => sum + value, 0);
+				return sumB - sumA;
+			}) as any;
 			const baseCat = {
-				type: 'line',
+				type: 'bar',
 				data: {
 					labels: [],
 					datasets: []
@@ -155,12 +163,14 @@ export class DashboardComponent implements OnInit {
 					},
 					scales: {
 						x: {
+							stacked: true,
 							title: {
 								display: false,
 								text: 'Month'
 							}
 						},
 						y: {
+							stacked: true,
 							title: {
 								display: false,
 								text: 'Expenses'

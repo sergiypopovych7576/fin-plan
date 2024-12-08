@@ -17,7 +17,8 @@ export class StateService {
         this.registerService(OperationsService, inject(OperationsService));
 
         // Define dependencies
-        // this.registerDependencies(AccountsService, [CategoriesService]);
+        this.registerDependencies(AccountsService, [OperationsService]);
+        this.registerDependencies(OperationsService, [AccountsService, CategoriesService]);
     }
 
     /**

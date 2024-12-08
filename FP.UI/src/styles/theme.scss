@@ -61,6 +61,35 @@ hr {
 	border: none;
 }
 
+// .mat-mdc-menu-content {
+// 	button {
+// 		color: $text-sub-color !important;
+// 	}
+// }
+
+
+/* width */
+::-webkit-scrollbar {
+	width: 10px;
+}
+  
+/* Track */
+::-webkit-scrollbar-track {
+	background: $background-color;
+	border-radius: 8px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+background: lightgray;
+border-radius: 8px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+background: lightgray;
+}
+
 // $contrasts: 10, 15, 20;
 
 // @each $contrast in $contrasts {
@@ -109,7 +138,9 @@ hr {
 // 	@return darken($color, 10);
 // }
 
-
+.mat-mdc-menu-panel {
+	background-color: $background-color !important;
+}
 
 .mat-drawer,
 .mat-drawer-container {

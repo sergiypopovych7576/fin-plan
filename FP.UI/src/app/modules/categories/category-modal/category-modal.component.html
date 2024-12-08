@@ -1,33 +1,43 @@
 <h2 mat-dialog-title>Category</h2>
 <mat-dialog-content>
-	<form [formGroup]="categoryForm">
-        <mat-form-field class="w-100">
-            <mat-label>Title</mat-label>
-            <input matInput formControlName="name">
-        </mat-form-field>
-        <mat-form-field class="w-100">
-            <mat-label>Type</mat-label>
-            <mat-select formControlName="type">
-                <mat-option [value]="0">
-                    Income
-                </mat-option>
-                <mat-option [value]="1">
-                    Expenses
-                </mat-option>
-                <mat-option [value]="2">
-                    Transfer
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-        <mat-form-field class="w-100">
-            <mat-label>Color</mat-label>
-            <input matInput formControlName="color" type="color">
-        </mat-form-field>
+    <form [formGroup]="categoryForm">
+        <div class="d-flex f-column">
+            <mat-form-field class="w-100">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="name">
+            </mat-form-field>
+        </div>
+        <div class="w-100 d-flex justify-between">
+            <div class="d-flex" style="width: 40%; gap:10%">
+                <fp-icon-picker style="width: 55%;" [(selectedIcon)]="categoryForm.value.iconName" (selectedIconChange)="onIconChange($event)" [color]="categoryForm.value.color"></fp-icon-picker>
+                <div style="width: 35%;">
+                    <mat-form-field class="w-100">
+                        <input matInput formControlName="color" type="color">
+                    </mat-form-field>
+                </div>
+            </div>     
+            <div style="width: 50%;">
+                <mat-form-field  class="w-100">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="type">
+                        <mat-option [value]="0">
+                            Income
+                        </mat-option>
+                        <mat-option [value]="1">
+                            Expenses
+                        </mat-option>
+                        <mat-option [value]="2">
+                            Transfer
+                        </mat-option>
+                    </mat-select>          
+                </mat-form-field>
+            </div>    
+        </div>
     </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-	<button mat-button mat-dialog-close (click)="onNoClick()">Cancel</button>
-	<button mat-button mat-dialog-close cdkFocusInitial (click)="onYesClick()">
-		Save
-	</button>
+    <button mat-button mat-dialog-close (click)="onNoClick()">Cancel</button>
+    <button mat-flat-button mat-dialog-close cdkFocusInitial (click)="onYesClick()">
+        Save
+    </button>
 </mat-dialog-actions>

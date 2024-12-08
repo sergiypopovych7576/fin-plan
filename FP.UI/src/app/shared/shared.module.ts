@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
+import { MoneyColorDirective } from "./directives";
 
 const MATERIAL_MODULES = [
 	MatIconModule,
@@ -33,6 +34,7 @@ const COMPONENTS = [
 	OperationsWidgetComponent,
 	ConfirmationModalDialogComponent,
 	ToOpCurrencyPipe,
+	MoneyColorDirective
 ];
 
 @NgModule({
@@ -46,4 +48,4 @@ const COMPONENTS = [
 	],
 	exports: COMPONENTS,
 })
-export class SharedModule {}
+export class SharedModule { }

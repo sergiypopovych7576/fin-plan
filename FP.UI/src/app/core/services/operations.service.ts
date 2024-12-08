@@ -37,6 +37,12 @@ export class OperationsService extends BaseService<IOperation> {
 		return this.getOperationSignal(date);
 	}
 
+	public override refresh(): void {
+		this.operationsDictionary.forEach((value, key) => {
+			this.refreshOperations(key);
+		});
+	}
+
 	public getOperations(date: string): Observable<IOperation[]> {
 		return this._httpClient.get<IOperation[]>(
 			`operations/month/${date}`,

@@ -31,7 +31,7 @@ export class MonthSelectorComponent implements OnInit {
 
 	public 	ngOnInit(): void {
 		this._dateChangeSubject
-		.pipe(debounceTime(300))
+		.pipe(debounceTime(200))
 		.subscribe((dateChange) => this.dateChanged.emit(dateChange));
 	}
 

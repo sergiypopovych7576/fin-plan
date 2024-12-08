@@ -1,66 +1,80 @@
-<div *ngIf="!operations" class="d-flex p-2">
-	<mat-spinner class="m-auto"></mat-spinner>
-</div>
-<div class="text-center h-100 d-flex" *ngIf="!operations.length; else grid">
-	<p class="m-auto">No operations were found</p>
-</div>
-<ng-template #grid>
-	<fp-grid [columns]="displayedColumns" [data]="operations">
-		<ng-template g-col="indicator" let-element>
-			<fp-indicator [color]="element.category.color">
-			</fp-indicator>
-		</ng-template>
-		<ng-template g-col="name" let-element>
-			{{ element.name }}
-		</ng-template>
-		<ng-template g-col="account" let-element>
-			@if (element.type === 2) {
+<fp-card class="h-100">
+	<div header class="d-flex justify-between pl-1">
+		<p class="mt-auto mb-auto">Transactions</p>
+		<button mat-flat-button (click)="onAddOperation()">
+			<mat-icon class="m-0">add</mat-icon>
+		</button>
+	</div>
+	<div class="pt-2" style="max-height: 94%;" content>
+		<fp-grid [columns]="displayedColumns" [data]="operations()">
+			<ng-template g-col="indicator" let-element>
+				<mat-icon [style.color]="element.category.color">
+					{{element.category.iconName}}
+				</mat-icon>
+				<!-- <fp-indicator [color]="element.category.color">
+				</fp-indicator> -->
+			</ng-template>
+			<ng-template g-col="name" let-element>
+				{{ element.name }}
+			</ng-template>
+			<ng-template g-col="account" let-element>
+				@if (element.type === 2) {
 				{{ element.targetAccount?.name }}
-			}
-			@if (element.type !== 2) {
+				}
+				@if (element.type !== 2) {
 				{{ element.sourceAccount?.name || element.targetAccount?.name}}
-			}
-		</ng-template>
-		<ng-template g-col="category" let-element>
-			<div [ngSwitch]="element.type">
+				}
+			</ng-template>
+			<ng-template g-col="category" let-element>
+				<div [ngSwitch]="element.type">
 				<div *ngSwitchCase="0">Incomes</div>
-				<div *ngSwitchCase="1">Expenses</div>
-				<div *ngSwitchCase="2">Transfer</div>
-			</div>
-		</ng-template>
-		<ng-template g-col="amount" let-element>
-			<span [class.color-red]="element.type === 1" [class.color-green]="element.type === 0">
-				{{ element | toOpCurrency: currency }}
-			</span>
-		</ng-template>
-		<ng-template g-col="date" let-element>
-			{{ element.date | date: 'dd/MM/yyyy'}}
-		</ng-template>
-		<ng-template g-col="actions" let-element>
-			{{ element.date | date: 'dd/MM/yyyy'}}
-		</ng-template>
-		<ng-template g-col="icon" let-element>
-			<mat-icon [style.color]="element.color">
-				{{element.iconName}}
-			</mat-icon>
-		</ng-template>
-		<ng-template g-col="name" let-element>
-			{{ element.name }}
-		</ng-template>
-		<ng-template g-col="type" let-element>
-			<div [ngSwitch]="element.type">
-				<div *ngSwitchCase="0">Incomes</div>
-				<div *ngSwitchCase="1">Expenses</div>
-				<div *ngSwitchCase="2">Transfer</div>
-			</div>
-		</ng-template>
-		<ng-template g-col="actions" let-element>
-			<button class="action-button" mat-icon-button [matMenuTriggerFor]="actionsMenu">
-				<mat-icon>more_vert</mat-icon>
-			</button>
-			<mat-menu #actionsMenu="matMenu" class="actions-menu">
-				<button mat-button (click)="onDeleteClick(element)"><mat-icon>delete</mat-icon>Delete</button>
-			</mat-menu>
-		</ng-template>
-	</fp-grid>
-</ng-template>
+					<div *ngSwitchCase="1">Expenses</div>
+					<div *ngSwitchCase="2">Transfer</div>
+				</div>
+			</ng-template>
+			<ng-template g-col="amount" let-element>
+				<span [moneyColorType]="element.type">
+					{{ element | toOpCurrency: currency }}
+				</span>
+			</ng-template>
+			<ng-template g-col="date" let-element>
+				{{ element.date | date: 'dd/MM/yyyy'}}
+			</ng-template>
+			<ng-template g-col="actions" let-element>
+				{{ element.date | date: 'dd/MM/yyyy'}}
+			</ng-template>
+			<ng-template g-col="icon" let-element>
+				<mat-icon [style.color]="element.color">
+					{{element.iconName}}
+				</mat-icon>
+			</ng-template>
+			<ng-template g-col="name" let-element>
+				{{ element.name }}
+			</ng-template>
+			<ng-template g-col="type" let-element>
+				<div [ngSwitch]="element.type">
+					<div *ngSwitchCase="0">Incomes</div>
+					<div *ngSwitchCase="1">Expenses</div>
+					<div *ngSwitchCase="2">Transfer</div>
+				</div>
+			</ng-template>
+			<ng-template g-col="actions" let-element>
+				<button class="action-button" mat-icon-button [matMenuTriggerFor]="actionsMenu">
+					<mat-icon>more_vert</mat-icon>
+				</button>
+				<mat-menu #actionsMenu="matMenu" class="actions-menu">
+					<div class="pl-1 pr-1 d-flex f-column">
+						<button mat-menu-item *ngIf="!element.scheduledOperationId" (click)="onEditClick(element)">
+							<mat-icon>edit</mat-icon>
+							<span>Edit</span>
+						</button>
+						<button mat-menu-item (click)="onOperationDelete(element)">
+							<mat-icon>delete</mat-icon>
+							<span>Delete</span>
+						</button>
+					</div>
+				</mat-menu>
+			</ng-template>
+		</fp-grid>
+	</div>
+</fp-card>

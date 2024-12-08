@@ -15,7 +15,6 @@ import { StateService } from '@fp-core/services/state.service';
 })
 export class BudgetComponent implements OnInit {
 	// Dependencies
-	private readonly _dialog = inject(MatDialog);
 	private readonly _operationsService = inject(StateService).getService(OperationsService);
 	private readonly _accountsService = inject(StateService).getService(AccountsService);
 
@@ -31,7 +30,6 @@ export class BudgetComponent implements OnInit {
 	public expenseOperations!: Signal<IOperation[]>;
 	public incomeTotal!: Signal<number>;
 	public expenseTotal!: Signal<number>;
-	public categories!: Signal<any>;
 	public defaultAccCurrency = computed(() => this.getDefaultCurrency());
 	public selectedToday = computed(() => this.isTodaySelected());
 	public defaultAcc = computed(() => this.accounts().find(account => account.isDefault) as IAccount);
@@ -66,21 +64,6 @@ export class BudgetComponent implements OnInit {
 		return operations.reduce((sum, op) => sum + op.amount, 0);
 	}
 
-	private calculateCategories() {
-		const filteredOperations = this.expenseOperations();
-		const totalAmount = this.calculateTotal(filteredOperations);
-		const categoryData = filteredOperations.reduce((acc, op) => {
-			const categoryName = op.category.name;
-			if (!acc[categoryName]) {
-				acc[categoryName] = { name: categoryName, amount: 0, color: op.category.color, percentage: 0 };
-			}
-			acc[categoryName].amount += op.amount;
-			acc[categoryName].percentage = (acc[categoryName].amount / totalAmount) * 100;
-			return acc;
-		}, {} as Record<string, { name: string; amount: number; color: string; percentage: number }>);
-		return Object.values(categoryData).sort((a, b) => b.percentage - a.percentage);
-	}
-
 	private getDefaultCurrency(): string | undefined {
 		return this.accounts().find(account => account.isDefault)?.currency;
 	}
@@ -104,8 +87,7 @@ export class BudgetComponent implements OnInit {
 		this.incomeOperations = computed(() => this.filterOperationsByType(OperationType.Incomes));
 		this.expenseOperations = computed(() => this.filterOperationsByType(OperationType.Expenses));
 		this.incomeTotal = computed(() => this.calculateTotal(this.incomeOperations()));
-		this.expenseTotal = computed(() => this.calculateTotal(this.expenseOperations()));
-		this.categories = computed(() => this.calculateCategories());
+		this.expenseTotal = computed(() => this.calculateTotal(this.expenseOperations()));		
 		timer(500).subscribe(() => this.operationsLoading.set(false));
 		// this._cdkRef.detectChanges();
 	}
@@ -128,24 +110,5 @@ export class BudgetComponent implements OnInit {
 
 	public onSync(): void {
 		this._operationsService.sync().subscribe(() => this.refreshOperations());
-	}
-
-	public onAddOperation(): void {
-		const dialogRef = this._dialog.open(OperationModalDialogComponent, {
-			data: { month: this.selectedMonthNumber(), year: this.selectedYear() }
-		});
-		dialogRef.afterClosed().subscribe(result => {
-			if (result) {
-				this._operationsService.create(result).subscribe(() => {
-					this.refreshOperations(!!result.interval);
-				});
-			}
-		});
-	}
-
-	public onOperationDelete(operation: IOperation): void {
-		if (!operation.scheduledOperationId) {
-			this._operationsService.delete(operation.id).subscribe(() => this.refreshOperations());
-		}
 	}
 }

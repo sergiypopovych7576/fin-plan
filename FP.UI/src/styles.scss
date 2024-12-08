@@ -54,3 +54,21 @@ html {
 		font-size: 42%;
 	}
 }
+
+button {
+	padding-left: 1.6rem !important;
+    padding-right: 1.6rem !important;
+}
+
+.mat-mdc-menu-content {
+	button {
+		border-radius: .5rem;
+	}
+}
+
+:not(.mat-mdc-menu-content) {
+	button {
+		height: 2.2rem !important;
+		min-height: 2.2rem !important;
+	}
+}

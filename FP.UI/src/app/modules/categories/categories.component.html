@@ -2,17 +2,13 @@
     <div class="w-100">
         <fp-card class="h-100">
             <div class="d-flex justify-between" header>
-                <p>Categories</p>
+                <p class="mt-auto mb-auto">Categories</p>
                 <button mat-flat-button (click)="onAddCategory()">
                     <mat-icon class="m-0">add</mat-icon>
                 </button>
             </div>
-            <div class="pt-1 pb-3 h-100" content>
+            <div class="pt-2" style="max-height: 95%;" content>
                 <fp-grid [columns]="columns" [data]="categories()">
-                    <ng-template g-col="indicator" let-category>
-                        <fp-indicator [color]="category.color">
-                        </fp-indicator>
-                    </ng-template>
                     <ng-template g-col="icon" let-category>
                         <mat-icon [style.color]="category.color">
                             {{category.iconName}}
@@ -34,10 +30,14 @@
                         </button>
                         <mat-menu #actionsMenu="matMenu">
                             <div class="pl-1 pr-1 d-flex f-column">
-                                <button (click)="onEditCategory(category)"
-                                    mat-button><mat-icon>edit</mat-icon>Edit</button>
-                                <button (click)="onDeleteCategory(category)"
-                                    mat-button><mat-icon>delete</mat-icon>Delete</button>
+                                <button mat-menu-item (click)="onEditCategory(category)">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <button mat-menu-item (click)="onDeleteCategory(category)">
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Delete</span>
+                                </button>
                             </div>
                         </mat-menu>
                     </ng-template>

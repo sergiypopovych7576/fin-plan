@@ -1,12 +1,29 @@
-@if(!categories.length) {
-<div class="text-center p-1">
-    <p>No data</p>
-</div>
-}
-
-<div style="overflow: auto; max-height: 12rem;">
-    <div *ngFor="let cat of categories" class="mt-2">
-        <span>{{cat.percentage | number:'1.0-0'}}% - {{cat.name}}</span>
-        <fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage" [color]="cat.color"></fp-progress-bar>
+<fp-card class="h-100">
+    <div class="d-flex justify-between pl-1" header>
+        <p>Expenses by categories</p>
+        <div>
+            @if(type() === 1) {
+            <button mat-flat-button (click)="onExpenses()">Expenses</button>
+            <button class="ml-1" (click)="onIncomes()" mat-button>Incomes</button>
+            }
+            @if(type() === 0) {
+            <button mat-button (click)="onExpenses()">Expenses</button>
+            <button class="ml-1" (click)="onIncomes()" mat-flat-button>Incomes</button>
+            }
+        </div>
     </div>
-</div>
+    <div class="pl-1 pb-2" style="height: 85%;" content>
+        @if(!calculations().length) {
+        <div class="text-center p-1">
+            <p>No data</p>
+        </div>
+        }
+        <div class="h-100 pt-1 d-flex f-column pr-2" style="overflow-x: hidden; overflow-y: auto;">
+            <div class="item mb-2" *ngFor="let cat of calculations()">
+                <span>{{cat.percentage | number:'1.0-0'}}% - {{cat.name}}</span>
+                <fp-progress-bar class="mt-1" mode="determinate" [value]="cat.percentage"
+                    [color]="cat.color"></fp-progress-bar>
+            </div>
+        </div>
+    </div>
+</fp-card>

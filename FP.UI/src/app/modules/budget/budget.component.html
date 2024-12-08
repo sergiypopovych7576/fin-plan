@@ -6,23 +6,13 @@
 				<button class="h-100 text-center mb-auto" mat-flat-button (click)="onSync()" style="max-height: 100%;">
 					<mat-icon class="m-0">sync</mat-icon>
 				</button>
-				<button class="h-100 ml-2 text-center mb-auto" mat-flat-button (click)="onAddOperation()" style="max-height: 100%;">
-					<mat-icon class="m-0">add</mat-icon>
-				</button>
 			</div>
 		</div>
-		<fp-card style="height: 88%;">
-			<div header class="pl-1">
-				<p>Transactions</p>
-			</div>
-			<div class="h-100 pt-2 pb-2" content>
-				<fp-operations-table [operations]="operations()" [currency]="defaultAccCurrency()"
-					(onDelete)="onOperationDelete($event)" [loading]="operationsLoading()"></fp-operations-table>
-			</div>
-		</fp-card>
+		<fp-operations-table style="height: 90%;" [operations]="operations" [currency]="defaultAccCurrency()"
+					[loading]="operationsLoading()"></fp-operations-table>
 	</div>
 	<div class="w-40 pl-3 d-flex f-column" style="width: 40%; gap:2%">
-		<div class="d-flex justify-between" style="gap:4%; height: 45%;">
+		<div class="d-flex justify-between" style="gap:4%; height: 42%;">
 			<div class="" style="width: 48%;">
 				<fp-card class="h-100">
 					<div class="h-100" content>
@@ -49,23 +39,9 @@
 			</div>
 		</div>
 		<div style="max-height: 30%;">
-			<fp-card>
-				<div class="pl-1" header>
-					<p>Expenses by categories</p>
-				</div>
-				<div class="pl-1 pt-1 pb-1" content>
-					<fp-categories-progress-list [categories]="categories()">
-					</fp-categories-progress-list>
-				</div>
-			</fp-card>
+			<fp-categories-progress-list [operations]="operations">
+			</fp-categories-progress-list>
 		</div>
-		<fp-card class="mt-auto" style="max-height: 20%;">
-			<div class="pl-1" header>
-				<p>Summary</p>
-			</div>
-			<div class="pl-1 pt-2 pb-1" style="overflow-y: auto;overflow-x: hidden;" content>
-				<fp-month-summary [selectedDate]="selectedDate()"></fp-month-summary>
-			</div>
-		</fp-card>
+		<fp-month-summary style="min-height: 24%; max-height: 24%; margin-top: auto;" [selectedDate]="selectedDate()"></fp-month-summary>
 	</div>
 </div>

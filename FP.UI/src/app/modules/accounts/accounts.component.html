@@ -1,11 +1,11 @@
-<div class="h-100 d-flex f-column">
-    <div class="d-flex flex-wrap w-100" style="gap: 2.66%">
-        <div *ngFor="let acc of accountTotals()" style="width: 23%;">
-            <fp-account-widget class="w-25" [outline]="true" [editable]="false" [account]="acc">
+<div class="h-100 d-flex" style="gap:2%">
+    <div class="d-flex f-column" style="width: 20%; gap: 2.3%">
+        <div class="w-100" *ngFor="let acc of accountTotals()">
+            <fp-account-widget [outline]="true" [editable]="false" [account]="acc">
             </fp-account-widget>
         </div>
     </div>
-    <div class="mt-5">
+    <div style="width: 80%;">
         <fp-account-list>
         </fp-account-list>
     </div>

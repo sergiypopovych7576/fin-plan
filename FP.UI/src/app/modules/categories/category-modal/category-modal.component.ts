@@ -15,7 +15,7 @@ export class CategoryModalDialogComponent implements OnInit {
         id: new FormControl(),
         name: new FormControl(),
         type: new FormControl(1),
-        color: new FormControl('#00ff00'),
+        color: new FormControl('#2e35ff'),
         iconName: new FormControl('category'),
     });
 
@@ -23,6 +23,10 @@ export class CategoryModalDialogComponent implements OnInit {
         if (this.data.category) {
             this.categoryForm.setValue(this.data.category);
         }
+    }
+
+    public onIconChange(iconName: string): void {
+        this.categoryForm.controls.iconName.setValue(iconName);
     }
 
     public onYesClick(): void {

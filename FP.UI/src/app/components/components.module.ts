@@ -7,17 +7,29 @@ import { IndicatorComponent } from "./indicator";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { GridColumnTemplateDirective, GridComponent } from "./grid";
 import { CommonModule } from "@angular/common";
+import { IconPickerComponent } from "./icon-picker";
+import { MatIconModule } from "@angular/material/icon";
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
 
 const MATERIAL_MODULES = [
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatIconModule,
+	ReactiveFormsModule,
+	MatFormFieldModule,
+	MatInputModule,
+	MatSelectModule
 ];
 const COMPONENTS = [
     ProgressBar,
     ChartComponent,
     CardComponent,
     IndicatorComponent,
-    GridComponent
+    GridComponent,
+    IconPickerComponent
 ];
 
 const DIRECTIVES = [

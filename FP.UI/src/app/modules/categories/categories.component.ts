@@ -18,37 +18,24 @@ export class CategoriesComponent {
 
     public columns = [
         {
-            name: 'indicator',
-            title: '',
-            width: 8
-        },
-        {
             name: 'icon',
-            title: 'Icon',
-            width: 8
+            title: '',
+            width: 2
         },
         {
             name: 'name',
             title: 'Name',
-            width: 40
+            width: 20
         },
         {
             name: 'type',
             title: 'Type',
-            width: 39
+            width: 60
         },
         {
             name: 'actions',
             title: '',
             width: 5
-        }
-    ]
-
-    public data = [
-        {
-            color: 'red',
-            iconName: 'account',
-            name: 'First item'
         }
     ]
 
